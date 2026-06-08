@@ -667,30 +667,30 @@
                 let ltoCell = "";
                 let gsisCell = "";
 
-                // Clean string parsing checks for http signatures
+                // LTO Document Layout Configuration
                 if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
                     ltoCell = `
                         <div style="display:flex; align-items:center; gap:8px;">
                             <a href="${v.lto_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
-                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
-                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove File</button>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove File</button>
                         </div>
                     `;
                 } else {
-                    ltoCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
+                    ltoCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
 
-                // Clean string parsing checks for http signatures
+                // GSIS Document Layout Configuration
                 if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
                     gsisCell = `
                         <div style="display:flex; align-items:center; gap:8px;">
                             <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
-                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
-                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove File</button>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove File</button>
                         </div>
                     `;
                 } else {
-                    gsisCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
+                    gsisCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
 
                 const row = document.createElement('tr');
@@ -703,7 +703,6 @@
                 tbody.appendChild(row);
             });
         }
-
         async function triggerFileUploadForm(plate, fieldName) {
             currentUploadPlate = plate;
             currentUploadField = fieldName;
