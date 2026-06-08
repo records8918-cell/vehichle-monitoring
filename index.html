@@ -667,7 +667,7 @@
             });
         }
 
-        function buildRepositoryTableRows() {
+     function buildRepositoryTableRows() {
             const query = document.getElementById('repo-search').value.toLowerCase();
             const tbody = document.getElementById('repo-table-body');
             tbody.innerHTML = "";
@@ -680,7 +680,7 @@
                 let ltoCell = "";
                 let gsisCell = "";
 
-                if (v.lto_document_attachment) {
+                if (v.lto_document_attachment && v.lto_document_attachment !== "NULL" && v.lto_document_attachment !== "") {
                     ltoCell = `
                         <div style="display:flex; align-items:center; gap:8px;">
                             <a href="${v.lto_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
@@ -692,7 +692,7 @@
                     ltoCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
 
-                if (v.gsis_document_attachment) {
+                if (v.gsis_document_attachment && v.gsis_document_attachment !== "NULL" && v.gsis_document_attachment !== "") {
                     gsisCell = `
                         <div style="display:flex; align-items:center; gap:8px;">
                             <a href="${v.gsis_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
