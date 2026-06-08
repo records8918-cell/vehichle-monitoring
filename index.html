@@ -584,35 +584,51 @@
             document.getElementById('alerts-container-box').style.display = alertItemsCount > 0 ? "block" : "none";
         }
 
-        function buildRegistryTableRows() {
-            const query = document.getElementById('table-search').value.toLowerCase();
-            const tbody = document.getElementById('registry-table-body');
+        function buildRepositoryTableRows() {
+            const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
             tbody.innerHTML = "";
 
-            fleet.forEach((v, index) => {
-                const ltoStat = evaluateDateStatus(v.lto);
-                const gsisStat = evaluateDateStatus(v.gsis);
-
-                if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
-                if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
-
+            fleet.forEach(v => {
                 const matchPlate = v.plate.toLowerCase().includes(query);
-                const matchModel = v.model.toLowerCase().includes(query);
                 const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
-                if (!matchPlate && !matchModel && !matchDriver) return;
+                if (query && !matchPlate && !matchDriver) return;
+
+                let ltoCell = "";
+                let gsisCell = "";
+
+                // LTO Document Layout Configuration
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove File</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
+
+                // GSIS Document Layout Configuration
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove File</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="td-plate">${v.plate}</td>
-                    <td><strong>${v.model}</strong></td>
-                    <td>${v.year || '—'}</td>
-                    <td>${v.driver ? v.driver : '<span class="text-unassigned">Unassigned</span>'}</td>
-                    <td><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.lto}</small></td>
-                    <td><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.gsis}</small></td>
-                    <td style="text-align:center;">
-                        <button class="btn-action" onclick="openFormModal(${index})">📝 Edit</button>
-                        <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteVehicleRecord('${v.plate}')">🗑️ Delete</button>
-                    </td>
+                    <td><strong>${v.driver || 'Unassigned'}</strong></td>
+                    <td>${ltoCell}</td>
+                    <td>${gsisCell}</td>
                 `;
                 tbody.appendChild(row);
             });
