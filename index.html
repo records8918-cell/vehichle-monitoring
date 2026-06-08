@@ -411,7 +411,6 @@
         let ltoFilter = 'all';
         let gsisFilter = 'all';
 
-        // Tracking variables for file upload targets
         let currentUploadPlate = "";
         let currentUploadField = "";
 
@@ -460,10 +459,10 @@
                 buildRegistryTableRows();
             } catch (err) {
                 console.error("Database connection error:", err);
-                alert("Connecting to Supabase cloud... Loading system snapshot placeholders.");
+                alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_url: "", gsis_url: "" },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_url: "", gsis_url: "" }
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -496,273 +495,302 @@
             });
         }
 
-        function switchActiveView(viewName) {
+        function switchActiveView(viewId) {
             document.querySelectorAll('.main-content').forEach(view => view.classList.remove('active-view'));
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
             
-            const titles = {
-                'dashboard': 'Active Fleet Registry',
-                'reports': 'Compliance Auditing Ledger',
-                'repository': 'Cloud Documentation Vault',
-                'utilities': 'System Maintenance Utilities'
-            };
+            const currentView = document.getElementById(`view-${viewId}`);
+            const currentNavItem = document.getElementById(`side-nav-${viewId}`);
+            
+            if(currentView) currentView.classList.add('active-view');
+            if(currentNavItem) currentNavItem.classList.add('active');
 
-            document.getElementById(`view-${viewName}`).classList.add('active-view');
-            document.getElementById(`side-nav-${viewName}`).classList.add('active');
-            document.getElementById('workspace-view-header-title').innerText = titles[viewName];
-
-            if (viewName === 'reports') {
-                document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString('en-PH')}`;
+            const headerTitle = document.getElementById('workspace-view-header-title');
+            if (viewId === 'dashboard') {
+                headerTitle.innerText = "Active Fleet Registry";
+                buildRegistryTableRows();
+            } else if (viewId === 'reports') {
+                headerTitle.innerText = "Executive Compliance Reports";
                 buildExecutiveReportRows();
-            } else if (viewName === 'repository') {
+            } else if (viewId === 'repository') {
+                headerTitle.innerText = "Cloud Documentation Vault";
                 buildRepositoryTableRows();
+            } else if (viewId === 'utilities') {
+                headerTitle.innerText = "System Utilities Overview";
             }
         }
 
-        function calculateDateStatus(targetDateStr) {
-            if (!targetDateStr) return { diff: 999, class: 'valid', text: 'Compliant' };
+        function evaluateDateStatus(targetDateStr) {
+            if (!targetDateStr) return { label: "EXPIRED", statusClass: "expired", daysRemaining: -9999 };
+            const targetDate = new Date(targetDateStr);
             const today = new Date();
             today.setHours(0,0,0,0);
-            const target = new Date(targetDateStr);
-            target.setHours(0,0,0,0);
-            
-            const diffTime = target - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            targetDate.setHours(0,0,0,0);
 
-            if (diffDays < 0) {
-                return { diff: diffDays, class: 'expired', text: 'Expired' };
-            } else if (diffDays <= WARNING_WINDOW_DAYS) {
-                return { diff: diffDays, class: 'expiring', text: `Warning (${diffDays}d)` };
+            const differenceInTime = targetDate.getTime() - today.getTime();
+            const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+            if (daysRemaining < 0) {
+                return { label: "EXPIRED", statusClass: "expired", daysRemaining };
+            } else if (daysRemaining <= WARNING_WINDOW_DAYS) {
+                return { label: `WARN (${daysRemaining}d)`, statusClass: "expiring", daysRemaining };
+            } else {
+                return { label: "VALID", statusClass: "valid", daysRemaining };
             }
-            return { diff: diffDays, class: 'valid', text: 'Valid' };
         }
 
         function updateInterfaceMetricsAndAlerts() {
+            let total = fleet.length;
             let expiredCount = 0;
             let warningCount = 0;
             let validCount = 0;
-            let ltoExpired = 0, ltoWarning = 0;
-            let gsisExpired = 0, gsisWarning = 0;
 
-            const alertHook = document.getElementById('alerts-list-hook');
-            alertHook.innerHTML = "";
+            let ltoExpired = 0, gsisExpired = 0;
+            let ltoWarning = 0, gsisWarning = 0;
+
+            const alertsHook = document.getElementById('alerts-list-hook');
+            alertsHook.innerHTML = "";
+            let alertItemsCount = 0;
 
             fleet.forEach(v => {
-                const ltoStat = calculateDateStatus(v.lto);
-                const gsisStat = calculateDateStatus(v.gsis);
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
 
-                let isVehicleExpired = false;
-                let isVehicleWarning = false;
+                let isExpired = (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired');
+                let isWarning = (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') && !isExpired;
 
-                if (ltoStat.class === 'expired') { ltoExpired++; isVehicleExpired = true; }
-                if (ltoStat.class === 'expiring') { ltoWarning++; isVehicleWarning = true; }
-                if (gsisStat.class === 'expired') { gsisExpired++; isVehicleExpired = true; }
-                if (gsisStat.class === 'expiring') { gsisWarning++; isVehicleWarning = true; }
-
-                if (isVehicleExpired) expiredCount++;
-                else if (isVehicleWarning) warningCount++;
+                if (isExpired) expiredCount++;
+                else if (isWarning) warningCount++;
                 else validCount++;
 
-                // Build real-time warning layout nodes
-                if (ltoStat.class === 'expired' || ltoStat.class === 'expiring') {
-                    createAlertElement(v.plate, v.driver, 'LTO Registration', ltoStat);
+                if (ltoStat.statusClass === 'expired') ltoExpired++;
+                if (gsisStat.statusClass === 'expired') gsisExpired++;
+                if (ltoStat.statusClass === 'expiring') ltoWarning++;
+                if (gsisStat.statusClass === 'expiring') gsisWarning++;
+
+                if (ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "alert-item";
+                    const dayLabel = ltoStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(ltoStat.daysRemaining)} days ago)` : `${ltoStat.daysRemaining} days remaining`;
+                    item.innerHTML = `<div><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'No Driver Assigned'}) requires LTO Registration Renewal.<span class="alert-tag">LTO O.R.</span></div><div class="alert-days">${dayLabel}</div>`;
+                    alertsHook.appendChild(item);
                 }
-                if (gsisStat.class === 'expired' || gsisStat.class === 'expiring') {
-                    createAlertElement(v.plate, v.driver, 'GSIS Insurance Policy', gsisStat);
+
+                if (gsisStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "alert-item";
+                    const dayLabel = gsisStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(gsisStat.daysRemaining)} days ago)` : `${gsisStat.daysRemaining} days remaining`;
+                    item.innerHTML = `<div><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'No Driver Assigned'}) requires GSIS Insurance Coverage Renewal.<span class="alert-tag" style="background:rgba(59,130,246,0.15); color:var(--accent-blue);">GSIS C.O.C.</span></div><div class="alert-days">${dayLabel}</div>`;
+                    alertsHook.appendChild(item);
                 }
             });
 
-            document.getElementById('stat-total').innerText = fleet.length;
+            document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-expired').innerText = expiredCount;
             document.getElementById('stat-expired-sub').innerText = `${ltoExpired} LTO • ${gsisExpired} GSIS`;
             document.getElementById('stat-warning').innerText = warningCount;
             document.getElementById('stat-warning-sub').innerText = `${ltoWarning} LTO • ${gsisWarning} GSIS`;
             document.getElementById('stat-valid').innerText = validCount;
 
-            document.getElementById('alerts-container-box').style.display = alertHook.children.length > 0 ? 'block' : 'none';
-
-            // Sync executive reports numbers
-            document.getElementById('rep-total').innerText = fleet.length;
-            document.getElementById('rep-expired').innerText = expiredCount;
-            document.getElementById('rep-warning').innerText = warningCount;
-        }
-
-        function createAlertElement(plate, driver, type, status) {
-            const hook = document.getElementById('alerts-list-hook');
-            const alert = document.createElement('div');
-            alert.className = 'alert-item';
-            
-            const timePhrase = status.diff < 0 
-                ? `<span class="status-badge expired" style="min-width:auto; padding:2px 6px;">Overdue by ${Math.abs(status.diff)} days</span>` 
-                : `expires in <span class="alert-days">${status.diff} days</span>`;
-
-            alert.innerHTML = `
-                <div>
-                    <strong>${plate}</strong> — ${driver || 'No Assigned Driver'} requires immediate <strong>${type}</strong> processing.
-                </div>
-                <div>${timePhrase}<span class="alert-tag">${status.text}</span></div>
-            `;
-            hook.appendChild(alert);
-        }
-
-        function testFilterMatch(v, query) {
-            const ltoStat = calculateDateStatus(v.lto).class;
-            const gsisStat = calculateDateStatus(v.gsis).class;
-
-            if (ltoFilter !== 'all' && ltoStat !== ltoFilter) return false;
-            if (gsisFilter !== 'all' && gsisStat !== gsisFilter) return false;
-
-            if (query) {
-                const matchStr = `${v.plate} ${v.model} ${v.driver}`.toLowerCase();
-                return matchStr.includes(query.toLowerCase());
-            }
-            return true;
+            document.getElementById('alerts-container-box').style.display = alertItemsCount > 0 ? "block" : "none";
         }
 
         function buildRegistryTableRows() {
-            const body = document.getElementById('registry-table-body');
-            body.innerHTML = "";
-            const searchQuery = document.getElementById('table-search').value;
+            const query = document.getElementById('table-search').value.toLowerCase();
+            const tbody = document.getElementById('registry-table-body');
+            tbody.innerHTML = "";
 
             fleet.forEach((v, index) => {
-                if (!testFilterMatch(v, searchQuery)) return;
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
 
-                const ltoStat = calculateDateStatus(v.lto);
-                const gsisStat = calculateDateStatus(v.gsis);
+                if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
+                if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchModel = v.model.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (!matchPlate && !matchModel && !matchDriver) return;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
                     <td class="td-plate">${v.plate}</td>
                     <td><strong>${v.model}</strong></td>
                     <td>${v.year || '—'}</td>
-                    <td>${v.driver ? `👷 ${v.driver}` : '<span class="text-unassigned">Unassigned</span>'}</td>
-                    <td><span class="status-badge ${ltoStat.class}">${ltoStat.text}</span><br><small style="color:var(--text-muted);">${v.lto}</small></td>
-                    <td><span class="status-badge ${gsisStat.class}">${gsisStat.text}</span><br><small style="color:var(--text-muted);">${v.gsis}</small></td>
+                    <td>${v.driver ? v.driver : '<span class="text-unassigned">Unassigned</span>'}</td>
+                    <td><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.lto}</small></td>
+                    <td><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.gsis}</small></td>
                     <td style="text-align:center;">
                         <button class="btn-action" onclick="openFormModal(${index})">📝 Edit</button>
-                        <button class="btn-action" style="color:var(--accent-red); border-color:rgba(239,68,68,0.2);" onclick="removeVehicleRecord('${v.plate}')">🗑️ Delete</button>
+                        <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteVehicleRecord('${v.plate}')">🗑️ Delete</button>
                     </td>
                 `;
-                body.appendChild(tr);
+                tbody.appendChild(row);
             });
         }
 
         function buildExecutiveReportRows() {
-            const body = document.getElementById('report-table-body');
-            body.innerHTML = "";
+            document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString()} | City Engineering Office Baguio`;
+            
+            let expiredCount = 0;
+            let warningCount = 0;
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                if (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired') expiredCount++;
+                else if (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') warningCount++;
+            });
+
+            document.getElementById('rep-total').innerText = fleet.length;
+            document.getElementById('rep-expired').innerText = expiredCount;
+            document.getElementById('rep-warning').innerText = warningCount;
+
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = "";
 
             fleet.forEach(v => {
-                const ltoStat = calculateDateStatus(v.lto);
-                const gsisStat = calculateDateStatus(v.gsis);
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
 
-                const tr = document.createElement('tr');
-                tr.style.color = "#000";
-                tr.innerHTML = `
-                    <td style="font-family:monospace; font-weight:700; border-bottom:1px solid #eee; padding:12px;">${v.plate}</td>
-                    <td style="border-bottom:1px solid #eee; padding:12px;">${v.model}</td>
-                    <td style="border-bottom:1px solid #eee; padding:12px;">${v.driver || 'Unassigned'}</td>
-                    <td style="border-bottom:1px solid #eee; padding:12px;"><span class="status-badge ${ltoStat.class}">${ltoStat.text}</span> (${v.lto})</td>
-                    <td style="border-bottom:1px solid #eee; padding:12px;"><span class="status-badge ${gsisStat.class}">${gsisStat.text}</span> (${v.gsis})</td>
+                const row = document.createElement('tr');
+                row.style.color = "#000";
+                row.innerHTML = `
+                    <td style="font-family:monospace; font-weight:700; border-bottom:1px solid #ddd; padding:12px;">${v.plate}</td>
+                    <td style="border-bottom:1px solid #ddd; padding:12px;">${v.model} (${v.year})</td>
+                    <td style="border-bottom:1px solid #ddd; padding:12px;">${v.driver || 'Unassigned'}</td>
+                    <td style="border-bottom:1px solid #ddd; padding:12px;"><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span> <small>${v.lto}</small></td>
+                    <td style="border-bottom:1px solid #ddd; padding:12px;"><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span> <small>${v.gsis}</small></td>
                 `;
-                body.appendChild(tr);
+                tbody.appendChild(row);
             });
         }
 
         function buildRepositoryTableRows() {
-            const body = document.getElementById('repo-table-body');
-            body.innerHTML = "";
             const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
+            tbody.innerHTML = "";
 
             fleet.forEach(v => {
-                if (query && !(`${v.plate} ${v.driver}`.toLowerCase().includes(query))) return;
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (query && !matchPlate && !matchDriver) return;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+                let ltoCell = "";
+                let gsisCell = "";
+
+                if (v.lto_document_attachment) {
+                    ltoCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.lto_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
+                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
+
+                if (v.gsis_document_attachment) {
+                    gsisCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.gsis_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
+                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
                     <td class="td-plate">${v.plate}</td>
                     <td><strong>${v.driver || 'Unassigned'}</strong></td>
-                    <td>${renderDocAttachmentCell(v.plate, 'lto_url', v.lto_url)}</td>
-                    <td>${renderDocAttachmentCell(v.plate, 'gsis_url', v.gsis_url)}</td>
+                    <td>${ltoCell}</td>
+                    <td>${gsisCell}</td>
                 `;
-                body.appendChild(tr);
+                tbody.appendChild(row);
             });
         }
 
-        function renderDocAttachmentCell(plate, field, url) {
-            if (url) {
-                return `
-                    <div style="display:flex; align-items:center; gap:16px;">
-                        <a href="${url}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
-                        <button class="btn-action" onclick="triggerNativeUploaderFileRoute('${plate}', '${field}')">🔄 Replace File</button>
-                    </div>
-                `;
-            }
-            return `<button class="btn-action btn-link-doc" onclick="triggerNativeUploaderFileRoute('${plate}', '${field}')">📤 Upload Scanned Copy</button>`;
-        }
-
-        function triggerNativeUploaderFileRoute(plate, field) {
+        function triggerFileUploadForm(plate, fieldName) {
             currentUploadPlate = plate;
-            currentUploadField = field;
+            currentUploadField = fieldName;
             document.getElementById('global-hidden-uploader').click();
         }
 
-        /* CRITICAL SUPABASE CLOUD FILE ATTACHMENT HANDLING:
-           Patched to correctly target lowercase storage bucket layout ("fleet-documents") 
-           to eliminate file processing runtime exceptions.
-        */
         async function processSelectedFile(inputElement) {
             if (!inputElement.files || inputElement.files.length === 0) return;
-            const selectedFile = inputElement.files[0];
+            const targetFile = inputElement.files[0];
             
-            // Generate clean target destination path string
-            const sanitisedPlate = currentUploadPlate.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-            const fileExtension = selectedFile.name.split('.').pop();
-            const cloudStorageDestinationPath = `${sanitisedPlate}/${currentUploadField}_${Date.now()}.${fileExtension}`;
-
+            const fileExtension = targetFile.name.split('.').pop();
+            const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
+            
             try {
-                // Notice lowercase 'fleet-documents' matching storage deployment exactly
-                const uploadEndpointUrl = `${SUPABASE_URL}/storage/v1/object/fleet-documents/${cloudStorageDestinationPath}`;
+                // Upload document directly to Supabase Storage Storage Bucket 'records'
+                const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
                 
-                let uploadHeaders = getHeaders();
-                delete uploadHeaders["Content-Type"]; // Let boundary set organically
-                uploadHeaders["Authorization"] = `Bearer ${SUPABASE_KEY}`;
+                const uploadHeaders = {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": targetFile.type
+                };
 
-                const cloudUploadResponse = await fetch(uploadEndpointUrl, {
+                const uploadResponse = await fetch(storageEndpoint, {
                     method: "POST",
                     headers: uploadHeaders,
-                    body: selectedFile
+                    body: targetFile
                 });
 
-                if (!cloudUploadResponse.ok) {
-                    const errorMsg = await cloudUploadResponse.text();
-                    throw new Error(`Storage Engine Rejected Binary Stream: ${errorMsg}`);
-                }
+                if (!uploadResponse.ok) throw new Error("Storage attachment pipeline rejected payload.");
 
-                const visualPublicResourceUrl = `${SUPABASE_URL}/storage/v1/object/public/fleet-documents/${cloudStorageDestinationPath}`;
+                const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
+                
+                // Update vehicle record payload reference mapping
+                const patchPayload = {};
+                patchPayload[currentUploadField] = cleanPublicUrl;
 
-                // Sync file resource locator string mutations to table matrix
-                const patchDatabasePayload = {};
-                patchDatabasePayload[currentUploadField] = visualPublicResourceUrl;
-
-                const restDatabaseUpdateUrl = `${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`;
-                const databasePatchResponse = await fetch(restDatabaseUpdateUrl, {
+                const databaseSyncResponse = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
                     method: "PATCH",
                     headers: getHeaders(),
-                    body: JSON.stringify(patchDatabasePayload)
+                    body: JSON.stringify(patchPayload)
                 });
 
-                if (!databasePatchResponse.ok) throw new Error("Database reference sync step failed.");
+                if (!databaseSyncResponse.ok) throw new Error("Database reference sync step failed.");
 
-                alert(`Cloud Asset Registered Successfully!`);
-                await fetchFleetFromCloud();
-                
-                if (document.getElementById('view-repository').classList.contains('active-view')) {
-                    buildRepositoryTableRows();
-                }
-            } catch (ex) {
-                console.error("Critical Storage Pipeline Trace Error:", ex);
-                alert(`Pipeline Exception Intercepted: ${ex.message}`);
-            } finally {
-                inputElement.value = ""; // Reset file capture hook completely
+                alert("Document successfully committed to security repository vault.");
+                inputElement.value = ""; // Reset file selection input
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error(err);
+                alert("Pipeline Exception Intercepted: Database reference sync step failed.");
+            }
+        }
+
+        async function clearCloudDocumentField(plateNumber, targetField) {
+            if (!confirm(`Are you sure you want to completely remove this document link for vehicle ${plateNumber}?`)) {
+                return;
+            }
+
+            try {
+                const patchPayload = {};
+                patchPayload[targetField] = null;
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
+                    method: "PATCH",
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!response.ok) throw new Error("Cloud clearing execution failed.");
+
+                alert("Document attachment reference successfully removed.");
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error("Database updates error:", err);
+                alert("Failed to clear file reference. Check network state.");
             }
         }
 
@@ -772,35 +800,35 @@
             form.reset();
 
             if (index > -1) {
-                const target = fleet[index];
-                document.getElementById('modal-title').innerText = `Update Registry Record [${target.plate}]`;
+                const v = fleet[index];
+                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
                 document.getElementById('edit-idx').value = index;
-                document.getElementById('f-plate').value = target.plate;
+                document.getElementById('f-plate').value = v.plate;
                 document.getElementById('f-plate').disabled = true;
-                document.getElementById('f-year').value = target.year || '';
-                document.getElementById('f-model').value = target.model;
-                document.getElementById('f-driver').value = target.driver || '';
-                document.getElementById('f-lto').value = target.lto || '';
-                document.getElementById('f-gsis').value = target.gsis || '';
+                document.getElementById('f-year').value = v.year;
+                document.getElementById('f-model').value = v.model;
+                document.getElementById('f-driver').value = v.driver || '';
+                document.getElementById('f-lto').value = v.lto;
+                document.getElementById('f-gsis').value = v.gsis;
             } else {
                 document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
                 document.getElementById('edit-idx').value = -1;
                 document.getElementById('f-plate').disabled = false;
             }
-            modal.style.display = 'flex';
+            modal.style.display = "flex";
         }
 
         function closeFormModal() {
-            document.getElementById('form-modal').style.display = 'none';
+            document.getElementById('form-modal').style.display = "none";
         }
 
         async function handleFormSubmission(e) {
             e.preventDefault();
-            const index = parseInt(document.getElementById('edit-idx').value);
-
-            const recordPayload = {
+            const idx = parseInt(document.getElementById('edit-idx').value);
+            
+            const recordData = {
                 plate: document.getElementById('f-plate').value.trim().toUpperCase(),
-                year: document.getElementById('f-year').value ? String(document.getElementById('f-year').value) : null,
+                year: document.getElementById('f-year').value.toString(),
                 model: document.getElementById('f-model').value.trim(),
                 driver: document.getElementById('f-driver').value.trim() || null,
                 lto: document.getElementById('f-lto').value,
@@ -808,52 +836,58 @@
             };
 
             try {
-                let restEndpointUrl = `${SUPABASE_URL}/rest/v1/fleet`;
-                let fallbackMethodType = "POST";
-
-                if (index > -1) {
-                    fallbackMethodType = "PATCH";
-                    restEndpointUrl += `?plate=eq.${encodeURIComponent(recordPayload.plate)}`;
+                let response;
+                if (idx > -1) {
+                    // Update operation via PATCH protocol mapping
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                        method: "PATCH",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                } else {
+                    // New record creation pipeline via POST protocol mapping
+                    recordData.lto_document_attachment = null;
+                    recordData.gsis_document_attachment = null;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                        method: "POST",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
                 }
 
-                const response = await fetch(restEndpointUrl, {
-                    method: fallbackMethodType,
-                    headers: getHeaders(),
-                    body: JSON.stringify(recordPayload)
-                });
-
-                if (!response.ok) throw new Error("REST data state modification transaction rejected.");
-
+                if (!response.ok) throw new Error("Cloud mutations rejected data schema validation parameters.");
+                
                 closeFormModal();
-                await fetchFleetFromCloud();
+                fetchFleetFromCloud();
             } catch (err) {
-                console.error("REST Mutation Engine Error:", err);
-                alert(`Engine Failure: ${err.message}`);
+                console.error(err);
+                alert("Mutation operation error exception encountered.");
             }
         }
 
-        async function removeVehicleRecord(plateIdString) {
-            if (!confirm(`Are you certain you wish to completely remove asset entity entry [${plateIdString}] from tracking matrices?`)) return;
+        async function deleteVehicleRecord(plateId) {
+            if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateIdString)}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateId)}`, {
                     method: "DELETE",
                     headers: getHeaders()
                 });
-                if (!response.ok) throw new Error("Cloud tracking removal execution step failed.");
-                await fetchFleetFromCloud();
+                if (!response.ok) throw new Error("Cloud execution failed.");
+                fetchFleetFromCloud();
             } catch (err) {
-                alert(`Engine Disconnect Exception: ${err.message}`);
+                console.error(err);
+                alert("Database action dropped: Delete validation missing privileges.");
             }
         }
 
         function exportLocalDatabaseToBackupFile() {
-            const outputBlobDataStreamStr = JSON.stringify(fleet, null, 4);
-            const dataFileBlobContainerInstance = new Blob([outputBlobDataStreamStr], { type: "application/json" });
-            const temporaryAnchorElementNode = document.createElement('a');
-            temporaryAnchorElementNode.href = URL.createObjectURL(dataFileBlobContainerInstance);
-            temporaryAnchorElementNode.download = `FLEET_MON_BACKUP_${new Date().toISOString().split('T')[0]}.json`;
-            temporaryAnchorElementNode.click();
-            URL.revokeObjectURL(temporaryAnchorElementNode.href);
+            if (fleet.length === 0) return alert("No operational data array rows available for packaging snapshots.");
+            const flatStringData = JSON.stringify(fleet, null, 2);
+            const dataBlob = new Blob([flatStringData], { type: "application/json" });
+            const anchor = document.createElement('a');
+            anchor.href = URL.createObjectURL(dataBlob);
+            anchor.download = `CEO_FLEET_SNAPSHOT_${new Date().toISOString().split('T')[0]}.json`;
+            anchor.click();
         }
     </script>
 </body>
