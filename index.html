@@ -56,4 +56,356 @@
         .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0; display: block; }
         .card-total { border-top: 4px solid var(--accent-blue); }
         .card-expired { border-top: 4px solid var(--accent-red); }
-        .card-warning { bord
+        .card-warning { border-top: 4px solid var(--accent-amber); }
+        .card-valid { border-top: 4px solid var(--accent-green); }
+
+        /* Filter Toolbar */
+        .filter-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 20px; }
+        .search-input { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 10px 15px; border-radius: 6px; width: 300px; outline: none; }
+        
+        .filter-btn-group { display: flex; background: var(--bg-dark); padding: 4px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .filter-tab { border: none; background: transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
+        .filter-tab.active { background: var(--border-color); color: #fff; }
+        .filter-tab:hover:not(.active) { color: #fff; }
+
+        /* Tables */
+        .table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { background: rgba(0,0,0,0.2); padding: 16px 24px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+        .data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        .td-plate { font-family: monospace; font-weight: 700; color: #fff; }
+
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .status-badge.valid { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .status-badge.expiring { background: rgba(245,158,11,0.2); color: var(--accent-amber); }
+        .status-badge.expired { background: rgba(239,68,68,0.2); color: var(--accent-red); }
+
+        /* UI Controls */
+        .btn-primary { background: var(--accent-green); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-action { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: var(--bg-card); width: 600px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .span-2 { grid-column: span 2; }
+        .form-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 6px; outline: none; }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); text-align: right; background: rgba(0,0,0,0.1); }
+
+        @media print {
+            .sidebar, .top-bar, .filter-toolbar, .btn-action, .btn-primary { display: none !important; }
+            .workspace { overflow: visible; }
+            .main-content { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hidden Uploader -->
+    <input type="file" id="global-uploader" style="display: none;" onchange="processUpload(this)">
+
+    <!-- Login -->
+    <div class="login-overlay" id="gatekeeper-lock">
+        <div class="login-box">
+            <h2>FLEET MONITOR PH</h2>
+            <p>CEO Baguio Security Access</p>
+            <form onsubmit="doLogin(event)">
+                <input type="password" id="gatekeeper-pass" class="login-input" placeholder="••••••••" required>
+                <button type="submit" class="btn-login">🔑 Verify Access</button>
+                <div class="login-error" id="gatekeeper-error">Invalid Credentials.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h2>FLEET MONITOR</h2>
+                <p>City Engineering Office</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item active" id="nav-dashboard" onclick="nav('dashboard')">📊 Dashboard</div>
+                <div class="sidebar-item" id="nav-repository" onclick="nav('repository')">📂 Document Vault</div>
+                <div class="sidebar-item" id="nav-reports" onclick="nav('reports')">📋 Executive Reports</div>
+                <div class="sidebar-item" id="nav-utils" onclick="nav('utils')">🛠️ System Utilities</div>
+            </div>
+        </div>
+        <div class="sidebar-footer">Logged: Admin • Baguio PH</div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        <div class="top-bar">
+            <h1 id="view-title">Active Fleet Registry</h1>
+            <button class="btn-primary" onclick="openModal()">➕ Add New Vehicle</button>
+        </div>
+
+        <!-- View: Dashboard -->
+        <div id="view-dashboard" class="main-content active-view">
+            <div class="metrics-grid">
+                <div class="metric-card card-total" onclick="setGlobalFilter('all')">
+                    <span class="metric-title">Total Fleet</span>
+                    <span class="metric-value" id="stat-total">0</span>
+                </div>
+                <div class="metric-card card-expired" onclick="setGlobalFilter('expired')">
+                    <span class="metric-title">Expired</span>
+                    <span class="metric-value" id="stat-expired">0</span>
+                </div>
+                <div class="metric-card card-warning" onclick="setGlobalFilter('expiring')">
+                    <span class="metric-title">Warnings</span>
+                    <span class="metric-value" id="stat-warning">0</span>
+                </div>
+                <div class="metric-card card-valid" onclick="setGlobalFilter('valid')">
+                    <span class="metric-title">Valid</span>
+                    <span class="metric-value" id="stat-valid">0</span>
+                </div>
+            </div>
+
+            <div class="filter-toolbar">
+                <div class="filter-btn-group" id="status-tabs">
+                    <button class="filter-tab active" id="tab-all" onclick="setGlobalFilter('all')">All Units</button>
+                    <button class="filter-tab" id="tab-valid" onclick="setGlobalFilter('valid')">Valid</button>
+                    <button class="filter-tab" id="tab-expiring" onclick="setGlobalFilter('expiring')">Warnings</button>
+                    <button class="filter-tab" id="tab-expired" onclick="setGlobalFilter('expired')">Expired</button>
+                </div>
+                <input type="text" id="main-search" class="search-input" placeholder="Search plate or officer..." oninput="refreshUI()">
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Plate No.</th>
+                            <th>Description</th>
+                            <th>Officer</th>
+                            <th>LTO Registry</th>
+                            <th>GSIS Insurance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleet-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Other views kept for functionality -->
+        <div id="view-repository" class="main-content">
+            <div class="table-container"><table class="data-table"><thead><tr><th>Plate</th><th>Officer</th><th>LTO O.R.</th><th>GSIS C.O.C.</th></tr></thead><tbody id="repo-table"></tbody></table></div>
+        </div>
+        <div id="view-reports" class="main-content">
+            <button class="btn-primary" onclick="window.print()" style="margin-bottom:20px;">🖨️ Print Compliance Audit</button>
+            <div id="report-print-area" style="background:#fff; color:#000; padding:40px; border-radius:8px;"><div id="report-table-target"></div></div>
+        </div>
+        <div id="view-utils" class="main-content">
+            <button class="btn-primary" onclick="exportData()">📥 Download JSON Snapshot</button>
+        </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="modal-form">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">New Vehicle Entry</h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <form id="vehicle-form" onsubmit="saveVehicle(event)">
+                <input type="hidden" id="edit-id" value="">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div><label class="form-label">Plate Number</label><input type="text" id="f-plate" class="form-control" required></div>
+                        <div><label class="form-label">Year</label><input type="number" id="f-year" class="form-control"></div>
+                        <div class="span-2"><label class="form-label">Make & Model</label><input type="text" id="f-model" class="form-control" required></div>
+                        <div class="span-2"><label class="form-label">Officer</label><input type="text" id="f-driver" class="form-control"></div>
+                        <div><label class="form-label">LTO Expiry</label><input type="date" id="f-lto" class="form-control" required></div>
+                        <div><label class="form-label">GSIS Expiry</label><input type="date" id="f-gsis" class="form-control" required></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">💾 Commit Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
+        let fleet = [];
+        let currentStatusFilter = 'all';
+
+        function doLogin(e) {
+            e.preventDefault();
+            if (document.getElementById('gatekeeper-pass').value === 'motorpool2010') {
+                sessionStorage.setItem('ceo_auth', 'true');
+                document.getElementById('gatekeeper-lock').style.display = 'none';
+                loadData();
+            } else { document.getElementById('gatekeeper-error').style.display = 'block'; }
+        }
+
+        window.onload = () => { if (sessionStorage.getItem('ceo_auth') === 'true') { document.getElementById('gatekeeper-lock').style.display = 'none'; loadData(); } };
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+                fleet = await res.json();
+                refreshUI();
+            } catch (err) { console.error(err); }
+        }
+
+        // New Global Filter logic
+        function setGlobalFilter(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + status).classList.add('active');
+            refreshUI();
+        }
+
+        function refreshUI() {
+            const search = document.getElementById('main-search').value.toLowerCase();
+            const table = document.getElementById('fleet-table');
+            const repo = document.getElementById('repo-table');
+            table.innerHTML = ""; repo.innerHTML = "";
+            
+            let stats = { total: fleet.length, expired: 0, warning: 0, valid: 0 };
+
+            fleet.forEach((v, idx) => {
+                const lto = getStatus(v.lto);
+                const gsis = getStatus(v.gsis);
+
+                // Calculate overall status for the row
+                let rowStatus = 'valid';
+                if (lto.state === 'expired' || gsis.state === 'expired') rowStatus = 'expired';
+                else if (lto.state === 'expiring' || gsis.state === 'expiring') rowStatus = 'expiring';
+
+                // Update Stats
+                if (rowStatus === 'expired') stats.expired++;
+                else if (rowStatus === 'expiring') stats.warning++;
+                else stats.valid++;
+
+                // Apply Filters (Search + Status Tab)
+                const matchesSearch = v.plate.toLowerCase().includes(search) || v.model.toLowerCase().includes(search) || (v.driver||'').toLowerCase().includes(search);
+                const matchesStatus = currentStatusFilter === 'all' || rowStatus === currentStatusFilter;
+
+                if (matchesSearch && matchesStatus) {
+                    table.innerHTML += `
+                        <tr>
+                            <td class="td-plate">${v.plate}</td>
+                            <td>${v.model} (${v.year})</td>
+                            <td>${v.driver || '—'}</td>
+                            <td><span class="status-badge ${lto.state}">${lto.label}</span><br><small>${v.lto}</small></td>
+                            <td><span class="status-badge ${gsis.state}">${gsis.label}</span><br><small>${v.gsis}</small></td>
+                            <td>
+                                <button class="btn-action" onclick="openModal(${idx})">Edit</button>
+                                <button class="btn-action" style="color:var(--accent-red)" onclick="deleteVehicle('${v.plate}')">Del</button>
+                            </td>
+                        </tr>
+                    `;
+
+                    repo.innerHTML += `
+                        <tr>
+                            <td class="td-plate">${v.plate}</td>
+                            <td>${v.driver || '—'}</td>
+                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">Upload</button>`}</td>
+                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">Upload</button>`}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            document.getElementById('stat-total').innerText = stats.total;
+            document.getElementById('stat-expired').innerText = stats.expired;
+            document.getElementById('stat-warning').innerText = stats.warning;
+            document.getElementById('stat-valid').innerText = stats.valid;
+            buildReport();
+        }
+
+        function getStatus(dateStr) {
+            if (!dateStr) return { label: 'MISSING', state: 'expired' };
+            const diff = (new Date(dateStr) - new Date()) / (1000 * 3600 * 24);
+            if (diff < 0) return { label: 'EXPIRED', state: 'expired' };
+            if (diff <= 60) return { label: `${Math.ceil(diff)} DAYS`, state: 'expiring' };
+            return { label: 'VALID', state: 'valid' };
+        }
+
+        async function saveVehicle(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const plate = document.getElementById('f-plate').value.toUpperCase().trim();
+            const payload = { plate, year: document.getElementById('f-year').value, model: document.getElementById('f-model').value, driver: document.getElementById('f-driver').value, lto: document.getElementById('f-lto').value, gsis: document.getElementById('f-gsis').value };
+
+            try {
+                let res;
+                if (editId) { res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) }); }
+                else { payload.lto_document_attachment = null; payload.gsis_document_attachment = null; res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: JSON.stringify(payload) }); }
+                if (!res.ok) throw new Error("Update failed.");
+                closeModal(); loadData();
+            } catch (err) { alert(err.message); }
+        }
+
+        async function deleteVehicle(plate) {
+            if (!confirm(`Remove ${plate}?`)) return;
+            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'DELETE', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+            loadData();
+        }
+
+        function nav(view) {
+            document.querySelectorAll('.main-content').forEach(v => v.classList.remove('active-view'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active-view');
+            document.getElementById('nav-' + view).classList.add('active');
+        }
+
+        function openModal(idx = -1) {
+            document.getElementById('vehicle-form').reset();
+            document.getElementById('edit-id').value = "";
+            document.getElementById('f-plate').disabled = false;
+            if (idx > -1) {
+                const v = fleet[idx];
+                document.getElementById('edit-id').value = v.plate;
+                document.getElementById('f-plate').value = v.plate;
+                document.getElementById('f-plate').disabled = true;
+                document.getElementById('f-year').value = v.year;
+                document.getElementById('f-model').value = v.model;
+                document.getElementById('f-driver').value = v.driver;
+                document.getElementById('f-lto').value = v.lto;
+                document.getElementById('f-gsis').value = v.gsis;
+            }
+            document.getElementById('modal-form').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal-form').style.display = 'none'; }
+        
+        function triggerUpload(plate, field) { uploadTarget = { plate, field }; document.getElementById('global-uploader').click(); }
+        
+        async function processUpload(input) {
+            if (!input.files[0]) return;
+            const file = input.files[0];
+            const path = `docs/${uploadTarget.plate}_${Date.now()}.${file.name.split('.').pop()}`;
+            try {
+                await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type }, body: file });
+                const url = `${SUPABASE_URL}/storage/v1/object/public/records/${path}`;
+                const patch = {}; patch[uploadTarget.field] = url;
+                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${uploadTarget.plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(patch) });
+                loadData();
+            } catch (err) { alert(err.message); }
+        }
+
+        function buildReport() {
+            let html = `<table style="width:100%; border-collapse:collapse; color:#000;"><thead><tr style="background:#f0f0f0;"><th style="border:1px solid #ddd; padding:10px;">Plate</th><th style="border:1px solid #ddd; padding:10px;">Model</th><th style="border:1px solid #ddd; padding:10px;">LTO</th><th style="border:1px solid #ddd; padding:10px;">GSIS</th></tr></thead><tbody>`;
+            fleet.forEach(v => { html += `<tr><td style="border:1px solid #ddd; padding:10px; font-weight:700;">${v.plate}</td><td style="border:1px solid #ddd; padding:10px;">${v.model}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.lto).label}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.gsis).label}</td></tr>`; });
+            html += `</tbody></table>`;
+            document.getElementById('report-table-target').innerHTML = html;
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(fleet, null, 2)], { type: "application/json" });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CEO_Fleet_Backup.json`; a.click();
+        }
+    </script>
+</body>
+</html>
