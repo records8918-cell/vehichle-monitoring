@@ -201,10 +201,12 @@
         // Database Configuration Link
         const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
-        const SUPABASE_ANON_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
 
         const WARNING_WINDOW_DAYS = 60;
         let fleet = [];
+        let ltoFilter = 'all';
+        let gsisFilter = 'all';
+
         let currentUploadPlate = "";
         let currentUploadField = "";
 
@@ -216,6 +218,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
             if (sessionStorage.getItem('fleet_authenticated') === 'true') {
                 document.getElementById('gatekeeper-lock').style.display = 'none';
                 fetchFleetFromCloud();
@@ -230,6 +233,13 @@
                 fetchFleetFromCloud();
             } else {
                 alert("Unauthorized credential signature.");
+            }
+        }
+
+        function setupEventListeners() {
+            const btnCloseModalFooter = document.getElementById('btn-close-modal-footer');
+            if (btnCloseModalFooter) {
+                btnCloseModalFooter.addEventListener('click', closeFormModal);
             }
         }
 
