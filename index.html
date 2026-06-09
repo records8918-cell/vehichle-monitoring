@@ -70,4 +70,429 @@
         /* Modal Overlay */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-box { background-color: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); width: 100%; max-width: 500px; overflow: hidden; }
-        .modal-header { padding: 20px; background-color: #1a2236; border-bottom: 1px solid var(--border-color); display: flex;
+        .modal-header { padding: 20px; background-color: #1a2236; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background-color: #1a2236; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .form-control { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; color: var(--text-main); font-size: 0.875rem; }
+        .form-control:focus { outline: none; border-color: var(--accent-green); }
+
+        /* Access Gatekeeper */
+        #gatekeeper-lock { position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-dark); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .gate-card { background: var(--bg-card); padding: 40px; border-radius: 8px; border:1px solid var(--border-color); width: 320px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="gatekeeper-lock">
+        <div class="gate-card">
+            <h2 style="font-size:1.1rem; margin-bottom:12px; text-transform:uppercase;">Fleet Monitor PH</h2>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:24px;">EQUIPMENT & FLEET MANAGEMENT</p>
+            <input type="password" id="gate-pass" class="form-control" placeholder="••••••••" style="text-align:center; margin-bottom:16px;">
+            <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="verifyGatePass()">Verify Access Credentials</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h1>FLEET MONITOR PH</h1>
+                <span>CITY ENGINEERING OFFICE</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" id="nav-dash" onclick="switchView('dash')">📊 Main Dashboard</li>
+                <li class="nav-item" id="nav-docs" onclick="switchView('docs')">📁 Docs Repository</li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            Logged in: CEO Admin<br>
+            Baguio City, PH
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="view-dash" class="view-section active-view">
+            <div class="page-header">
+                <h2>Active Fleet Registry</h2>
+                <button class="btn btn-primary" onclick="openFormModal(-1)">➕ Add Vehicle</button>
+            </div>
+
+            <div class="kpi-container">
+                <div class="kpi-card blue"><div class="kpi-label">Total Fleet</div><div class="kpi-value" id="kpi-total">0</div><div class="kpi-subtext">Active Units Logged</div></div>
+                <div class="kpi-card red"><div class="kpi-label">Expired Records</div><div class="kpi-value" id="kpi-expired">0</div><div class="kpi-subtext">0 LTO • 0 GSIS</div></div>
+                <div class="kpi-card yellow"><div class="kpi-label">Expiring Soon</div><div class="kpi-value" id="kpi-soon">0</div><div class="kpi-subtext">Within 60 Days</div></div>
+                <div class="kpi-card green"><div class="kpi-label">Fully Compliant</div><div class="kpi-value" id="kpi-compliant">0</div><div class="kpi-subtext">Up to Date</div></div>
+            </div>
+
+            <div class="alert-panel">
+                <div class="alert-title">⚠️ Active Expiration Attention Required (60-Day Window)</div>
+                <div class="alert-list" id="alert-box-entries"></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plate No.</th>
+                            <th>Vehicle Specs</th>
+                            <th>LTO Registration</th>
+                            <th>GSIS Expiry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dash-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-docs" class="view-section">
+            <div class="page-header">
+                <h2>Cloud Documentation Vault</h2>
+                <input type="text" id="repo-search" class="form-control" placeholder="Search by Plate or Driver Name..." style="width: 300px;" oninput="buildRepositoryTableRows()">
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plate No.</th>
+                            <th>Accountable Employee</th>
+                            <th>LTO O.R. Scan Status</th>
+                            <th>GSIS C.O.C. Scan Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repo-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="modal-title">Log New Fleet Vehicle</h3><button class="btn-action" onclick="closeFormModal()">✕</button></div>
+            <form id="vehicle-form" onsubmit="handleFormSubmission(event)">
+                <input type="hidden" id="edit-idx" value="-1">
+                <div class="modal-body">
+                    <div class="form-group"><label class="form-label">Plate Number</label><input type="text" id="f-plate" class="form-control" required placeholder="e.g. SAB 1234"></div>
+                    <div class="form-group"><label class="form-label">Model Manufacturer</label><input type="text" id="f-model" class="form-control" required placeholder="e.g. Toyota Hilux"></div>
+                    <div class="form-group"><label class="form-label">Model Year</label><input type="number" id="f-year" class="form-control" required placeholder="e.g. 2023"></div>
+                    <div class="form-group"><label class="form-label">Assigned Accountable Employee</label><input type="text" id="f-driver" class="form-control" placeholder="Full name of engineer or officer"></div>
+                    <div class="form-group"><label class="form-label">LTO Registration Deadline</label><input type="date" id="f-lto" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">GSIS Comprehensive Coverage Policy</label><input type="date" id="f-gsis" class="form-control" required></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeFormModal()">Cancel</button><button type="submit" class="btn btn-primary">💾 Save Record</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="upload-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3>Upload Scanned Attachment</h3><button class="btn-action" onclick="document.getElementById('upload-modal').style.display='none'">✕</button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Select Document File</label><input type="file" id="file-input-control" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
+                <p style="font-size:0.75rem; color:var(--text-muted);">Max allowed upload size is 5MB.</p>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="document.getElementById('upload-modal').style.display='none'">Cancel</button><button type="button" class="btn btn-primary" onclick="processCloudFileUpload()">🚀 Start Processing</button></div>
+        </div>
+    </div>
+
+    <script>
+        // Database Configuration Link
+        const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
+        const SUPABASE_ANON_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
+
+        const WARNING_WINDOW_DAYS = 60;
+        let fleet = [];
+        let currentUploadPlate = "";
+        let currentUploadField = "";
+
+        const getHeaders = () => ({
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('fleet_authenticated') === 'true') {
+                document.getElementById('gatekeeper-lock').style.display = 'none';
+                fetchFleetFromCloud();
+            }
+        });
+
+        function verifyGatePass() {
+            const pass = document.getElementById('gate-pass').value;
+            if (pass === "ceo1") {
+                sessionStorage.setItem('fleet_authenticated', 'true');
+                document.getElementById('gatekeeper-lock').style.display = 'none';
+                fetchFleetFromCloud();
+            } else {
+                alert("Unauthorized credential signature.");
+            }
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active-view');
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+            if (viewName === 'docs') buildRepositoryTableRows();
+        }
+
+        async function fetchFleetFromCloud() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/fleet_registry?select=*&order=plate.asc`, {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error("Cloud fetching handshake failed.");
+                fleet = await res.json();
+                recalculateDashboardMetrics();
+            } catch (err) {
+                console.error(err);
+                alert("Database link synchronization lost.");
+            }
+        }
+
+        function recalculateDashboardMetrics() {
+            const now = new Date();
+            let total = fleet.length;
+            let expired = 0, soon = 0, compliant = 0;
+            let expiredLto = 0, expiredGsis = 0;
+            
+            const alertList = document.getElementById('alert-box-entries');
+            alertList.innerHTML = "";
+            const tbody = document.getElementById('dash-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach((v, index) => {
+                const lto = new Date(v.lto);
+                const gsis = new Date(v.gsis);
+                
+                const ltoDiff = Math.ceil((lto - now) / (1000 * 60 * 60 * 24));
+                const gsisDiff = Math.ceil((gsis - now) / (1000 * 60 * 60 * 24));
+
+                let isLtoExpired = ltoDiff <= 0;
+                let isGsisExpired = gsisDiff <= 0;
+                let isLtoSoon = !isLtoExpired && ltoDiff <= WARNING_WINDOW_DAYS;
+                let isGsisSoon = !isGsisExpired && gsisDiff <= WARNING_WINDOW_DAYS;
+
+                if (isLtoExpired) expiredLto++;
+                if (isGsisExpired) expiredGsis++;
+
+                if (isLtoExpired || isGsisExpired) expired++;
+                else if (isLtoSoon || isGsisSoon) soon++;
+                else compliant++;
+
+                // Append alert messages
+                if (isLtoExpired) alertList.innerHTML += `<div class="alert-item" style="border-color:var(--accent-red)"><span><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'Unassigned'}) requires urgent LTO Renewal!</span><span class="alert-badge" style="color:var(--accent-red); background:rgba(239,68,68,0.15)">OVERDUE</span></div>`;
+                else if (isLtoSoon) alertList.innerHTML += `<div class="alert-item"><span><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'Unassigned'}) requires LTO Registration. <span class="alert-badge" style="color:var(--accent-yellow)">LTO O.R.</span></span><span style="font-size:0.8rem; color:var(--text-muted);">${ltoDiff} days remaining</span></div>`;
+
+                if (isGsisExpired) alertList.innerHTML += `<div class="alert-item" style="border-color:var(--accent-red)"><span><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'Unassigned'}) comprehensive coverage expired!</span><span class="alert-badge" style="color:var(--accent-red); background:rgba(239,68,68,0.15)">OVERDUE</span></div>`;
+                else if (isGsisSoon) alertList.innerHTML += `<div class="alert-item"><span><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'Unassigned'}) requires GSIS Coverage Renewal. <span class="alert-badge" style="color:#3b82f6; background:rgba(59,130,246,0.15)">GSIS C.O.C.</span></span><span style="font-size:0.8rem; color:var(--text-muted);">${gsisDiff} days remaining</span></div>`;
+
+                // Render main rows
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="td-plate">${v.plate}</td>
+                    <td><strong>${v.model}</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">${v.year} • Assignee: ${v.driver || 'Unassigned'}</span></td>
+                    <td style="color:${isLtoExpired ? 'var(--accent-red)' : isLtoSoon ? 'var(--accent-yellow)' : 'var(--accent-green)'}">${v.lto}</td>
+                    <td style="color:${isGsisExpired ? 'var(--accent-red)' : isGsisSoon ? 'var(--accent-yellow)' : 'var(--accent-green)'}">${v.gsis}</td>
+                    <td><button class="btn-action" onclick="openFormModal(${index})">📝 Edit</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('kpi-total').innerText = total;
+            document.getElementById('kpi-expired').innerText = expired;
+            document.getElementById('kpi-expired').parentNode.querySelector('.kpi-subtext').innerText = `${expiredLto} LTO • ${expiredGsis} GSIS`;
+            document.getElementById('kpi-soon').innerText = soon;
+            document.getElementById('kpi-compliant').innerText = compliant;
+        }
+
+        function openFormModal(index = -1) {
+            const modal = document.getElementById('form-modal');
+            const form = document.getElementById('vehicle-form');
+            if (form) form.reset();
+
+            const modalTitle = document.getElementById('modal-title');
+            const editIdx = document.getElementById('edit-idx');
+            const fPlate = document.getElementById('f-plate');
+            const fYear = document.getElementById('f-year');
+            const fModel = document.getElementById('f-model');
+            const fDriver = document.getElementById('f-driver');
+            const fLto = document.getElementById('f-lto');
+            const fGsis = document.getElementById('f-gsis');
+
+            if (index > -1) {
+                const v = fleet[index];
+                if (modalTitle) modalTitle.innerText = "Modify Existing Fleet Record";
+                if (editIdx) editIdx.value = index;
+                if (fPlate) { fPlate.value = v.plate || ''; fPlate.disabled = true; }
+                if (fYear) fYear.value = v.year || '';
+                if (fModel) fModel.value = v.model || '';
+                if (fDriver) fDriver.value = v.driver || '';
+                if (fLto) fLto.value = v.lto || '';
+                if (fGsis) fGsis.value = v.gsis || '';
+            } else {
+                if (modalTitle) modalTitle.innerText = "Log New Fleet Vehicle";
+                if (editIdx) editIdx.value = -1;
+                if (fPlate) { fPlate.value = ''; fPlate.disabled = false; }
+            }
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeFormModal() { document.getElementById('form-modal').style.display = "none"; }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('edit-idx').value);
+            const payload = {
+                plate: document.getElementById('f-plate').value.toUpperCase().trim(),
+                model: document.getElementById('f-model').value.trim(),
+                year: parseInt(document.getElementById('f-year').value),
+                driver: document.getElementById('f-driver').value.trim(),
+                lto: document.getElementById('f-lto').value,
+                gsis: document.getElementById('f-gsis').value
+            };
+
+            try {
+                let url = `${SUPABASE_URL}/rest/v1/fleet_registry`;
+                let method = "POST";
+                let headers = getHeaders();
+
+                if (idx > -1) {
+                    method = "PATCH";
+                    url += `?plate=eq.${payload.plate}`;
+                }
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("Handshake operational rejection.");
+                closeFormModal();
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error(err);
+                alert("Could not commit updates to database cloud entry.");
+            }
+        }
+
+        function buildRepositoryTableRows() {
+            const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (query && !matchPlate && !matchDriver) return;
+
+                let ltoCell = "";
+                let gsisCell = "";
+
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Document</a>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
+
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Document</a>
+                            <button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
+                            <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="td-plate">${v.plate}</td>
+                    <td><strong>${v.driver || 'Unassigned'}</strong></td>
+                    <td>${ltoCell}</td>
+                    <td>${gsisCell}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function triggerFileUploadForm(plate, field) {
+            currentUploadPlate = plate;
+            currentUploadField = field;
+            document.getElementById('file-input-control').value = "";
+            document.getElementById('upload-modal').style.display = "flex";
+        }
+
+        async function processCloudFileUpload() {
+            const fileCtrl = document.getElementById('file-input-control');
+            if (!fileCtrl.files || fileCtrl.files.length === 0) return alert("Select an image or document scan first.");
+            const file = fileCtrl.files[0];
+            const fileExt = file.name.split('.').pop();
+            const cloudPath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExt}`;
+
+            try {
+                let uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/scans/${cloudPath}`, {
+                    method: 'POST',
+                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type },
+                    body: file
+                });
+                if (!uploadRes.ok) throw new Error("Storage cluster upload failed.");
+
+                const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/scans/${cloudPath}`;
+                let patchPayload = {};
+                patchPayload[currentUploadField] = publicUrl;
+
+                let dbRes = await fetch(`${SUPABASE_URL}/rest/v1/fleet_registry?plate=eq.${currentUploadPlate}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!dbRes.ok) throw new Error("Registry record pointer linking failed.");
+                document.getElementById('upload-modal').style.display = "none";
+                await fetchFleetFromCloud();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error(err);
+                alert("Attachment asset processing faulted.");
+            }
+        }
+
+        async function clearCloudDocumentField(plate, field) {
+            if (!confirm("Confirm complete disposal of uploaded scanned link attachment?")) return;
+            try {
+                let patchPayload = {};
+                patchPayload[field] = null;
+
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/fleet_registry?plate=eq.${plate}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!res.ok) throw new Error("Disposal patch write verification rejected.");
+                await fetchFleetFromCloud();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error(err);
+                alert("Failed to alter storage field reference logic.");
+            }
+        }
+    </script>
+</body>
+</html>
