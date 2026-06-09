@@ -795,76 +795,92 @@
         }
 
         function openFormModal(index = -1) {
-            const modal = document.getElementById('form-modal');
-            const form = document.getElementById('vehicle-form');
-            form.reset();
+    const modal = document.getElementById('form-modal');
+    const form = document.getElementById('vehicle-form');
+    
+    // Reset form fields
+    form.reset();
 
-            if (index > -1) {
-                const v = fleet[index];
-                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
-                document.getElementById('edit-idx').value = index;
-                document.getElementById('f-plate').value = v.plate;
-                document.getElementById('f-plate').disabled = true;
-                document.getElementById('f-year').value = v.year;
-                document.getElementById('f-model').value = v.model;
-                document.getElementById('f-driver').value = v.driver || '';
-                document.getElementById('f-lto').value = v.lto;
-                document.getElementById('f-gsis').value = v.gsis;
-            } else {
-                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
-                document.getElementById('edit-idx').value = -1;
-                document.getElementById('f-plate').disabled = false;
-            }
-            modal.style.display = "flex";
-        }
+    if (index > -1) {
+        // Mode: EDIT
+        const v = fleet[index];
+        document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
+        document.getElementById('edit-idx').value = index;
+        document.getElementById('f-plate').value = v.plate;
+        document.getElementById('f-plate').disabled = true; // Plate cannot be changed during edit
+        document.getElementById('f-year').value = v.year;
+        document.getElementById('f-model').value = v.model;
+        document.getElementById('f-driver').value = v.driver || '';
+        document.getElementById('f-lto').value = v.lto;
+        document.getElementById('f-gsis').value = v.gsis;
+    } else {
+        // Mode: ADD NEW
+        document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
+        document.getElementById('edit-idx').value = -1;
+        document.getElementById('f-plate').disabled = false; // Plate is editable for new entries
+        document.getElementById('f-plate').value = "";
+    }
+    modal.style.display = "flex";
+}
 
         function closeFormModal() {
             document.getElementById('form-modal').style.display = "none";
         }
 
         async function handleFormSubmission(e) {
-            e.preventDefault();
-            const idx = parseInt(document.getElementById('edit-idx').value);
+    e.preventDefault();
+    const idx = parseInt(document.getElementById('edit-idx').value);
+    
+    // Prepare the data object
+    const recordData = {
+        plate: document.getElementById('f-plate').value.trim().toUpperCase(),
+        year: document.getElementById('f-year').value ? document.getElementById('f-year').value.toString() : null,
+        model: document.getElementById('f-model').value.trim(),
+        driver: document.getElementById('f-driver').value.trim() || null,
+        lto: document.getElementById('f-lto').value,
+        gsis: document.getElementById('f-gsis').value
+    };
+
+    try {
+        let response;
+        if (idx > -1) {
+            // UPDATING EXISTING VEHICLE
+            response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                method: "PATCH",
+                headers: getHeaders(),
+                body: JSON.stringify(recordData)
+            });
+        } else {
+            // ADDING NEW VEHICLE
+            // Ensure document fields are initialized as null for new records
+            recordData.lto_document_attachment = null;
+            recordData.gsis_document_attachment = null;
             
-            const recordData = {
-                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
-                year: document.getElementById('f-year').value.toString(),
-                model: document.getElementById('f-model').value.trim(),
-                driver: document.getElementById('f-driver').value.trim() || null,
-                lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value
-            };
-
-            try {
-                let response;
-                if (idx > -1) {
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
-                        method: "PATCH",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
-                } else {
-                    recordData.lto_document_attachment = null;
-                    recordData.gsis_document_attachment = null;
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
-                        method: "POST",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
-                }
-
-                if (!response.ok) throw new Error("Cloud mutations failed.");
-                
-                closeFormModal();
-                fetchFleetFromCloud();
-            } catch (err) {
-                console.error(err);
-                alert("Mutation operation completed successfully.");
-                closeFormModal();
-                fetchFleetFromCloud();
-            }
+            response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                method: "POST",
+                headers: {
+                    ...getHeaders(),
+                    "Prefer": "return=minimal" // Standard for Supabase inserts
+                },
+                body: JSON.stringify(recordData)
+            });
         }
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Database refused the request.");
+        }
+        
+        alert("Success: Record has been saved to the cloud.");
+        closeFormModal();
+        fetchFleetFromCloud(); // Refresh the list
+        
+    } catch (err) {
+        console.error("Critical Mutation Error:", err);
+        // This will now show you the ACTUAL error (e.g., Duplicate Plate or RLS Policy error)
+        alert("SAVE FAILED: " + err.message);
+    }
+}
         async function deleteVehicleRecord(plateId) {
             if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
             try {
