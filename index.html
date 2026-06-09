@@ -1,3 +1,5 @@
+code
+Html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,7 +52,8 @@
 
         /* Dashboard Stats */
         .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
-        .metric-card { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 8px; }
+        .metric-card { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+        .metric-card:hover { transform: translateY(-3px); }
         .metric-title { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
         .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0; display: block; }
         .card-total { border-top: 4px solid var(--accent-blue); }
@@ -58,9 +61,14 @@
         .card-warning { border-top: 4px solid var(--accent-amber); }
         .card-valid { border-top: 4px solid var(--accent-green); }
 
-        /* Alert Panel */
-        .alerts-panel { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 32px; }
-        .alert-item { display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid var(--accent-amber); font-size: 0.9rem; }
+        /* Filter Toolbar */
+        .filter-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 20px; }
+        .search-input { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 10px 15px; border-radius: 6px; width: 300px; outline: none; }
+        
+        .filter-btn-group { display: flex; background: var(--bg-dark); padding: 4px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .filter-tab { border: none; background: transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
+        .filter-tab.active { background: var(--border-color); color: #fff; }
+        .filter-tab:hover:not(.active) { color: #fff; }
 
         /* Tables */
         .table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
@@ -68,6 +76,7 @@
         .data-table th { background: rgba(0,0,0,0.2); padding: 16px 24px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
         .data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
         .td-plate { font-family: monospace; font-weight: 700; color: #fff; }
+
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .status-badge.valid { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .status-badge.expiring { background: rgba(245,158,11,0.2); color: var(--accent-amber); }
@@ -76,8 +85,6 @@
         /* UI Controls */
         .btn-primary { background: var(--accent-green); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-action { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; }
-        .filter-toolbar { display: flex; justify-content: space-between; margin-bottom: 24px; gap: 20px; }
-        .search-input { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 10px 15px; border-radius: 6px; width: 350px; outline: none; }
 
         /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
@@ -94,13 +101,12 @@
             .sidebar, .top-bar, .filter-toolbar, .btn-action, .btn-primary { display: none !important; }
             .workspace { overflow: visible; }
             .main-content { display: block !important; }
-            body { background: white; color: black; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Invisible Uploader for Repository -->
+    <!-- Hidden Uploader -->
     <input type="file" id="global-uploader" style="display: none;" onchange="processUpload(this)">
 
     <!-- Login -->
@@ -143,31 +149,32 @@
         <!-- View: Dashboard -->
         <div id="view-dashboard" class="main-content active-view">
             <div class="metrics-grid">
-                <div class="metric-card card-total">
+                <div class="metric-card card-total" onclick="setGlobalFilter('all')">
                     <span class="metric-title">Total Fleet</span>
                     <span class="metric-value" id="stat-total">0</span>
                 </div>
-                <div class="metric-card card-expired">
-                    <span class="metric-title">Critical Expired</span>
+                <div class="metric-card card-expired" onclick="setGlobalFilter('expired')">
+                    <span class="metric-title">Expired</span>
                     <span class="metric-value" id="stat-expired">0</span>
                 </div>
-                <div class="metric-card card-warning">
-                    <span class="metric-title">Warning (60d)</span>
+                <div class="metric-card card-warning" onclick="setGlobalFilter('expiring')">
+                    <span class="metric-title">Warnings</span>
                     <span class="metric-value" id="stat-warning">0</span>
                 </div>
-                <div class="metric-card card-valid">
-                    <span class="metric-title">Fully Compliant</span>
+                <div class="metric-card card-valid" onclick="setGlobalFilter('valid')">
+                    <span class="metric-title">Valid</span>
                     <span class="metric-value" id="stat-valid">0</span>
                 </div>
             </div>
 
-            <div class="alerts-panel" id="alerts-box" style="display:none;">
-                <h3 style="color:var(--accent-amber); font-size:0.8rem; margin-bottom:12px;">⚠️ RENEWAL ATTENTION REQUIRED</h3>
-                <div id="alerts-list"></div>
-            </div>
-
             <div class="filter-toolbar">
-                <input type="text" id="main-search" class="search-input" placeholder="Search plate, model, or officer name..." oninput="refreshUI()">
+                <div class="filter-btn-group" id="status-tabs">
+                    <button class="filter-tab active" id="tab-all" onclick="setGlobalFilter('all')">All Units</button>
+                    <button class="filter-tab" id="tab-valid" onclick="setGlobalFilter('valid')">Valid</button>
+                    <button class="filter-tab" id="tab-expiring" onclick="setGlobalFilter('expiring')">Warnings</button>
+                    <button class="filter-tab" id="tab-expired" onclick="setGlobalFilter('expired')">Expired</button>
+                </div>
+                <input type="text" id="main-search" class="search-input" placeholder="Search plate or officer..." oninput="refreshUI()">
             </div>
 
             <div class="table-container">
@@ -175,7 +182,7 @@
                     <thead>
                         <tr>
                             <th>Plate No.</th>
-                            <th>Model / Description</th>
+                            <th>Description</th>
                             <th>Officer</th>
                             <th>LTO Registry</th>
                             <th>GSIS Insurance</th>
@@ -187,43 +194,16 @@
             </div>
         </div>
 
-        <!-- View: Repository -->
+        <!-- Other views kept for functionality -->
         <div id="view-repository" class="main-content">
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Plate</th>
-                            <th>Assigned Officer</th>
-                            <th>LTO O.R. Document</th>
-                            <th>GSIS C.O.C. Document</th>
-                        </tr>
-                    </thead>
-                    <tbody id="repo-table"></tbody>
-                </table>
-            </div>
+            <div class="table-container"><table class="data-table"><thead><tr><th>Plate</th><th>Officer</th><th>LTO O.R.</th><th>GSIS C.O.C.</th></tr></thead><tbody id="repo-table"></tbody></table></div>
         </div>
-
-        <!-- View: Reports -->
         <div id="view-reports" class="main-content">
             <button class="btn-primary" onclick="window.print()" style="margin-bottom:20px;">🖨️ Print Compliance Audit</button>
-            <div id="report-print-area" style="background:#fff; color:#000; padding:40px; border-radius:8px;">
-                <div style="text-align:center; border-bottom:2px solid #333; padding-bottom:20px; margin-bottom:20px;">
-                    <h2>City Engineering Office - Baguio</h2>
-                    <p>Equipment & Fleet Management Division</p>
-                    <h3 style="margin-top:10px;">EXECUTIVE COMPLIANCE AUDIT REPORT</h3>
-                </div>
-                <div id="report-table-target"></div>
-            </div>
+            <div id="report-print-area" style="background:#fff; color:#000; padding:40px; border-radius:8px;"><div id="report-table-target"></div></div>
         </div>
-
-        <!-- View: Utilities -->
         <div id="view-utils" class="main-content">
-            <div style="background:var(--bg-card); padding:30px; border-radius:8px; border:1px solid var(--border-color); max-width:500px;">
-                <h3 style="margin-bottom:10px;">Data Backup</h3>
-                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Download a local JSON copy of your fleet database for offline records.</p>
-                <button class="btn-primary" onclick="exportData()">📥 Download JSON Snapshot</button>
-            </div>
+            <button class="btn-primary" onclick="exportData()">📥 Download JSON Snapshot</button>
         </div>
     </div>
 
@@ -238,30 +218,12 @@
                 <input type="hidden" id="edit-id" value="">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div>
-                            <label class="form-label">Plate Number</label>
-                            <input type="text" id="f-plate" class="form-control" placeholder="e.g. SAB-1234" required>
-                        </div>
-                        <div>
-                            <label class="form-label">Acquisition Year</label>
-                            <input type="number" id="f-year" class="form-control" placeholder="2024">
-                        </div>
-                        <div class="span-2">
-                            <label class="form-label">Make & Model Description</label>
-                            <input type="text" id="f-model" class="form-control" required>
-                        </div>
-                        <div class="span-2">
-                            <label class="form-label">Assigned Officer / Driver</label>
-                            <input type="text" id="f-driver" class="form-control">
-                        </div>
-                        <div>
-                            <label class="form-label">LTO Expiry Date</label>
-                            <input type="date" id="f-lto" class="form-control" required>
-                        </div>
-                        <div>
-                            <label class="form-label">GSIS Expiry Date</label>
-                            <input type="date" id="f-gsis" class="form-control" required>
-                        </div>
+                        <div><label class="form-label">Plate Number</label><input type="text" id="f-plate" class="form-control" required></div>
+                        <div><label class="form-label">Year</label><input type="number" id="f-year" class="form-control"></div>
+                        <div class="span-2"><label class="form-label">Make & Model</label><input type="text" id="f-model" class="form-control" required></div>
+                        <div class="span-2"><label class="form-label">Officer</label><input type="text" id="f-driver" class="form-control"></div>
+                        <div><label class="form-label">LTO Expiry</label><input type="date" id="f-lto" class="form-control" required></div>
+                        <div><label class="form-label">GSIS Expiry</label><input type="date" id="f-gsis" class="form-control" required></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -276,127 +238,67 @@
         const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
         let fleet = [];
-        let uploadTarget = { plate: '', field: '' };
+        let currentStatusFilter = 'all';
 
-        // Authentication
         function doLogin(e) {
             e.preventDefault();
             if (document.getElementById('gatekeeper-pass').value === 'motorpool2010') {
                 sessionStorage.setItem('ceo_auth', 'true');
                 document.getElementById('gatekeeper-lock').style.display = 'none';
                 loadData();
-            } else {
-                document.getElementById('gatekeeper-error').style.display = 'block';
-            }
+            } else { document.getElementById('gatekeeper-error').style.display = 'block'; }
         }
 
-        window.onload = () => {
-            if (sessionStorage.getItem('ceo_auth') === 'true') {
-                document.getElementById('gatekeeper-lock').style.display = 'none';
-                loadData();
-            }
-        };
+        window.onload = () => { if (sessionStorage.getItem('ceo_auth') === 'true') { document.getElementById('gatekeeper-lock').style.display = 'none'; loadData(); } };
 
-        // Data Management
         async function loadData() {
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, {
-                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-                });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
                 fleet = await res.json();
                 refreshUI();
-            } catch (err) { console.error("Fetch Error:", err); }
+            } catch (err) { console.error(err); }
         }
 
-        async function saveVehicle(e) {
-            e.preventDefault();
-            const editId = document.getElementById('edit-id').value;
-            const plate = document.getElementById('f-plate').value.toUpperCase().trim();
-            
-            const payload = {
-                plate: plate,
-                year: document.getElementById('f-year').value,
-                model: document.getElementById('f-model').value,
-                driver: document.getElementById('f-driver').value,
-                lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value
-            };
-
-            try {
-                let res;
-                if (editId) {
-                    // Update
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, {
-                        method: 'PATCH',
-                        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-                        body: JSON.stringify(payload)
-                    });
-                } else {
-                    // Insert New
-                    payload.lto_document_attachment = null;
-                    payload.gsis_document_attachment = null;
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
-                        method: 'POST',
-                        headers: { 
-                            "apikey": SUPABASE_KEY, 
-                            "Authorization": `Bearer ${SUPABASE_KEY}`, 
-                            "Content-Type": "application/json",
-                            "Prefer": "return=minimal"
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                }
-
-                if (!res.ok) throw new Error("Database rejected request. (Check if plate is duplicate)");
-
-                closeModal();
-                loadData();
-                alert("Database updated successfully.");
-            } catch (err) {
-                alert("Error: " + err.message);
-            }
+        // New Global Filter logic
+        function setGlobalFilter(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + status).classList.add('active');
+            refreshUI();
         }
 
-        async function deleteVehicle(plate) {
-            if (!confirm(`Permanently remove vehicle ${plate}?`)) return;
-            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, {
-                method: 'DELETE',
-                headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-            });
-            loadData();
-        }
-
-        // UI Logic
         function refreshUI() {
             const search = document.getElementById('main-search').value.toLowerCase();
             const table = document.getElementById('fleet-table');
             const repo = document.getElementById('repo-table');
-            const alerts = document.getElementById('alerts-list');
-            
-            table.innerHTML = "";
-            repo.innerHTML = "";
-            alerts.innerHTML = "";
+            table.innerHTML = ""; repo.innerHTML = "";
             
             let stats = { total: fleet.length, expired: 0, warning: 0, valid: 0 };
-            let hasAlerts = false;
 
             fleet.forEach((v, idx) => {
                 const lto = getStatus(v.lto);
                 const gsis = getStatus(v.gsis);
 
+                // Calculate overall status for the row
+                let rowStatus = 'valid';
+                if (lto.state === 'expired' || gsis.state === 'expired') rowStatus = 'expired';
+                else if (lto.state === 'expiring' || gsis.state === 'expiring') rowStatus = 'expiring';
+
                 // Update Stats
-                if (lto.state === 'expired' || gsis.state === 'expired') stats.expired++;
-                else if (lto.state === 'expiring' || gsis.state === 'expiring') stats.warning++;
+                if (rowStatus === 'expired') stats.expired++;
+                else if (rowStatus === 'expiring') stats.warning++;
                 else stats.valid++;
 
-                // Search Filter
-                if (v.plate.toLowerCase().includes(search) || v.model.toLowerCase().includes(search) || (v.driver||'').toLowerCase().includes(search)) {
-                    // Dashboard Table
+                // Apply Filters (Search + Status Tab)
+                const matchesSearch = v.plate.toLowerCase().includes(search) || v.model.toLowerCase().includes(search) || (v.driver||'').toLowerCase().includes(search);
+                const matchesStatus = currentStatusFilter === 'all' || rowStatus === currentStatusFilter;
+
+                if (matchesSearch && matchesStatus) {
                     table.innerHTML += `
                         <tr>
                             <td class="td-plate">${v.plate}</td>
                             <td>${v.model} (${v.year})</td>
-                            <td>${v.driver || 'Unassigned'}</td>
+                            <td>${v.driver || '—'}</td>
                             <td><span class="status-badge ${lto.state}">${lto.label}</span><br><small>${v.lto}</small></td>
                             <td><span class="status-badge ${gsis.state}">${gsis.label}</span><br><small>${v.gsis}</small></td>
                             <td>
@@ -406,26 +308,14 @@
                         </tr>
                     `;
 
-                    // Repository Table
                     repo.innerHTML += `
                         <tr>
                             <td class="td-plate">${v.plate}</td>
                             <td>${v.driver || '—'}</td>
-                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">📤 Upload</button>`}</td>
-                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">📤 Upload</button>`}</td>
+                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">Upload</button>`}</td>
+                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">Upload</button>`}</td>
                         </tr>
                     `;
-                }
-
-                // Alerts
-                if (lto.state !== 'valid' || gsis.state !== 'valid') {
-                    hasAlerts = true;
-                    if (lto.state !== 'valid') {
-                        alerts.innerHTML += `<div class="alert-item"><span><strong>${v.plate}</strong>: LTO Registration Renewal</span> <span>${lto.label}</span></div>`;
-                    }
-                    if (gsis.state !== 'valid') {
-                        alerts.innerHTML += `<div class="alert-item"><span><strong>${v.plate}</strong>: GSIS Insurance Coverage</span> <span>${gsis.label}</span></div>`;
-                    }
                 }
             });
 
@@ -433,8 +323,6 @@
             document.getElementById('stat-expired').innerText = stats.expired;
             document.getElementById('stat-warning').innerText = stats.warning;
             document.getElementById('stat-valid').innerText = stats.valid;
-            document.getElementById('alerts-box').style.display = hasAlerts ? 'block' : 'none';
-            
             buildReport();
         }
 
@@ -446,23 +334,38 @@
             return { label: 'VALID', state: 'valid' };
         }
 
-        // Navigation
+        async function saveVehicle(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const plate = document.getElementById('f-plate').value.toUpperCase().trim();
+            const payload = { plate, year: document.getElementById('f-year').value, model: document.getElementById('f-model').value, driver: document.getElementById('f-driver').value, lto: document.getElementById('f-lto').value, gsis: document.getElementById('f-gsis').value };
+
+            try {
+                let res;
+                if (editId) { res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) }); }
+                else { payload.lto_document_attachment = null; payload.gsis_document_attachment = null; res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: JSON.stringify(payload) }); }
+                if (!res.ok) throw new Error("Update failed.");
+                closeModal(); loadData();
+            } catch (err) { alert(err.message); }
+        }
+
+        async function deleteVehicle(plate) {
+            if (!confirm(`Remove ${plate}?`)) return;
+            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'DELETE', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+            loadData();
+        }
+
         function nav(view) {
             document.querySelectorAll('.main-content').forEach(v => v.classList.remove('active-view'));
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             document.getElementById('view-' + view).classList.add('active-view');
             document.getElementById('nav-' + view).classList.add('active');
-            
-            const titles = { dashboard: 'Active Fleet Registry', repository: 'Document Vault', reports: 'Executive Reports', utils: 'System Utilities' };
-            document.getElementById('view-title').innerText = titles[view];
         }
 
-        // Modal Controls
         function openModal(idx = -1) {
             document.getElementById('vehicle-form').reset();
             document.getElementById('edit-id').value = "";
             document.getElementById('f-plate').disabled = false;
-
             if (idx > -1) {
                 const v = fleet[idx];
                 document.getElementById('edit-id').value = v.plate;
@@ -473,77 +376,37 @@
                 document.getElementById('f-driver').value = v.driver;
                 document.getElementById('f-lto').value = v.lto;
                 document.getElementById('f-gsis').value = v.gsis;
-                document.getElementById('modal-title').innerText = "Edit Vehicle Record";
-            } else {
-                document.getElementById('modal-title').innerText = "New Vehicle Entry";
             }
             document.getElementById('modal-form').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('modal-form').style.display = 'none'; }
-
-        // Document Repository Upload
-        function triggerUpload(plate, field) {
-            uploadTarget = { plate, field };
-            document.getElementById('global-uploader').click();
-        }
-
+        
+        function triggerUpload(plate, field) { uploadTarget = { plate, field }; document.getElementById('global-uploader').click(); }
+        
         async function processUpload(input) {
             if (!input.files[0]) return;
             const file = input.files[0];
             const path = `docs/${uploadTarget.plate}_${Date.now()}.${file.name.split('.').pop()}`;
-            
             try {
-                // 1. Storage Upload
-                const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, {
-                    method: 'POST',
-                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type },
-                    body: file
-                });
-                
-                if (!upRes.ok) throw new Error("Upload to storage failed.");
-
-                // 2. Link in Database
+                await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type }, body: file });
                 const url = `${SUPABASE_URL}/storage/v1/object/public/records/${path}`;
                 const patch = {}; patch[uploadTarget.field] = url;
-                
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${uploadTarget.plate}`, {
-                    method: 'PATCH',
-                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify(patch)
-                });
-
+                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${uploadTarget.plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(patch) });
                 loadData();
-                alert("Document linked successfully.");
             } catch (err) { alert(err.message); }
         }
 
-        // Report & Export
         function buildReport() {
-            let html = `<table style="width:100%; border-collapse:collapse; color:#000;"><thead><tr style="background:#f0f0f0;">
-                <th style="border:1px solid #ddd; padding:10px;">Plate</th>
-                <th style="border:1px solid #ddd; padding:10px;">Description</th>
-                <th style="border:1px solid #ddd; padding:10px;">LTO Registry</th>
-                <th style="border:1px solid #ddd; padding:10px;">GSIS Insurance</th>
-                </tr></thead><tbody>`;
-            fleet.forEach(v => {
-                html += `<tr>
-                    <td style="border:1px solid #ddd; padding:10px; font-weight:700;">${v.plate}</td>
-                    <td style="border:1px solid #ddd; padding:10px;">${v.model}</td>
-                    <td style="border:1px solid #ddd; padding:10px;">${getStatus(v.lto).label} (${v.lto})</td>
-                    <td style="border:1px solid #ddd; padding:10px;">${getStatus(v.gsis).label} (${v.gsis})</td>
-                </tr>`;
-            });
-            html += `</tbody></table><p style="margin-top:20px; font-size:0.8rem; color:#666;">Report Generated: ${new Date().toLocaleString()}</p>`;
+            let html = `<table style="width:100%; border-collapse:collapse; color:#000;"><thead><tr style="background:#f0f0f0;"><th style="border:1px solid #ddd; padding:10px;">Plate</th><th style="border:1px solid #ddd; padding:10px;">Model</th><th style="border:1px solid #ddd; padding:10px;">LTO</th><th style="border:1px solid #ddd; padding:10px;">GSIS</th></tr></thead><tbody>`;
+            fleet.forEach(v => { html += `<tr><td style="border:1px solid #ddd; padding:10px; font-weight:700;">${v.plate}</td><td style="border:1px solid #ddd; padding:10px;">${v.model}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.lto).label}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.gsis).label}</td></tr>`; });
+            html += `</tbody></table>`;
             document.getElementById('report-table-target').innerHTML = html;
         }
 
         function exportData() {
             const blob = new Blob([JSON.stringify(fleet, null, 2)], { type: "application/json" });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `CEO_Fleet_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CEO_Fleet_Backup.json`; a.click();
         }
     </script>
 </body>
