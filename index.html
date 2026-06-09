@@ -806,50 +806,57 @@
         }
 
         async function handleFormSubmission(e) {
-            e.preventDefault();
-            const idx = parseInt(document.getElementById('edit-idx').value);
-            
-            const recordData = {
-                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
-                year: document.getElementById('f-year').value.toString(),
-                model: document.getElementById('f-model').value.trim(),
-                driver: document.getElementById('f-driver').value.trim() || null,
-                lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value
-            };
+    e.preventDefault();
+    const idx = parseInt(document.getElementById('edit-idx').value);
+    
+    const recordData = {
+        plate: document.getElementById('f-plate').value.trim().toUpperCase(),
+        year: document.getElementById('f-year').value.toString(),
+        model: document.getElementById('f-model').value.trim(),
+        driver: document.getElementById('f-driver').value.trim() || null,
+        lto: document.getElementById('f-lto').value,
+        gsis: document.getElementById('f-gsis').value
+    };
 
-            toggleLoading(true);
-            try {
-                let response;
-                if (idx > -1) {
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
-                        method: "PATCH",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
-                } else {
-                    recordData.lto_document_attachment = null;
-                    recordData.gsis_document_attachment = null;
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
-                        method: "POST",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
-                }
-
-                if (!response.ok) throw new Error("Cloud mutations failed.");
-                
-                closeFormModal();
-                fetchFleetFromCloud();
-            } catch (err) {
-                console.error(err);
-                alert("Mutation operation completed successfully.");
-                closeFormModal();
-                fetchFleetFromCloud();
-            } finally {
-                toggleLoading(false);
-            }
+    toggleLoading(true);
+    try {
+        let response;
+        if (idx > -1) {
+            // EDITING
+            response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                method: "PATCH",
+                headers: getHeaders(),
+                body: JSON.stringify(recordData)
+            });
+        } else {
+            // ADDING NEW
+            recordData.lto_document_attachment = null;
+            recordData.gsis_document_attachment = null;
+            response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                method: "POST",
+                headers: {
+                    ...getHeaders(),
+                    "Prefer": "return=minimal" 
+                },
+                body: JSON.stringify(recordData)
+            });
         }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Cloud mutation failed.");
+        }
+        
+        alert("Vehicle record saved successfully!");
+        closeFormModal();
+        fetchFleetFromCloud(); // This refreshes the dashboard
+    } catch (err) {
+        console.error("Database Error:", err);
+        alert("ERROR SAVING: " + err.message); // This will tell us the real problem
+    } finally {
+        toggleLoading(false);
+    }
+}
 
         async function deleteVehicleRecord(plateId) {
             if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
