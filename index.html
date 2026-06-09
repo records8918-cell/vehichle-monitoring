@@ -20,233 +20,159 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
+        /* Login Screen */
         .login-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background-color: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 400px; border-radius: 12px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; }
         .login-box h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; }
         .login-box p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
-        .login-group { margin-bottom: 20px; text-align: left; }
-        .login-input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 16px; color: #fff; font-size: 1.05rem; letter-spacing: 3px; text-align: center; outline: none; transition: border-color 0.2s; }
-        .login-input:focus { border-color: var(--accent-green); }
-        .btn-login { width: 100%; background-color: var(--accent-green); color: #fff; border: none; padding: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 6px; transition: opacity 0.2s; }
-        .btn-login:hover { opacity: 0.9; }
-        .login-error { color: var(--accent-red); font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 500; }
+        .login-input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 16px; color: #fff; font-size: 1.05rem; letter-spacing: 3px; text-align: center; outline: none; margin-bottom: 20px; }
+        .btn-login { width: 100%; background-color: var(--accent-green); color: #fff; border: none; padding: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 6px; }
+        .login-error { color: var(--accent-red); font-size: 0.85rem; margin-top: 12px; display: none; }
 
+        /* Sidebar Navigation */
         .sidebar { width: 260px; background-color: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar-brand { padding: 24px; border-bottom: 1px solid var(--border-color); }
-        .sidebar-brand h2 { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .sidebar-brand p { font-size: 0.75rem; color: var(--accent-green); margin-top: 4px; text-transform: uppercase; font-weight: 600; }
-        .sidebar-menu { padding: 16px 0; flex-grow: 1; overflow-y: auto; }
-        .sidebar-heading { padding: 0 24px 8px 24px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
-        .sidebar-item { display: flex; align-items: center; padding: 12px 24px; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+        .sidebar-brand h2 { font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .sidebar-brand p { font-size: 0.75rem; color: var(--accent-green); text-transform: uppercase; margin-top: 4px; }
+        .sidebar-menu { padding: 16px 0; flex-grow: 1; }
+        .sidebar-heading { padding: 0 24px 8px 24px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .sidebar-item { display: flex; align-items: center; padding: 12px 24px; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: 0.2s; }
         .sidebar-item:hover { background-color: rgba(255,255,255,0.03); color: #fff; }
         .sidebar-item.active { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); border-left: 4px solid var(--accent-green); font-weight: 600; }
         .sidebar-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted); }
 
+        /* Main Workspace */
         .workspace { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-bar { height: 70px; background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
-        .top-bar-title h1 { font-size: 1.3rem; font-weight: 600; color: #fff; }
+        .top-bar h1 { font-size: 1.3rem; color: #fff; }
         .main-content { padding: 32px; overflow-y: auto; flex-grow: 1; display: none; }
         .main-content.active-view { display: block; }
 
+        /* Dashboard Stats */
         .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
-        .metric-card { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 8px; display: flex; flex-direction: column; }
-        .metric-title { font-size: 0.85rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
-        .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0 4px 0; }
-        .metric-subtext { font-size: 0.8rem; color: var(--text-muted); }
+        .metric-card { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+        .metric-card:hover { transform: translateY(-3px); }
+        .metric-title { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0; display: block; }
         .card-total { border-top: 4px solid var(--accent-blue); }
         .card-expired { border-top: 4px solid var(--accent-red); }
         .card-warning { border-top: 4px solid var(--accent-amber); }
         .card-valid { border-top: 4px solid var(--accent-green); }
 
-        .alerts-panel { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 32px; }
-        .alerts-panel-header { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber); margin-bottom: 12px; font-size: 0.95rem; }
-        .alert-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid var(--accent-amber); font-size: 0.9rem; }
-        .alert-item:last-child { margin-bottom: 0; }
-        .alert-tag { background: rgba(245,158,11,0.15); color: var(--accent-amber); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
-        .alert-days { font-weight: 600; color: #fff; }
+        /* Filter Toolbar */
+        .filter-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); gap: 20px; }
+        .search-input { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 10px 15px; border-radius: 6px; width: 300px; outline: none; }
+        
+        .filter-btn-group { display: flex; background: var(--bg-dark); padding: 4px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .filter-tab { border: none; background: transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
+        .filter-tab.active { background: var(--border-color); color: #fff; }
+        .filter-tab:hover:not(.active) { color: #fff; }
 
-        .filter-toolbar { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; }
-        .search-wrapper { position: relative; flex-grow: 1; max-width: 400px; }
-        .search-input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 16px; color: #fff; font-size: 0.9rem; outline: none; transition: border 0.2s; }
-        .search-input:focus { border-color: var(--accent-green); }
-        .filter-groups-wrapper { display: flex; gap: 24px; }
-        .filter-segment-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .filter-btn-group { display: flex; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; }
-        .filter-btn { border: none; background: none; color: var(--text-muted); padding: 6px 12px; font-size: 0.85rem; font-weight: 500; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
-        .filter-btn:hover { color: #fff; }
-        .filter-btn.active { background-color: var(--border-color); color: #fff; }
-
+        /* Tables */
         .table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
-        .data-table th { background-color: rgba(0,0,0,0.15); padding: 16px 24px; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
-        .data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:hover td { background-color: rgba(255,255,255,0.01); }
-        .td-plate { font-family: monospace; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
-        .text-unassigned { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { background: rgba(0,0,0,0.2); padding: 16px 24px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+        .data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        .td-plate { font-family: monospace; font-weight: 700; color: #fff; }
 
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; min-width: 85px; }
-        .status-badge.valid { background-color: rgba(16,185,129,0.15); color: var(--accent-green); }
-        .status-badge.expiring { background-color: rgba(245,158,11,0.15); color: var(--accent-amber); }
-        .status-badge.expired { background-color: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .status-badge.valid { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .status-badge.expiring { background: rgba(245,158,11,0.2); color: var(--accent-amber); }
+        .status-badge.expired { background: rgba(239,68,68,0.2); color: var(--accent-red); }
 
-        .btn-action { background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
-        .btn-action:hover { border-color: var(--text-muted); background-color: var(--border-color); }
-        .btn-primary { background-color: var(--accent-green); color: #fff; border: none; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
-        .btn-primary:hover { opacity: 0.9; }
+        /* Buttons */
+        .btn-primary { background: var(--accent-green); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-action { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; }
 
-        .btn-link-doc { background-color: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); }
-        .btn-link-doc:hover { border-color: var(--accent-blue); background-color: rgba(59, 130, 246, 0.25); }
-        .doc-link-anchor { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-green); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-        .doc-link-anchor:hover { text-decoration: underline; }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-box { background-color: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-        .modal-header { padding: 20px 28px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: rgba(0,0,0,0.1); }
-        .modal-header h3 { font-size: 1.1rem; font-weight: 600; color: #fff; }
-        .btn-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-        .btn-close:hover { color: #fff; }
-        
-        .modal-body { padding: 28px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
-        .form-group { display: flex; flex-direction: column; width: 100%; }
-        .form-group.span-2 { grid-column: span 2; }
-        
-        .form-label { display: block; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; min-height: 16px; }
-        .form-control { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; color: #fff; font-size: 0.95rem; outline: none; transition: border 0.2s; height: 42px; }
-        .form-control:focus { border-color: var(--accent-green); }
-        .form-control:disabled { background-color: rgba(0,0,0,0.2); color: var(--text-muted); cursor: not-allowed; }
-        
-        .modal-footer { padding: 16px 28px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background-color: rgba(0,0,0,0.1); }
-        .btn-secondary { background: none; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
-        .btn-secondary:hover { background-color: var(--border-color); }
-
-        .report-header { text-align: center; padding: 24px 0; border-bottom: 2px solid var(--border-color); margin-bottom: 32px; }
-        .report-header h2 { font-size: 1.6rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        .report-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
-        .report-timestamp { text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; font-style: italic; }
-        .report-summary-boxes { display: flex; gap: 24px; margin-bottom: 32px; }
-        .rep-box { flex: 1; background-color: rgba(0,0,0,0.15); border: 1px dashed var(--border-color); padding: 16px; border-radius: 6px; text-align: center; }
-        .rep-box-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
-        .rep-box.danger .rep-box-val { color: var(--accent-red); }
-        .rep-box.warning .rep-box-val { color: var(--accent-amber); }
-
-        .utility-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; max-width: 600px; margin-bottom: 24px; }
-        .utility-card h3 { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
-        .utility-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: var(--bg-card); width: 600px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .span-2 { grid-column: span 2; }
+        .form-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 6px; outline: none; }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); text-align: right; background: rgba(0,0,0,0.1); }
 
         @media print {
-            body { background: #fff; color: #000; }
             .sidebar, .top-bar, .filter-toolbar, .btn-action, .btn-primary { display: none !important; }
-            .main-content { padding: 0; overflow: visible; }
-            .table-container, .data-table { border: 1px solid #000; color: #000; }
-            .data-table th, .data-table td { border-bottom: 1px solid #000; color: #000; padding: 10px; }
-            .status-badge { border: 1px solid #000; background: none !important; color: #000 !important; }
-            .td-plate { color: #000; }
+            .workspace { overflow: visible; }
+            .main-content { display: block !important; }
         }
     </style>
 </head>
 <body>
 
-    <input type="file" id="global-hidden-uploader" style="display: none;" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
+    <!-- Hidden File Uploader -->
+    <input type="file" id="global-uploader" style="display: none;" onchange="processUpload(this)">
 
+    <!-- Login -->
     <div class="login-overlay" id="gatekeeper-lock">
         <div class="login-box">
             <h2>FLEET MONITOR PH</h2>
-            <p>Equipment & Fleet Management</p>
-            <form id="gatekeeper-form" onsubmit="verifySecurityAccess(event)">
-                <div class="login-group">
-                    <input type="password" id="gatekeeper-pass" class="login-input" placeholder="••••••••" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn-login">🔑 Verify Access Credentials</button>
-                <div class="login-error" id="gatekeeper-error">Invalid security password. Access denied.</div>
+            <p>CEO Baguio Security Access</p>
+            <form onsubmit="doLogin(event)">
+                <input type="password" id="gatekeeper-pass" class="login-input" placeholder="••••••••" required>
+                <button type="submit" class="btn-login">🔑 Verify Access</button>
+                <div class="login-error" id="gatekeeper-error">Invalid Credentials.</div>
             </form>
         </div>
     </div>
 
+    <!-- Sidebar -->
     <div class="sidebar">
         <div>
             <div class="sidebar-brand">
-                <h2>FLEET MONITOR PH</h2>
+                <h2>FLEET MONITOR</h2>
                 <p>City Engineering Office</p>
             </div>
             <div class="sidebar-menu">
-                <div class="sidebar-heading">Operations</div>
-                <div class="sidebar-item active" id="side-nav-dashboard" onclick="switchActiveView('dashboard')">📊 Main Dashboard</div>
-                <div class="sidebar-item" id="side-nav-reports" onclick="switchActiveView('reports')">📋 Executive Reports</div>
-                <div class="sidebar-item" id="side-nav-repository" onclick="switchActiveView('repository')">📂 Docs Repository</div>
-                <div class="sidebar-item" id="side-nav-utilities" onclick="switchActiveView('utilities')">🛠️ System Utilities</div>
+                <div class="sidebar-item active" id="nav-dashboard" onclick="nav('dashboard')">📊 Dashboard</div>
+                <div class="sidebar-item" id="nav-repository" onclick="nav('repository')">📂 Document Vault</div>
+                <div class="sidebar-item" id="nav-reports" onclick="nav('reports')">📋 Executive Reports</div>
+                <div class="sidebar-item" id="nav-utils" onclick="nav('utils')">🛠️ System Utilities</div>
             </div>
         </div>
-        <div class="sidebar-footer">
-            Logged in: CEO Admin<br>
-            Baguio City, PH
-        </div>
+        <div class="sidebar-footer">Logged: Admin • Baguio PH</div>
     </div>
 
+    <!-- Workspace -->
     <div class="workspace">
         <div class="top-bar">
-            <div class="top-bar-title">
-                <h1 id="workspace-view-header-title">Active Fleet Registry</h1>
-            </div>
-            <div>
-                <button class="btn-primary" id="menu-add-vehicle">➕ Add Vehicle</button>
-            </div>
+            <h1 id="view-title">Active Fleet Registry</h1>
+            <button class="btn-primary" onclick="openModal()">➕ Add New Vehicle</button>
         </div>
 
-        <div class="main-content active-view" id="view-dashboard">
+        <!-- Dashboard View -->
+        <div id="view-dashboard" class="main-content active-view">
             <div class="metrics-grid">
-                <div class="metric-card card-total">
+                <div class="metric-card card-total" onclick="setGlobalFilter('all')">
                     <span class="metric-title">Total Fleet</span>
                     <span class="metric-value" id="stat-total">0</span>
-                    <span class="metric-subtext">Active Units Logged</span>
                 </div>
-                <div class="metric-card card-expired">
-                    <span class="metric-title">Expired Records</span>
+                <div class="metric-card card-expired" onclick="setGlobalFilter('expired')">
+                    <span class="metric-title">Expired</span>
                     <span class="metric-value" id="stat-expired">0</span>
-                    <span class="metric-subtext" id="stat-expired-sub">0 LTO • 0 GSIS</span>
                 </div>
-                <div class="metric-card card-warning">
-                    <span class="metric-title">Expiring Soon</span>
+                <div class="metric-card card-warning" onclick="setGlobalFilter('expiring')">
+                    <span class="metric-title">Warnings</span>
                     <span class="metric-value" id="stat-warning">0</span>
-                    <span class="metric-subtext" id="stat-warning-sub">0 LTO • 0 GSIS</span>
                 </div>
-                <div class="metric-card card-valid">
-                    <span class="metric-title">Fully Compliant</span>
+                <div class="metric-card card-valid" onclick="setGlobalFilter('valid')">
+                    <span class="metric-title">Valid</span>
                     <span class="metric-value" id="stat-valid">0</span>
-                    <span class="metric-subtext">Up to Date</span>
                 </div>
-            </div>
-
-            <div class="alerts-panel" id="alerts-container-box" style="display:none;">
-                <div class="alerts-panel-header">⚠️ ACTIVE EXPIRATION ATTENTION REQUIRED (60-DAY WINDOW)</div>
-                <div id="alerts-list-hook"></div>
             </div>
 
             <div class="filter-toolbar">
-                <div class="search-wrapper">
-                    <input type="text" class="search-input" id="table-search" placeholder="Search by plate number, model, or driver...">
+                <div class="filter-btn-group" id="status-tabs">
+                    <button class="filter-tab active" id="tab-all" onclick="setGlobalFilter('all')">All Units</button>
+                    <button class="filter-tab" id="tab-valid" onclick="setGlobalFilter('valid')">Valid</button>
+                    <button class="filter-tab" id="tab-expiring" onclick="setGlobalFilter('expiring')">Warnings</button>
+                    <button class="filter-tab" id="tab-expired" onclick="setGlobalFilter('expired')">Expired</button>
                 </div>
-                <div class="filter-groups-wrapper">
-                    <div>
-                        <div class="filter-segment-label">LTO Registration</div>
-                        <div class="filter-btn-group" id="filter-lto-group">
-                            <button class="filter-btn active" data-filter="all">All</button>
-                            <button class="filter-btn" data-filter="valid">Valid</button>
-                            <button class="filter-btn" data-filter="expiring">Warning</button>
-                            <button class="filter-btn" data-filter="expired">Expired</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="filter-segment-label">GSIS Insurance</div>
-                        <div class="filter-btn-group" id="filter-gsis-group">
-                            <button class="filter-btn active" data-filter="all">All</button>
-                            <button class="filter-btn" data-filter="valid">Valid</button>
-                            <button class="filter-btn" data-filter="expiring">Warning</button>
-                            <button class="filter-btn" data-filter="expired">Expired</button>
-                        </div>
-                    </div>
-                </div>
+                <input type="text" id="main-search" class="search-input" placeholder="Search plate or officer..." oninput="refreshUI()">
             </div>
 
             <div class="table-container">
@@ -254,136 +180,69 @@
                     <thead>
                         <tr>
                             <th>Plate No.</th>
-                            <th>Vehicle Model Description</th>
-                            <th>Year</th>
-                            <th>Assigned Officer / Driver</th>
-                            <th>LTO Registration</th>
+                            <th>Description</th>
+                            <th>Officer</th>
+                            <th>LTO Registry</th>
                             <th>GSIS Insurance</th>
-                            <th style="text-align:center;">Actions</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="registry-table-body">
-                    </tbody>
+                    <tbody id="fleet-table"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="main-content" id="view-reports">
-            <div style="margin-bottom: 20px;">
-                <button class="btn-action" onclick="window.print()">🖨️ Print Official Report</button>
-            </div>
-            <div class="table-container" style="background:#fff; color:#000; padding:40px; border-radius:8px;">
-                <div class="report-header">
-                    <h2>City Government of Baguio</h2>
-                    <p>City Engineering Office — Equipment & Fleet Management Division</p>
-                    <p style="font-weight:600; margin-top:10px; font-size:1.1rem;">EXECUTIVE FLEET COMPLIANCE AUDIT REPORT</p>
-                </div>
-                <div class="report-timestamp" id="print-timestamp">Generated on: --</div>
-                <div class="report-summary-boxes">
-                    <div class="rep-box">
-                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Total Active Units</div>
-                        <div class="rep-box-val" id="rep-total">0</div>
-                    </div>
-                    <div class="rep-box danger">
-                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Critical Expired Units</div>
-                        <div class="rep-box-val" id="rep-expired">0</div>
-                    </div>
-                    <div class="rep-box warning">
-                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Pending Warnings</div>
-                        <div class="rep-box-val" id="rep-warning">0</div>
-                    </div>
-                </div>
-                <table class="data-table" style="width:100%; border:1px solid #ddd; color:#000;">
-                    <thead>
-                        <tr style="background:#f5f5f5;">
-                            <th style="color:#333; border-bottom:2px solid #ccc;">Plate No.</th>
-                            <th style="color:#333; border-bottom:2px solid #ccc;">Model Description</th>
-                            <th style="color:#333; border-bottom:2px solid #ccc;">Assigned Personnel</th>
-                            <th style="color:#333; border-bottom:2px solid #ccc;">LTO Status</th>
-                            <th style="color:#333; border-bottom:2px solid #ccc;">GSIS Insurance Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-table-body" style="background:transparent;">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="main-content" id="view-repository">
-            <div style="margin-bottom: 24px;">
-                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
-                    Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.) and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
-                </p>
-            </div>
-            <div class="filter-toolbar" style="margin-bottom: 24px;">
-                <div class="search-wrapper" style="max-width: 100%;">
-                    <input type="text" class="search-input" id="repo-search" oninput="buildRepositoryTableRows()" placeholder="🔍 Filter repository by plate or driver name...">
-                </div>
-            </div>
+        <!-- Repository View -->
+        <div id="view-repository" class="main-content">
             <div class="table-container">
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Plate No.</th>
-                            <th>Assigned Officer</th>
-                            <th>LTO Registration O.R. Document Attachment</th>
-                            <th>GSIS Insurance C.O.C. Document Attachment</th>
+                            <th>Officer</th>
+                            <th>LTO Registration O.R.</th>
+                            <th>GSIS Insurance C.O.C.</th>
                         </tr>
                     </thead>
-                    <tbody id="repo-table-body">
-                    </tbody>
+                    <tbody id="repo-table"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="main-content" id="view-utilities">
-            <div class="utility-card">
-                <h3>Local JSON Registry Backup Utility</h3>
-                <p>Generate and download a localized snapshot file of the system registry records. Use this tool to preserve a flat-file version of the vehicle array on your computer.</p>
-                <button class="btn-action" onclick="exportLocalDatabaseToBackupFile()">📥 Download Local Snapshot (.json)</button>
-            </div>
+        <!-- Reports View -->
+        <div id="view-reports" class="main-content">
+            <button class="btn-primary" onclick="window.print()" style="margin-bottom:20px;">🖨️ Print Compliance Audit</button>
+            <div id="report-print-area" style="background:#fff; color:#000; padding:40px; border-radius:8px;"><div id="report-table-target"></div></div>
+        </div>
+
+        <!-- Utils View -->
+        <div id="view-utils" class="main-content">
+            <button class="btn-primary" onclick="exportData()">📥 Download JSON Snapshot</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="form-modal">
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="modal-form">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="modal-title">Log New Fleet Vehicle</h3>
-                <button class="btn-close" id="btn-close-modal">&times;</button>
+                <h3 id="modal-title">New Vehicle Entry</h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
-            <form id="vehicle-form">
-                <input type="hidden" id="edit-idx" value="-1">
+            <form id="vehicle-form" onsubmit="saveVehicle(event)">
+                <input type="hidden" id="edit-id" value="">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Plate / Converted Number</label>
-                            <input type="text" id="f-plate" class="form-control" placeholder="e.g. SAB-2391" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Acquisition Year</label>
-                            <input type="number" id="f-year" class="form-control" placeholder="e.g. 2019" min="1990" max="2030">
-                        </div>
-                        <div class="form-group span-2">
-                            <label class="form-label">Vehicle Make / Model Description</label>
-                            <input type="text" id="f-model" class="form-control" placeholder="e.g. Toyota Hilux D-4D CrewCab" required>
-                        </div>
-                        <div class="form-group span-2">
-                            <label class="form-label">Assigned Accountable Employee</label>
-                            <input type="text" id="f-driver" class="form-control" placeholder="Full name of engineer or officer">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">LTO Registration Deadline</label>
-                            <input type="date" id="f-lto" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">GSIS Comprehensive Coverage Policy</label>
-                            <input type="date" id="f-gsis" class="form-control" required>
-                        </div>
+                        <div><label class="form-label">Plate Number</label><input type="text" id="f-plate" class="form-control" required></div>
+                        <div><label class="form-label">Year</label><input type="number" id="f-year" class="form-control"></div>
+                        <div class="span-2"><label class="form-label">Make & Model</label><input type="text" id="f-model" class="form-control" required></div>
+                        <div class="span-2"><label class="form-label">Officer</label><input type="text" id="f-driver" class="form-control"></div>
+                        <div><label class="form-label">LTO Expiry</label><input type="date" id="f-lto" class="form-control" required></div>
+                        <div><label class="form-label">GSIS Expiry</label><input type="date" id="f-gsis" class="form-control" required></div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" id="btn-close-modal-footer">Cancel</button>
-                    <button type="submit" class="btn-primary">💾 Save Record</button>
+                    <button type="button" class="btn-action" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">💾 Commit Record</button>
                 </div>
             </form>
         </div>
@@ -392,503 +251,221 @@
     <script>
         const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
-
-        const WARNING_WINDOW_DAYS = 60;
         let fleet = [];
-        let ltoFilter = 'all';
-        let gsisFilter = 'all';
+        let currentStatusFilter = 'all';
+        let uploadTarget = { plate: '', field: '' };
 
-        let currentUploadPlate = "";
-        let currentUploadField = "";
-
-        const getHeaders = () => ({
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            if (sessionStorage.getItem('fleet_authenticated') === 'true') {
-                document.getElementById('gatekeeper-lock').style.display = 'none';
-                fetchFleetFromCloud();
-            }
-        });
-
-        function verifySecurityAccess(e) {
+        function doLogin(e) {
             e.preventDefault();
-            const passwordInput = document.getElementById('gatekeeper-pass').value;
-            const errorLabel = document.getElementById('gatekeeper-error');
-            const MASTER_PASSWORD = "motorpool2010"; 
-
-            if (passwordInput === MASTER_PASSWORD) {
-                sessionStorage.setItem('fleet_authenticated', 'true');
-                errorLabel.style.display = 'none';
+            if (document.getElementById('gatekeeper-pass').value === 'motorpool2010') {
+                sessionStorage.setItem('ceo_auth', 'true');
                 document.getElementById('gatekeeper-lock').style.display = 'none';
-                fetchFleetFromCloud();
-            } else {
-                errorLabel.style.display = 'block';
-                document.getElementById('gatekeeper-pass').value = '';
-                document.getElementById('gatekeeper-pass').focus();
-            }
+                loadData();
+            } else { document.getElementById('gatekeeper-error').style.display = 'block'; }
         }
 
-        async function fetchFleetFromCloud() {
+        window.onload = () => { if (sessionStorage.getItem('ceo_auth') === 'true') { document.getElementById('gatekeeper-lock').style.display = 'none'; loadData(); } };
+
+        async function loadData() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, {
-                    method: "GET",
-                    headers: getHeaders()
-                });
-                if (!response.ok) throw new Error("Cloud fetch failed");
-                fleet = await response.json();
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } catch (err) {
-                console.error("Database connection error:", err);
-                alert("Database connection sync alert. Using snapshot placeholders.");
-                fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_document_attachment: null, gsis_document_attachment: null }
-                ];
-                updateInterfaceMetricsAndAlerts();
-                buildRegistryTableRows();
-            }
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+                fleet = await res.json();
+                refreshUI();
+            } catch (err) { console.error(err); }
         }
 
-        function setupEventListeners() {
-            document.getElementById('menu-add-vehicle').addEventListener('click', () => openFormModal());
-            document.getElementById('btn-close-modal').addEventListener('click', closeFormModal);
-            document.getElementById('btn-close-modal-footer').addEventListener('click', closeFormModal);
-            document.getElementById('vehicle-form').addEventListener('submit', handleFormSubmission);
-            document.getElementById('table-search').addEventListener('input', buildRegistryTableRows);
+        function setGlobalFilter(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + status).classList.add('active');
+            refreshUI();
+        }
+
+        function refreshUI() {
+            const search = document.getElementById('main-search').value.toLowerCase();
+            const table = document.getElementById('fleet-table');
+            const repo = document.getElementById('repo-table');
+            table.innerHTML = ""; repo.innerHTML = "";
             
-            document.querySelectorAll('#filter-lto-group .filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('#filter-lto-group .filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    ltoFilter = e.target.getAttribute('data-filter');
-                    buildRegistryTableRows();
-                });
-            });
+            let stats = { total: fleet.length, expired: 0, warning: 0, valid: 0 };
 
-            document.querySelectorAll('#filter-gsis-group .filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('#filter-gsis-group .filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    gsisFilter = e.target.getAttribute('data-filter');
-                    buildRegistryTableRows();
-                });
-            });
-        }
+            fleet.forEach((v, idx) => {
+                const lto = getStatus(v.lto);
+                const gsis = getStatus(v.gsis);
 
-        function switchActiveView(viewId) {
-            document.querySelectorAll('.main-content').forEach(view => view.classList.remove('active-view'));
-            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
-            
-            const currentView = document.getElementById(`view-${viewId}`);
-            const currentNavItem = document.getElementById(`side-nav-${viewId}`);
-            
-            if(currentView) currentView.classList.add('active-view');
-            if(currentNavItem) currentNavItem.classList.add('active');
+                let rowStatus = 'valid';
+                if (lto.state === 'expired' || gsis.state === 'expired') rowStatus = 'expired';
+                else if (lto.state === 'expiring' || gsis.state === 'expiring') rowStatus = 'expiring';
 
-            const headerTitle = document.getElementById('workspace-view-header-title');
-            if (viewId === 'dashboard') {
-                headerTitle.innerText = "Active Fleet Registry";
-                buildRegistryTableRows();
-            } else if (viewId === 'reports') {
-                headerTitle.innerText = "Executive Compliance Reports";
-                buildExecutiveReportRows();
-            } else if (viewId === 'repository') {
-                headerTitle.innerText = "Cloud Documentation Vault";
-                buildRepositoryTableRows();
-            } else if (viewId === 'utilities') {
-                headerTitle.innerText = "System Utilities Overview";
-            }
-        }
+                if (rowStatus === 'expired') stats.expired++;
+                else if (rowStatus === 'expiring') stats.warning++;
+                else stats.valid++;
 
-        function evaluateDateStatus(targetDateStr) {
-            if (!targetDateStr) return { label: "EXPIRED", statusClass: "expired", daysRemaining: -9999 };
-            const targetDate = new Date(targetDateStr);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            targetDate.setHours(0,0,0,0);
+                const matchesSearch = v.plate.toLowerCase().includes(search) || v.model.toLowerCase().includes(search) || (v.driver||'').toLowerCase().includes(search);
+                const matchesStatus = currentStatusFilter === 'all' || rowStatus === currentStatusFilter;
 
-            const differenceInTime = targetDate.getTime() - today.getTime();
-            const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-
-            if (daysRemaining < 0) {
-                return { label: "EXPIRED", statusClass: "expired", daysRemaining };
-            } else if (daysRemaining <= WARNING_WINDOW_DAYS) {
-                return { label: `WARN (${daysRemaining}d)`, statusClass: "expiring", daysRemaining };
-            } else {
-                return { label: "VALID", statusClass: "valid", daysRemaining };
-            }
-        }
-
-        function updateInterfaceMetricsAndAlerts() {
-            let total = fleet.length;
-            let expiredCount = 0;
-            let warningCount = 0;
-            let validCount = 0;
-
-            let ltoExpired = 0, gsisExpired = 0;
-            let ltoWarning = 0, gsisWarning = 0;
-
-            const alertsHook = document.getElementById('alerts-list-hook');
-            alertsHook.innerHTML = "";
-            let alertItemsCount = 0;
-
-            fleet.forEach(v => {
-                const ltoStat = evaluateDateStatus(v.lto);
-                const gsisStat = evaluateDateStatus(v.gsis);
-
-                let isExpired = (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired');
-                let isWarning = (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') && !isExpired;
-
-                if (isExpired) expiredCount++;
-                else if (isWarning) warningCount++;
-                else validCount++;
-
-                if (ltoStat.statusClass === 'expired') ltoExpired++;
-                if (gsisStat.statusClass === 'expired') gsisExpired++;
-                if (ltoStat.statusClass === 'expiring') ltoWarning++;
-                if (gsisStat.statusClass === 'expiring') gsisWarning++;
-
-                if (ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
-                    alertItemsCount++;
-                    const item = document.createElement('div');
-                    item.className = "alert-item";
-                    const dayLabel = ltoStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(ltoStat.daysRemaining)} days ago)` : `${ltoStat.daysRemaining} days remaining`;
-                    item.innerHTML = `<div><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'No Driver Assigned'}) requires LTO Registration Renewal.<span class="alert-tag">LTO O.R.</span></div><div class="alert-days">${dayLabel}</div>`;
-                    alertsHook.appendChild(item);
-                }
-
-                if (gsisStat.daysRemaining <= WARNING_WINDOW_DAYS) {
-                    alertItemsCount++;
-                    const item = document.createElement('div');
-                    item.className = "alert-item";
-                    const dayLabel = gsisStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(gsisStat.daysRemaining)} days ago)` : `${gsisStat.daysRemaining} days remaining`;
-                    item.innerHTML = `<div><strong>${v.plate}</strong> — ${v.model} (${v.driver || 'No Driver Assigned'}) requires GSIS Insurance Coverage Renewal.<span class="alert-tag" style="background:rgba(59,130,246,0.15); color:var(--accent-blue);">GSIS C.O.C.</span></div><div class="alert-days">${dayLabel}</div>`;
-                    alertsHook.appendChild(item);
-                }
-            });
-
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-expired').innerText = expiredCount;
-            document.getElementById('stat-expired-sub').innerText = `${ltoExpired} LTO • ${gsisExpired} GSIS`;
-            document.getElementById('stat-warning').innerText = warningCount;
-            document.getElementById('stat-warning-sub').innerText = `${ltoWarning} LTO • ${gsisWarning} GSIS`;
-            document.getElementById('stat-valid').innerText = validCount;
-
-            document.getElementById('alerts-container-box').style.display = alertItemsCount > 0 ? "block" : "none";
-        }
-
-        function buildRegistryTableRows() {
-            const query = document.getElementById('table-search').value.toLowerCase();
-            const tbody = document.getElementById('registry-table-body');
-            tbody.innerHTML = "";
-
-            fleet.forEach((v, index) => {
-                const ltoStat = evaluateDateStatus(v.lto);
-                const gsisStat = evaluateDateStatus(v.gsis);
-
-                if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
-                if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
-
-                const matchPlate = v.plate.toLowerCase().includes(query);
-                const matchModel = v.model.toLowerCase().includes(query);
-                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
-                if (!matchPlate && !matchModel && !matchDriver) return;
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="td-plate">${v.plate}</td>
-                    <td><strong>${v.model}</strong></td>
-                    <td>${v.year || '—'}</td>
-                    <td>${v.driver ? v.driver : '<span class="text-unassigned">Unassigned</span>'}</td>
-                    <td><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.lto}</small></td>
-                    <td><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.gsis}</small></td>
-                    <td style="text-align:center;">
-                        <button class="btn-action" onclick="openFormModal(${index})">📝 Edit</button>
-                        <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteVehicleRecord('${v.plate}')">🗑️ Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function buildExecutiveReportRows() {
-            document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString()} | City Engineering Office Baguio`;
-            
-            let expiredCount = 0;
-            let warningCount = 0;
-            fleet.forEach(v => {
-                const ltoStat = evaluateDateStatus(v.lto);
-                const gsisStat = evaluateDateStatus(v.gsis);
-                if (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired') expiredCount++;
-                else if (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') warningCount++;
-            });
-
-            document.getElementById('rep-total').innerText = fleet.length;
-            document.getElementById('rep-expired').innerText = expiredCount;
-            document.getElementById('rep-warning').innerText = warningCount;
-
-            const tbody = document.getElementById('report-table-body');
-            tbody.innerHTML = "";
-
-            fleet.forEach(v => {
-                const ltoStat = evaluateDateStatus(v.lto);
-                const gsisStat = evaluateDateStatus(v.gsis);
-
-                const row = document.createElement('tr');
-                row.style.color = "#000";
-                row.innerHTML = `
-                    <td style="font-family:monospace; font-weight:700; border-bottom:1px solid #ddd; padding:12px;">${v.plate}</td>
-                    <td style="border-bottom:1px solid #ddd; padding:12px;">${v.model} (${v.year})</td>
-                    <td style="border-bottom:1px solid #ddd; padding:12px;">${v.driver || 'Unassigned'}</td>
-                    <td style="border-bottom:1px solid #ddd; padding:12px;"><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span> <small>${v.lto}</small></td>
-                    <td style="border-bottom:1px solid #ddd; padding:12px;"><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span> <small>${v.gsis}</small></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function buildRepositoryTableRows() {
-            const query = document.getElementById('repo-search').value.toLowerCase();
-            const tbody = document.getElementById('repo-table-body');
-            tbody.innerHTML = "";
-
-            fleet.forEach(v => {
-                const matchPlate = v.plate.toLowerCase().includes(query);
-                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
-                if (query && !matchPlate && !matchDriver) return;
-
-                let ltoCell = "";
-                let gsisCell = "";
-
-                // Clean string parsing checks for http signatures
-                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    ltoCell = `
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
-                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
-                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove File</button>
-                        </div>
+                if (matchesSearch && matchesStatus) {
+                    table.innerHTML += `
+                        <tr>
+                            <td class="td-plate">${v.plate}</td>
+                            <td>${v.model} (${v.year})</td>
+                            <td>${v.driver || '—'}</td>
+                            <td><span class="status-badge ${lto.state}">${lto.label}</span><br><small>${v.lto}</small></td>
+                            <td><span class="status-badge ${gsis.state}">${gsis.label}</span><br><small>${v.gsis}</small></td>
+                            <td>
+                                <button class="btn-action" onclick="openModal(${idx})">Edit</button>
+                                <button class="btn-action" style="color:var(--accent-red)" onclick="deleteVehicle('${v.plate}')">Del</button>
+                            </td>
+                        </tr>
                     `;
-                } else {
-                    ltoCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
-                }
 
-                // Clean string parsing checks for http signatures
-                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    gsisCell = `
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
-                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
-                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove File</button>
-                        </div>
+                    repo.innerHTML += `
+                        <tr>
+                            <td class="td-plate">${v.plate}</td>
+                            <td>${v.driver || '—'}</td>
+                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">Upload</button>`}</td>
+                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">Upload</button>`}</td>
+                        </tr>
                     `;
-                } else {
-                    gsisCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="td-plate">${v.plate}</td>
-                    <td><strong>${v.driver || 'Unassigned'}</strong></td>
-                    <td>${ltoCell}</td>
-                    <td>${gsisCell}</td>
-                `;
-                tbody.appendChild(row);
             });
+
+            document.getElementById('stat-total').innerText = stats.total;
+            document.getElementById('stat-expired').innerText = stats.expired;
+            document.getElementById('stat-warning').innerText = stats.warning;
+            document.getElementById('stat-valid').innerText = stats.valid;
+            buildReport();
         }
 
-        async function triggerFileUploadForm(plate, fieldName) {
-            currentUploadPlate = plate;
-            currentUploadField = fieldName;
-            document.getElementById('global-hidden-uploader').click();
+        function getStatus(dateStr) {
+            if (!dateStr) return { label: 'MISSING', state: 'expired' };
+            const diff = (new Date(dateStr) - new Date()) / (1000 * 3600 * 24);
+            if (diff < 0) return { label: 'EXPIRED', state: 'expired' };
+            if (diff <= 60) return { label: `${Math.ceil(diff)} DAYS`, state: 'expiring' };
+            return { label: 'VALID', state: 'valid' };
         }
 
-        async function processSelectedFile(inputElement) {
-            if (!inputElement.files || inputElement.files.length === 0) return;
-            const targetFile = inputElement.files[0];
-            const fileExtension = targetFile.name.split('.').pop();
-            const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
-            const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
-            
-            try {
-                const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
-                const uploadHeaders = {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": `Bearer ${SUPABASE_KEY}`,
-                    "Content-Type": targetFile.type
-                };
-
-                const uploadResponse = await fetch(storageEndpoint, {
-                    method: "POST",
-                    headers: uploadHeaders,
-                    body: targetFile
-                });
-
-                if (!uploadResponse.ok) throw new Error("Storage upload failed.");
-
-                const patchPayload = {};
-                patchPayload[currentUploadField] = cleanPublicUrl;
-
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
-                    method: "PATCH",
-                    headers: getHeaders(),
-                    body: JSON.stringify(patchPayload)
-                });
-
-                // Immediate layout rendering
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
-
-                alert("Document successfully committed to security repository vault.");
-                inputElement.value = ""; 
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } catch (err) {
-                console.error(err);
-                // Fallback rendering routine
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
-                
-                inputElement.value = "";
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            }
-        }
-
-        async function clearCloudDocumentField(plateNumber, targetField) {
-            if (!confirm(`Are you sure you want to completely remove this document link for vehicle ${plateNumber}?`)) {
-                return;
-            }
+        async function saveVehicle(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const plate = document.getElementById('f-plate').value.toUpperCase().trim();
+            const payload = { plate, year: document.getElementById('f-year').value, model: document.getElementById('f-model').value, driver: document.getElementById('f-driver').value, lto: document.getElementById('f-lto').value, gsis: document.getElementById('f-gsis').value };
 
             try {
-                const patchPayload = {};
-                patchPayload[targetField] = null;
-
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
-                    method: "PATCH",
-                    headers: getHeaders(),
-                    body: JSON.stringify(patchPayload)
-                });
-
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
-
-                alert("Document attachment reference successfully removed.");
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } catch (err) {
-                console.error("Bypassing pipeline intercept error:", err);
-                
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
-                
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            }
+                let res;
+                if (editId) { 
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plate)}`, { 
+                        method: 'PATCH', 
+                        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, 
+                        body: JSON.stringify(payload) 
+                    }); 
+                } else { 
+                    payload.lto_document_attachment = null; 
+                    payload.gsis_document_attachment = null; 
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, { 
+                        method: 'POST', 
+                        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" }, 
+                        body: JSON.stringify(payload) 
+                    }); 
+                }
+                if (!res.ok) throw new Error("Update failed.");
+                closeModal(); loadData();
+            } catch (err) { alert(err.message); }
         }
 
-        function openFormModal(index = -1) {
-            const modal = document.getElementById('form-modal');
-            const form = document.getElementById('vehicle-form');
-            form.reset();
+        async function deleteVehicle(plate) {
+            if (!confirm(`Remove ${plate}?`)) return;
+            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plate)}`, { method: 'DELETE', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+            loadData();
+        }
 
-            if (index > -1) {
-                const v = fleet[index];
-                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
-                document.getElementById('edit-idx').value = index;
+        function nav(view) {
+            document.querySelectorAll('.main-content').forEach(v => v.classList.remove('active-view'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active-view');
+            document.getElementById('nav-' + view).classList.add('active');
+        }
+
+        function openModal(idx = -1) {
+            document.getElementById('vehicle-form').reset();
+            document.getElementById('edit-id').value = "";
+            document.getElementById('f-plate').disabled = false;
+            if (idx > -1) {
+                const v = fleet[idx];
+                document.getElementById('edit-id').value = v.plate;
                 document.getElementById('f-plate').value = v.plate;
                 document.getElementById('f-plate').disabled = true;
                 document.getElementById('f-year').value = v.year;
                 document.getElementById('f-model').value = v.model;
-                document.getElementById('f-driver').value = v.driver || '';
+                document.getElementById('f-driver').value = v.driver;
                 document.getElementById('f-lto').value = v.lto;
                 document.getElementById('f-gsis').value = v.gsis;
-            } else {
-                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
-                document.getElementById('edit-idx').value = -1;
-                document.getElementById('f-plate').disabled = false;
             }
-            modal.style.display = "flex";
+            document.getElementById('modal-form').style.display = 'flex';
         }
 
-        function closeFormModal() {
-            document.getElementById('form-modal').style.display = "none";
+        function closeModal() { document.getElementById('modal-form').style.display = 'none'; }
+        
+        function triggerUpload(plate, field) { 
+            uploadTarget = { plate, field }; 
+            document.getElementById('global-uploader').click(); 
         }
-
-        async function handleFormSubmission(e) {
-            e.preventDefault();
-            const idx = parseInt(document.getElementById('edit-idx').value);
-            
-            const recordData = {
-                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
-                year: document.getElementById('f-year').value.toString(),
-                model: document.getElementById('f-model').value.trim(),
-                driver: document.getElementById('f-driver').value.trim() || null,
-                lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value
-            };
+        
+        // STEP 3: THE IMPROVED UPLOAD FUNCTION
+        async function processUpload(input) {
+            if (!input.files[0]) return;
+            const file = input.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${uploadTarget.plate}_${Date.now()}.${fileExt}`;
+            const path = fileName;
 
             try {
-                let response;
-                if (idx > -1) {
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
-                        method: "PATCH",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
-                } else {
-                    recordData.lto_document_attachment = null;
-                    recordData.gsis_document_attachment = null;
-                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
-                        method: "POST",
-                        headers: getHeaders(),
-                        body: JSON.stringify(recordData)
-                    });
+                // 1. Upload to Storage records bucket
+                const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, { 
+                    method: 'POST', 
+                    headers: { 
+                        "apikey": SUPABASE_KEY, 
+                        "Authorization": `Bearer ${SUPABASE_KEY}`, 
+                        "Content-Type": file.type,
+                        "x-upsert": "true" 
+                    }, 
+                    body: file 
+                });
+                
+                if (!upRes.ok) {
+                    const errorData = await upRes.json();
+                    throw new Error(`Upload Failed: ${errorData.message || upRes.statusText}`);
                 }
 
-                if (!response.ok) throw new Error("Cloud mutations failed.");
+                // 2. Patch database with public URL
+                const url = `${SUPABASE_URL}/storage/v1/object/public/records/${path}`;
+                const patch = {}; 
+                patch[uploadTarget.field] = url;
                 
-                closeFormModal();
-                fetchFleetFromCloud();
-            } catch (err) {
-                console.error(err);
-                alert("Mutation operation completed successfully.");
-                closeFormModal();
-                fetchFleetFromCloud();
-            }
-        }
-
-        async function deleteVehicleRecord(plateId) {
-            if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateId)}`, {
-                    method: "DELETE",
-                    headers: getHeaders()
+                const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(uploadTarget.plate)}`, { 
+                    method: 'PATCH', 
+                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, 
+                    body: JSON.stringify(patch) 
                 });
-                if (!response.ok) throw new Error("Cloud execution failed.");
-                fetchFleetFromCloud();
-            } catch (err) {
-                console.error(err);
-                alert("Database action updated successfully.");
-                fetchFleetFromCloud();
-            }
+
+                if (!dbRes.ok) throw new Error("Linked failed.");
+                
+                alert("Upload successful!");
+                loadData();
+            } catch (err) { alert(err.message); }
+            finally { input.value = ""; }
         }
 
-        function exportLocalDatabaseToBackupFile() {
-            if (fleet.length === 0) return alert("No operational data array rows available for packaging snapshots.");
-            const flatStringData = JSON.stringify(fleet, null, 2);
-            const dataBlob = new Blob([flatStringData], { type: "application/json" });
-            const anchor = document.createElement('a');
-            anchor.href = URL.createObjectURL(dataBlob);
-            anchor.download = `CEO_FLEET_SNAPSHOT_${new Date().toISOString().split('T')[0]}.json`;
-            anchor.click();
+        function buildReport() {
+            let html = `<table style="width:100%; border-collapse:collapse; color:#000;"><thead><tr style="background:#f0f0f0;"><th style="border:1px solid #ddd; padding:10px;">Plate</th><th style="border:1px solid #ddd; padding:10px;">Model</th><th style="border:1px solid #ddd; padding:10px;">LTO</th><th style="border:1px solid #ddd; padding:10px;">GSIS</th></tr></thead><tbody>`;
+            fleet.forEach(v => { html += `<tr><td style="border:1px solid #ddd; padding:10px; font-weight:700;">${v.plate}</td><td style="border:1px solid #ddd; padding:10px;">${v.model}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.lto).label}</td><td style="border:1px solid #ddd; padding:10px;">${getStatus(v.gsis).label}</td></tr>`; });
+            html += `</tbody></table>`;
+            document.getElementById('report-table-target').innerHTML = html;
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(fleet, null, 2)], { type: "application/json" });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CEO_Fleet_Backup.json`; a.click();
         }
     </script>
 </body>
