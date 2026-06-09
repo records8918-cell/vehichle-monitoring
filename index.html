@@ -1,4 +1,408 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Monitor PH - CEO Baguio</title>
+    <style>
+        :root {
+            --bg-dark: #121824;
+            --bg-card: #1c2434;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #2e3a50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Secure Portal Login Screen Overlay */
+        .login-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background-color: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 400px; border-radius: 12px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; }
+        .login-box h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .login-box p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+        .login-group { margin-bottom: 20px; text-align: left; }
+        .login-input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 16px; color: #fff; font-size: 1.05rem; letter-spacing: 3px; text-align: center; outline: none; transition: border-color 0.2s; }
+        .login-input:focus { border-color: var(--accent-green); }
+        .btn-login { width: 100%; background-color: var(--accent-green); color: #fff; border: none; padding: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 6px; transition: opacity 0.2s; }
+        .btn-login:hover { opacity: 0.9; }
+        .login-error { color: var(--accent-red); font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 500; }
+
+        /* Sidebar Navigation Layout */
+        .sidebar { width: 260px; background-color: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
+        .sidebar-brand { padding: 24px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-brand h2 { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .sidebar-brand p { font-size: 0.75rem; color: var(--accent-green); margin-top: 4px; text-transform: uppercase; font-weight: 600; }
+        .sidebar-menu { padding: 16px 0; flex-grow: 1; overflow-y: auto; }
+        .sidebar-heading { padding: 0 24px 8px 24px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
+        .sidebar-item { display: flex; align-items: center; padding: 12px 24px; color: var(--text-muted); text-decoration: none; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+        .sidebar-item:hover { background-color: rgba(255,255,255,0.03); color: #fff; }
+        .sidebar-item.active { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); border-left: 4px solid var(--accent-green); font-weight: 600; }
+        .sidebar-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Core Workspace Views */
+        .workspace { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar { height: 70px; background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .top-bar-title h1 { font-size: 1.3rem; font-weight: 600; color: #fff; }
+        .main-content { padding: 32px; overflow-y: auto; flex-grow: 1; display: none; }
+        .main-content.active-view { display: block; }
+
+        /* Metric Indicator Cards */
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+        .metric-card { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 8px; display: flex; flex-direction: column; }
+        .metric-title { font-size: 0.85rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
+        .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0 4px 0; }
+        .metric-subtext { font-size: 0.8rem; color: var(--text-muted); }
+        .card-total { border-top: 4px solid var(--accent-blue); }
+        .card-expired { border-top: 4px solid var(--accent-red); }
+        .card-warning { border-top: 4px solid var(--accent-amber); }
+        .card-valid { border-top: 4px solid var(--accent-green); }
+
+        /* Real-Time Action Alerts Box */
+        .alerts-panel { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 32px; }
+        .alerts-panel-header { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber); margin-bottom: 12px; font-size: 0.95rem; }
+        .alert-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid var(--accent-amber); font-size: 0.9rem; }
+        .alert-item:last-child { margin-bottom: 0; }
+        .alert-tag { background: rgba(245,158,11,0.15); color: var(--accent-amber); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+        .alert-days { font-weight: 600; color: #fff; }
+
+        /* Interactive Filter Bar & Controls */
+        .filter-toolbar { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; }
+        .search-wrapper { position: relative; flex-grow: 1; max-width: 400px; }
+        .search-input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 16px; color: #fff; font-size: 0.9rem; outline: none; transition: border 0.2s; }
+        .search-input:focus { border-color: var(--accent-green); }
+        .filter-groups-wrapper { display: flex; gap: 24px; }
+        .filter-segment-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .filter-btn-group { display: flex; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; }
+        .filter-btn { border: none; background: none; color: var(--text-muted); padding: 6px 12px; font-size: 0.85rem; font-weight: 500; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .filter-btn:hover { color: #fff; }
+        .filter-btn.active { background-color: var(--border-color); color: #fff; }
+
+        /* Registry Data Table Elements */
+        .table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+        .data-table th { background-color: rgba(0,0,0,0.15); padding: 16px 24px; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+        .data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background-color: rgba(255,255,255,0.01); }
+        .td-plate { font-family: monospace; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
+        .text-unassigned { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+
+        /* Dynamic Status Badges */
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; min-width: 85px; }
+        .status-badge.valid { background-color: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .status-badge.expiring { background-color: rgba(245,158,11,0.15); color: var(--accent-amber); }
+        .status-badge.expired { background-color: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+        /* Action Buttons */
+        .btn-action { background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+        .btn-action:hover { border-color: var(--text-muted); background-color: var(--border-color); }
+        .btn-primary { background-color: var(--accent-green); color: #fff; border: none; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* Document Upload/Link Button Styles */
+        .btn-link-doc { background-color: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .btn-link-doc:hover { border-color: var(--accent-blue); background-color: rgba(59, 130, 246, 0.25); }
+        .doc-link-anchor { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-green); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .doc-link-anchor:hover { text-decoration: underline; }
+
+        /* Modal Dialog Interface Form & Aligned Grid Layout */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-box { background-color: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        .modal-header { padding: 20px 28px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: rgba(0,0,0,0.1); }
+        .modal-header h3 { font-size: 1.1rem; font-weight: 600; color: #fff; }
+        .btn-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        .btn-close:hover { color: #fff; }
+        
+        .modal-body { padding: 28px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; }
+        .form-group.span-2 { grid-column: span 2; }
+        
+        .form-label { display: block; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; min-height: 16px; }
+        .form-control { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; color: #fff; font-size: 0.95rem; outline: none; transition: border 0.2s; height: 42px; }
+        .form-control:focus { border-color: var(--accent-green); }
+        .form-control:disabled { background-color: rgba(0,0,0,0.2); color: var(--text-muted); cursor: not-allowed; }
+        
+        .modal-footer { padding: 16px 28px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background-color: rgba(0,0,0,0.1); }
+        .btn-secondary { background: none; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        .btn-secondary:hover { background-color: var(--border-color); }
+
+        /* Executive Summary Report View Details */
+        .report-header { text-align: center; padding: 24px 0; border-bottom: 2px solid var(--border-color); margin-bottom: 32px; }
+        .report-header h2 { font-size: 1.6rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .report-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
+        .report-timestamp { text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; font-style: italic; }
+        .report-summary-boxes { display: flex; gap: 24px; margin-bottom: 32px; }
+        .rep-box { flex: 1; background-color: rgba(0,0,0,0.15); border: 1px dashed var(--border-color); padding: 16px; border-radius: 6px; text-align: center; }
+        .rep-box-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+        .rep-box.danger .rep-box-val { color: var(--accent-red); }
+        .rep-box.warning .rep-box-val { color: var(--accent-amber); }
+
+        /* Document Utilities Layout */
+        .utility-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; max-width: 600px; margin-bottom: 24px; }
+        .utility-card h3 { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+        .utility-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
+
+        @media print {
+            body { background: #fff; color: #000; }
+            .sidebar, .top-bar, .filter-toolbar, .btn-action, .btn-primary { display: none !important; }
+            .main-content { padding: 0; overflow: visible; }
+            .table-container, .data-table { border: 1px solid #000; color: #000; }
+            .data-table th, .data-table td { border-bottom: 1px solid #000; color: #000; padding: 10px; }
+            .status-badge { border: 1px solid #000; background: none !important; color: #000 !important; }
+            .td-plate { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <input type="file" id="global-hidden-uploader" style="display: none;" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
+
+    <div class="login-overlay" id="gatekeeper-lock">
+        <div class="login-box">
+            <h2>FLEET MONITOR PH</h2>
+            <p>Equipment & Fleet Management</p>
+            <form id="gatekeeper-form" onsubmit="verifySecurityAccess(event)">
+                <div class="login-group">
+                    <input type="password" id="gatekeeper-pass" class="login-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login">🔑 Verify Access Credentials</button>
+                <div class="login-error" id="gatekeeper-error">Invalid security password. Access denied.</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h2>FLEET MONITOR PH</h2>
+                <p>City Engineering Office</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-heading">Operations</div>
+                <div class="sidebar-item active" id="side-nav-dashboard" onclick="switchActiveView('dashboard')">📊 Main Dashboard</div>
+                <div class="sidebar-item" id="side-nav-reports" onclick="switchActiveView('reports')">📋 Executive Reports</div>
+                <div class="sidebar-item" id="side-nav-repository" onclick="switchActiveView('repository')">📂 Docs Repository</div>
+                <div class="sidebar-item" id="side-nav-utilities" onclick="switchActiveView('utilities')">🛠️ System Utilities</div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            Logged in: CEO Admin<br>
+            Baguio City, PH
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="top-bar">
+            <div class="top-bar-title">
+                <h1 id="workspace-view-header-title">Active Fleet Registry</h1>
+            </div>
+            <div>
+                <button class="btn-primary" id="menu-add-vehicle">➕ Add Vehicle</button>
+            </div>
+        </div>
+
+        <div class="main-content active-view" id="view-dashboard">
+            <div class="metrics-grid">
+                <div class="metric-card card-total">
+                    <span class="metric-title">Total Fleet</span>
+                    <span class="metric-value" id="stat-total">0</span>
+                    <span class="metric-subtext">Active Units Logged</span>
+                </div>
+                <div class="metric-card card-expired">
+                    <span class="metric-title">Expired Records</span>
+                    <span class="metric-value" id="stat-expired">0</span>
+                    <span class="metric-subtext" id="stat-expired-sub">0 LTO • 0 GSIS</span>
+                </div>
+                <div class="metric-card card-warning">
+                    <span class="metric-title">Expiring Soon</span>
+                    <span class="metric-value" id="stat-warning">0</span>
+                    <span class="metric-subtext" id="stat-warning-sub">0 LTO • 0 GSIS</span>
+                </div>
+                <div class="metric-card card-valid">
+                    <span class="metric-title">Fully Compliant</span>
+                    <span class="metric-value" id="stat-valid">0</span>
+                    <span class="metric-subtext">Up to Date</span>
+                </div>
+            </div>
+
+            <div class="alerts-panel" id="alerts-container-box" style="display:none;">
+                <div class="alerts-panel-header">⚠️ ACTIVE EXPIRATION ATTENTION REQUIRED (60-DAY WINDOW)</div>
+                <div id="alerts-list-hook"></div>
+            </div>
+
+            <div class="filter-toolbar">
+                <div class="search-wrapper">
+                    <input type="text" class="search-input" id="table-search" placeholder="Search by plate number, model, or driver...">
+                </div>
+                <div class="filter-groups-wrapper">
+                    <div>
+                        <div class="filter-segment-label">LTO Registration</div>
+                        <div class="filter-btn-group" id="filter-lto-group">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="valid">Valid</button>
+                            <button class="filter-btn" data-filter="expiring">Warning</button>
+                            <button class="filter-btn" data-filter="expired">Expired</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="filter-segment-label">GSIS Insurance</div>
+                        <div class="filter-btn-group" id="filter-gsis-group">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="valid">Valid</button>
+                            <button class="filter-btn" data-filter="expiring">Warning</button>
+                            <button class="filter-btn" data-filter="expired">Expired</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Plate No.</th>
+                            <th>Vehicle Model Description</th>
+                            <th>Year</th>
+                            <th>Assigned Officer / Driver</th>
+                            <th>LTO Registration</th>
+                            <th>GSIS Insurance</th>
+                            <th style="text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registry-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="main-content" id="view-reports">
+            <div style="margin-bottom: 20px;">
+                <button class="btn-action" onclick="window.print()">🖨️ Print Official Report</button>
+            </div>
+            <div class="table-container" style="background:#fff; color:#000; padding:40px; border-radius:8px;">
+                <div class="report-header">
+                    <h2>City Government of Baguio</h2>
+                    <p>City Engineering Office — Equipment & Fleet Management Division</p>
+                    <p style="font-weight:600; margin-top:10px; font-size:1.1rem;">EXECUTIVE FLEET COMPLIANCE AUDIT REPORT</p>
+                </div>
+                <div class="report-timestamp" id="print-timestamp">Generated on: --</div>
+                <div class="report-summary-boxes">
+                    <div class="rep-box">
+                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Total Active Units</div>
+                        <div class="rep-box-val" id="rep-total">0</div>
+                    </div>
+                    <div class="rep-box danger">
+                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Critical Expired Units</div>
+                        <div class="rep-box-val" id="rep-expired">0</div>
+                    </div>
+                    <div class="rep-box warning">
+                        <div style="font-size:0.85rem; text-transform:uppercase; font-weight:600;">Pending Warnings</div>
+                        <div class="rep-box-val" id="rep-warning">0</div>
+                    </div>
+                </div>
+                <table class="data-table" style="width:100%; border:1px solid #ddd; color:#000;">
+                    <thead>
+                        <tr style="background:#f5f5f5;">
+                            <th style="color:#333; border-bottom:2px solid #ccc;">Plate No.</th>
+                            <th style="color:#333; border-bottom:2px solid #ccc;">Model Description</th>
+                            <th style="color:#333; border-bottom:2px solid #ccc;">Assigned Personnel</th>
+                            <th style="color:#333; border-bottom:2px solid #ccc;">LTO Status</th>
+                            <th style="color:#333; border-bottom:2px solid #ccc;">GSIS Insurance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body" style="background:transparent;">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="main-content" id="view-repository">
+            <div style="margin-bottom: 24px;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
+                    Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.) and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
+                </p>
+            </div>
+            <div class="filter-toolbar" style="margin-bottom: 24px;">
+                <div class="search-wrapper" style="max-width: 100%;">
+                    <input type="text" class="search-input" id="repo-search" oninput="buildRepositoryTableRows()" placeholder="🔍 Filter repository by plate or driver name...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Plate No.</th>
+                            <th>Assigned Officer</th>
+                            <th>LTO Registration O.R. Document Attachment</th>
+                            <th>GSIS Insurance C.O.C. Document Attachment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repo-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="main-content" id="view-utilities">
+            <div class="utility-card">
+                <h3>Local JSON Registry Backup Utility</h3>
+                <p>Generate and download a localized snapshot file of the system registry records. Use this tool to preserve a flat-file version of the vehicle array on your computer.</p>
+                <button class="btn-action" onclick="exportLocalDatabaseToBackupFile()">📥 Download Local Snapshot (.json)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">Log New Fleet Vehicle</h3>
+                <button class="btn-close" id="btn-close-modal">&times;</button>
+            </div>
+            <form id="vehicle-form">
+                <input type="hidden" id="edit-idx" value="-1">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Plate / Converted Number</label>
+                            <input type="text" id="f-plate" class="form-control" placeholder="e.g. SAB-2391" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Acquisition Year</label>
+                            <input type="number" id="f-year" class="form-control" placeholder="e.g. 2019" min="1990" max="2030">
+                        </div>
+                        <div class="form-group span-2">
+                            <label class="form-label">Vehicle Make / Model Description</label>
+                            <input type="text" id="f-model" class="form-control" placeholder="e.g. Toyota Hilux D-4D CrewCab" required>
+                        </div>
+                        <div class="form-group span-2">
+                            <label class="form-label">Assigned Accountable Employee</label>
+                            <input type="text" id="f-driver" class="form-control" placeholder="Full name of engineer or officer">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LTO Registration Deadline</label>
+                            <input type="date" id="f-lto" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">GSIS Comprehensive Coverage Policy</label>
+                            <input type="date" id="f-gsis" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btn-close-modal-footer">Cancel</button>
+                    <button type="submit" class="btn-primary">💾 Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
         const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
 
@@ -52,13 +456,7 @@
                 if (!response.ok) throw new Error("Cloud fetch failed");
                 fleet = await response.json();
                 updateInterfaceMetricsAndAlerts();
-                
-                // Forces correct view construction dynamically depending on current active side menu
-                if (document.getElementById('side-nav-dashboard').classList.contains('active')) {
-                    buildRegistryTableRows();
-                } else if (document.getElementById('side-nav-repository').classList.contains('active')) {
-                    buildRepositoryTableRows();
-                }
+                buildRegistryTableRows();
             } catch (err) {
                 console.error("Database connection error:", err);
                 alert("Database connection sync alert. Using snapshot placeholders.");
@@ -225,8 +623,8 @@
                     <td><span class="status-badge ${ltoStat.statusClass}">${ltoStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.lto}</small></td>
                     <td><span class="status-badge ${gsisStat.statusClass}">${gsisStat.label}</span><br><small style="color:var(--text-muted); font-size:0.75rem;">${v.gsis}</small></td>
                     <td style="text-align:center;">
-                        <button type="button" class="btn-action" onclick="openFormModal(${index})">📝 Edit</button>
-                        <button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteVehicleRecord('${v.plate}')">🗑️ Delete</button>
+                        <button class="btn-action" onclick="openFormModal(${index})">📝 Edit</button>
+                        <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteVehicleRecord('${v.plate}')">🗑️ Delete</button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -282,26 +680,28 @@
                 let ltoCell = "";
                 let gsisCell = "";
 
-                // LTO String formatting layout
-                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    ltoCell = '<div style="display:flex; align-items:center; gap:8px;">' +
-                              '<a href="' + v.lto_document_attachment.trim() + '" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>' +
-                              '<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm(\'' + v.plate + '\', \'lto_document_attachment\')">🔄 Replace File</button>' +
-                              '<button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField(\'' + v.plate + '\', \'lto_document_attachment\')">🗑️ Remove File</button>' +
-                              '</div>';
+                if (v.lto_document_attachment) {
+                    ltoCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.lto_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace File</button>
+                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
                 } else {
-                    ltoCell = '<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm(\'' + v.plate + '\', \'lto_document_attachment\')">📤 Upload Scanned Copy</button>';
+                    ltoCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
 
-                // GSIS String formatting layout
-                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    gsisCell = '<div style="display:flex; align-items:center; gap:8px;">' +
-                               '<a href="' + v.gsis_document_attachment.trim() + '" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>' +
-                               '<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm(\'' + v.plate + '\', \'gsis_document_attachment\')">🔄 Replace File</button>' +
-                               '<button type="button" class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField(\'' + v.plate + '\', \'gsis_document_attachment\')">🗑️ Remove File</button>' +
-                               '</div>';
+                if (v.gsis_document_attachment) {
+                    gsisCell = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <a href="${v.gsis_document_attachment}" target="_blank" class="doc-link-anchor">📄 View Uploaded Document</a>
+                            <button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace File</button>
+                            <button class="btn-action" style="border-color:var(--accent-red); color:var(--accent-red);" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
                 } else {
-                    gsisCell = '<button type="button" class="btn-action btn-link-doc" onclick="triggerFileUploadForm(\'' + v.plate + '\', \'gsis_document_attachment\')">📤 Upload Scanned Copy</button>';
+                    gsisCell = `<button class="btn-action btn-link-doc" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
                 }
 
                 const row = document.createElement('tr');
@@ -315,7 +715,7 @@
             });
         }
 
-        async function triggerFileUploadForm(plate, fieldName) {
+        function triggerFileUploadForm(plate, fieldName) {
             currentUploadPlate = plate;
             currentUploadField = fieldName;
             document.getElementById('global-hidden-uploader').click();
@@ -324,12 +724,14 @@
         async function processSelectedFile(inputElement) {
             if (!inputElement.files || inputElement.files.length === 0) return;
             const targetFile = inputElement.files[0];
+            
             const fileExtension = targetFile.name.split('.').pop();
             const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
-            const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
             
             try {
+                // Upload document directly to Supabase Storage Storage Bucket 'records'
                 const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
+                
                 const uploadHeaders = {
                     "apikey": SUPABASE_KEY,
                     "Authorization": `Bearer ${SUPABASE_KEY}`,
@@ -342,32 +744,28 @@
                     body: targetFile
                 });
 
-                if (!uploadResponse.ok) throw new Error("Storage upload failed.");
+                if (!uploadResponse.ok) throw new Error("Storage attachment pipeline rejected payload.");
 
+                const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
+                
+                // Update vehicle record payload reference mapping
                 const patchPayload = {};
                 patchPayload[currentUploadField] = cleanPublicUrl;
 
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
+                const databaseSyncResponse = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
                     method: "PATCH",
                     headers: getHeaders(),
                     body: JSON.stringify(patchPayload)
                 });
 
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
+                if (!databaseSyncResponse.ok) throw new Error("Database reference sync step failed.");
 
                 alert("Document successfully committed to security repository vault.");
-                inputElement.value = ""; 
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
+                inputElement.value = ""; // Reset file selection input
+                fetchFleetFromCloud();
             } catch (err) {
                 console.error(err);
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
-                
-                inputElement.value = "";
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
+                alert("Pipeline Exception Intercepted: Database reference sync step failed.");
             }
         }
 
@@ -380,26 +778,19 @@
                 const patchPayload = {};
                 patchPayload[targetField] = null;
 
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
                     method: "PATCH",
                     headers: getHeaders(),
                     body: JSON.stringify(patchPayload)
                 });
 
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
+                if (!response.ok) throw new Error("Cloud clearing execution failed.");
 
                 alert("Document attachment reference successfully removed.");
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
+                fetchFleetFromCloud();
             } catch (err) {
-                console.error("Bypassing pipeline intercept error:", err);
-                
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
-                
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
+                console.error("Database updates error:", err);
+                alert("Failed to clear file reference. Check network state.");
             }
         }
 
@@ -447,12 +838,14 @@
             try {
                 let response;
                 if (idx > -1) {
+                    // Update operation via PATCH protocol mapping
                     response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
                         method: "PATCH",
                         headers: getHeaders(),
                         body: JSON.stringify(recordData)
                     });
                 } else {
+                    // New record creation pipeline via POST protocol mapping
                     recordData.lto_document_attachment = null;
                     recordData.gsis_document_attachment = null;
                     response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
@@ -462,15 +855,13 @@
                     });
                 }
 
-                if (!response.ok) throw new Error("Cloud mutations failed.");
+                if (!response.ok) throw new Error("Cloud mutations rejected data schema validation parameters.");
                 
                 closeFormModal();
                 fetchFleetFromCloud();
             } catch (err) {
                 console.error(err);
-                alert("Mutation operation completed successfully.");
-                closeFormModal();
-                fetchFleetFromCloud();
+                alert("Mutation operation error exception encountered.");
             }
         }
 
@@ -485,8 +876,7 @@
                 fetchFleetFromCloud();
             } catch (err) {
                 console.error(err);
-                alert("Database action updated successfully.");
-                fetchFleetFromCloud();
+                alert("Database action dropped: Delete validation missing privileges.");
             }
         }
 
