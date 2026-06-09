@@ -80,7 +80,7 @@
         .status-badge.expiring { background: rgba(245,158,11,0.2); color: var(--accent-amber); }
         .status-badge.expired { background: rgba(239,68,68,0.2); color: var(--accent-red); }
 
-        /* Buttons */
+        /* UI Controls */
         .btn-primary { background: var(--accent-green); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-action { background: var(--bg-dark); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; }
 
@@ -104,7 +104,7 @@
 </head>
 <body>
 
-    <!-- Hidden File Uploader -->
+    <!-- Hidden Uploader -->
     <input type="file" id="global-uploader" style="display: none;" onchange="processUpload(this)">
 
     <!-- Login -->
@@ -144,7 +144,7 @@
             <button class="btn-primary" onclick="openModal()">➕ Add New Vehicle</button>
         </div>
 
-        <!-- Dashboard View -->
+        <!-- View: Dashboard -->
         <div id="view-dashboard" class="main-content active-view">
             <div class="metrics-grid">
                 <div class="metric-card card-total" onclick="setGlobalFilter('all')">
@@ -192,30 +192,14 @@
             </div>
         </div>
 
-        <!-- Repository View -->
+        <!-- Other views kept for functionality -->
         <div id="view-repository" class="main-content">
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Plate No.</th>
-                            <th>Officer</th>
-                            <th>LTO Registration O.R.</th>
-                            <th>GSIS Insurance C.O.C.</th>
-                        </tr>
-                    </thead>
-                    <tbody id="repo-table"></tbody>
-                </table>
-            </div>
+            <div class="table-container"><table class="data-table"><thead><tr><th>Plate</th><th>Officer</th><th>LTO O.R.</th><th>GSIS C.O.C.</th></tr></thead><tbody id="repo-table"></tbody></table></div>
         </div>
-
-        <!-- Reports View -->
         <div id="view-reports" class="main-content">
             <button class="btn-primary" onclick="window.print()" style="margin-bottom:20px;">🖨️ Print Compliance Audit</button>
             <div id="report-print-area" style="background:#fff; color:#000; padding:40px; border-radius:8px;"><div id="report-table-target"></div></div>
         </div>
-
-        <!-- Utils View -->
         <div id="view-utils" class="main-content">
             <button class="btn-primary" onclick="exportData()">📥 Download JSON Snapshot</button>
         </div>
@@ -253,7 +237,6 @@
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
         let fleet = [];
         let currentStatusFilter = 'all';
-        let uploadTarget = { plate: '', field: '' };
 
         function doLogin(e) {
             e.preventDefault();
@@ -274,6 +257,7 @@
             } catch (err) { console.error(err); }
         }
 
+        // New Global Filter logic
         function setGlobalFilter(status) {
             currentStatusFilter = status;
             document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -293,14 +277,17 @@
                 const lto = getStatus(v.lto);
                 const gsis = getStatus(v.gsis);
 
+                // Calculate overall status for the row
                 let rowStatus = 'valid';
                 if (lto.state === 'expired' || gsis.state === 'expired') rowStatus = 'expired';
                 else if (lto.state === 'expiring' || gsis.state === 'expiring') rowStatus = 'expiring';
 
+                // Update Stats
                 if (rowStatus === 'expired') stats.expired++;
                 else if (rowStatus === 'expiring') stats.warning++;
                 else stats.valid++;
 
+                // Apply Filters (Search + Status Tab)
                 const matchesSearch = v.plate.toLowerCase().includes(search) || v.model.toLowerCase().includes(search) || (v.driver||'').toLowerCase().includes(search);
                 const matchesStatus = currentStatusFilter === 'all' || rowStatus === currentStatusFilter;
 
@@ -323,8 +310,8 @@
                         <tr>
                             <td class="td-plate">${v.plate}</td>
                             <td>${v.driver || '—'}</td>
-                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">Upload</button>`}</td>
-                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank" style="color:var(--accent-green)">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">Upload</button>`}</td>
+                            <td>${v.lto_document_attachment ? `<a href="${v.lto_document_attachment}" target="_blank">📄 View O.R.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','lto_document_attachment')">Upload</button>`}</td>
+                            <td>${v.gsis_document_attachment ? `<a href="${v.gsis_document_attachment}" target="_blank">📄 View C.O.C.</a>` : `<button class="btn-action" onclick="triggerUpload('${v.plate}','gsis_document_attachment')">Upload</button>`}</td>
                         </tr>
                     `;
                 }
@@ -353,21 +340,8 @@
 
             try {
                 let res;
-                if (editId) { 
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plate)}`, { 
-                        method: 'PATCH', 
-                        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, 
-                        body: JSON.stringify(payload) 
-                    }); 
-                } else { 
-                    payload.lto_document_attachment = null; 
-                    payload.gsis_document_attachment = null; 
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, { 
-                        method: 'POST', 
-                        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" }, 
-                        body: JSON.stringify(payload) 
-                    }); 
-                }
+                if (editId) { res = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) }); }
+                else { payload.lto_document_attachment = null; payload.gsis_document_attachment = null; res = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" }, body: JSON.stringify(payload) }); }
                 if (!res.ok) throw new Error("Update failed.");
                 closeModal(); loadData();
             } catch (err) { alert(err.message); }
@@ -375,7 +349,7 @@
 
         async function deleteVehicle(plate) {
             if (!confirm(`Remove ${plate}?`)) return;
-            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plate)}`, { method: 'DELETE', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
+            await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${plate}`, { method: 'DELETE', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
             loadData();
         }
 
@@ -406,54 +380,19 @@
 
         function closeModal() { document.getElementById('modal-form').style.display = 'none'; }
         
-        function triggerUpload(plate, field) { 
-            uploadTarget = { plate, field }; 
-            document.getElementById('global-uploader').click(); 
-        }
+        function triggerUpload(plate, field) { uploadTarget = { plate, field }; document.getElementById('global-uploader').click(); }
         
-        // STEP 3: THE IMPROVED UPLOAD FUNCTION
         async function processUpload(input) {
             if (!input.files[0]) return;
             const file = input.files[0];
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${uploadTarget.plate}_${Date.now()}.${fileExt}`;
-            const path = fileName;
-
+            const path = `docs/${uploadTarget.plate}_${Date.now()}.${file.name.split('.').pop()}`;
             try {
-                // 1. Upload to Storage records bucket
-                const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, { 
-                    method: 'POST', 
-                    headers: { 
-                        "apikey": SUPABASE_KEY, 
-                        "Authorization": `Bearer ${SUPABASE_KEY}`, 
-                        "Content-Type": file.type,
-                        "x-upsert": "true" 
-                    }, 
-                    body: file 
-                });
-                
-                if (!upRes.ok) {
-                    const errorData = await upRes.json();
-                    throw new Error(`Upload Failed: ${errorData.message || upRes.statusText}`);
-                }
-
-                // 2. Patch database with public URL
+                await fetch(`${SUPABASE_URL}/storage/v1/object/records/${path}`, { method: 'POST', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type }, body: file });
                 const url = `${SUPABASE_URL}/storage/v1/object/public/records/${path}`;
-                const patch = {}; 
-                patch[uploadTarget.field] = url;
-                
-                const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(uploadTarget.plate)}`, { 
-                    method: 'PATCH', 
-                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, 
-                    body: JSON.stringify(patch) 
-                });
-
-                if (!dbRes.ok) throw new Error("Linked failed.");
-                
-                alert("Upload successful!");
+                const patch = {}; patch[uploadTarget.field] = url;
+                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${uploadTarget.plate}`, { method: 'PATCH', headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(patch) });
                 loadData();
             } catch (err) { alert(err.message); }
-            finally { input.value = ""; }
         }
 
         function buildReport() {
