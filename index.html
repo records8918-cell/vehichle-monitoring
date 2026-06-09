@@ -810,28 +810,44 @@
             }
         }
 
-        function openFormModal(index = -1) {
+       function openFormModal(index = -1) {
             const modal = document.getElementById('form-modal');
             const form = document.getElementById('vehicle-form');
-            form.reset();
+            if (form) form.reset();
+
+            // Safely grab form inputs to prevent background script crashes
+            const modalTitle = document.getElementById('modal-title');
+            const editIdx = document.getElementById('edit-idx');
+            const fPlate = document.getElementById('f-plate');
+            const fYear = document.getElementById('f-year');
+            const fModel = document.getElementById('f-model');
+            const fDriver = document.getElementById('f-driver');
+            const fLto = document.getElementById('f-lto');
+            const fGsis = document.getElementById('f-gsis');
 
             if (index > -1) {
                 const v = fleet[index];
-                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
-                document.getElementById('edit-idx').value = index;
-                document.getElementById('f-plate').value = v.plate;
-                document.getElementById('f-plate').disabled = true;
-                document.getElementById('f-year').value = v.year;
-                document.getElementById('f-model').value = v.model;
-                document.getElementById('f-driver').value = v.driver || '';
-                document.getElementById('f-lto').value = v.lto;
-                document.getElementById('f-gsis').value = v.gsis;
+                if (modalTitle) modalTitle.innerText = "Modify Existing Fleet Record";
+                if (editIdx) editIdx.value = index;
+                if (fPlate) {
+                    fPlate.value = v.plate || '';
+                    fPlate.disabled = true; // Lock plate when editing
+                }
+                if (fYear) fYear.value = v.year || '';
+                if (fModel) fModel.value = v.model || '';
+                if (fDriver) fDriver.value = v.driver || '';
+                if (fLto) fLto.value = v.lto || '';
+                if (fGsis) fGsis.value = v.gsis || '';
             } else {
-                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
-                document.getElementById('edit-idx').value = -1;
-                document.getElementById('f-plate').disabled = false;
+                if (modalTitle) modalTitle.innerText = "Log New Fleet Vehicle";
+                if (editIdx) editIdx.value = -1;
+                if (fPlate) {
+                    fPlate.value = '';
+                    fPlate.disabled = false; // Allow typing for new entries
+                }
             }
-            modal.style.display = "flex";
+            
+            if (modal) modal.style.display = "flex";
         }
 
         function closeFormModal() {
