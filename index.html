@@ -1,21 +1,3 @@
-The chaotic squeezing in your screenshot happened because of a common Flexbox
-calculation error in Tailwind. When combining flex-grow with a width constraint
-(w-full) next to a fixed-width sidebar, the browser's layout engine can
-miscalculate the workspace boundaries and squeeze the main panel down to almost
-zero width, making everything stack vertically.
-
-I have corrected this by applying standard layout architecture:
-
-1.  Pristine Desktop Bounds: Replaced the workspace flex boundaries with flex-1
-    min-w-0. This forces the main dashboard to dynamically expand to occupy 100%
-    of the remaining horizontal screen space next to the sidebar.
-2.  Fixed the False "9999 Days Overdue" Alert: Prevented empty schedules from
-    triggering active warnings. Now, if a chainsaw or concrete cutter has no
-    scheduled maintenance date, the alert panel will not display a false overdue
-    notice.
-
-Here is your complete, fully corrected, and completely functional master HTML
-code:
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
