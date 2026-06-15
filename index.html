@@ -293,6 +293,9 @@
             </div>
             <form id="vehicle-form" class="flex-grow flex flex-col overflow-hidden">
                 <input type="hidden" id="edit-idx" value="-1">
+                <!-- Hidden legacy history output synced behind scenes -->
+                <textarea id="f-history" class="hidden"></textarea>
+
                 <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
@@ -316,7 +319,7 @@
                             <input type="text" id="f-engine" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2KD-123456">
                         </div>
                         <div class="col-span-2 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Accountable Employee</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Accountable Employee (Driver)</label>
                             <input type="text" id="f-driver" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="Full name of engineer or officer">
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
@@ -324,16 +327,34 @@
                             <input type="date" id="f-lto" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Comprehensive Policy</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Insurance Renewal</label>
                             <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
                         </div>
-                        <div class="col-span-2 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Next Preventive Maintenance Schedule (PMS)</label>
+                        <div class="col-span-2 flex flex-col gap-1.5 border-t border-brand-border pt-4">
+                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
                             <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                         </div>
-                        <div class="col-span-2 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Repair Logs & Maintenance History Log</label>
-                            <textarea id="f-history" rows="4" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all resize-none" placeholder="Format: YYYY-MM-DD: Repair completed - Notes (One record per line)"></textarea>
+
+                        <!-- Mechanic Structured Logger -->
+                        <div class="col-span-2 bg-brand-dark/40 border border-brand-border rounded-xl p-4 space-y-4">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">➕ Mechanic Maintenance History Logger</span>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="col-span-3 sm:col-span-1">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Date of Repair</label>
+                                    <input type="date" id="new-log-date" class="w-full bg-brand-dark border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                                </div>
+                                <div class="col-span-3 sm:col-span-2">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Service Maintenance Details</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="new-log-activity" class="flex-grow bg-brand-dark border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Changed engine oil, replaced filters">
+                                        <button type="button" onclick="addMaintenanceLogEntry()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all shrink-0">➕ Add Log</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-brand-border/40 pt-4">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Repair Logs & Maintenance Timeline</span>
+                                <div id="history-display-timeline" class="space-y-3 max-h-48 overflow-y-auto pr-2 text-xs"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -911,6 +932,10 @@
             const form = document.getElementById('vehicle-form');
             form.reset();
 
+            // Set dynamic logger default date to today
+            document.getElementById('new-log-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('new-log-activity').value = '';
+
             if (index > -1) {
                 const v = fleet[index];
                 document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
@@ -926,13 +951,68 @@
                 document.getElementById('f-gsis').value = v.gsis;
                 document.getElementById('f-pms').value = v.next_pms || '';
                 document.getElementById('f-history').value = v.repair_history || '';
+                
+                renderHistoryTimeline(v.repair_history || '');
             } else {
                 document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
                 document.getElementById('edit-idx').value = -1;
                 document.getElementById('f-plate').disabled = false;
+                renderHistoryTimeline('');
             }
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        }
+
+        function renderHistoryTimeline(historyString) {
+            const timelineContainer = document.getElementById('history-display-timeline');
+            timelineContainer.innerHTML = "";
+
+            if (!historyString || historyString.trim() === "") {
+                timelineContainer.innerHTML = `<span class="italic text-slate-500 block py-2">No repair history logged for this vehicle.</span>`;
+                return;
+            }
+
+            const logs = historyString.split('\n').filter(line => line.trim() !== "");
+            
+            logs.forEach(log => {
+                const parts = log.split(':');
+                const dateLabel = parts[0] ? parts[0].trim() : '—';
+                const activityLabel = parts.slice(1).join(':') ? parts.slice(1).join(':').trim() : '—';
+
+                const logItem = document.createElement('div');
+                logItem.className = "flex gap-3 items-start border-l border-brand-border pl-4 relative ml-2";
+                logItem.innerHTML = `
+                    <div class="absolute w-2 h-2 rounded-full bg-emerald-500 -left-[4.5px] top-1.5"></div>
+                    <div>
+                        <span class="font-mono text-[10px] font-bold text-slate-400 block">${dateLabel}</span>
+                        <span class="text-slate-200 mt-0.5 block">${activityLabel}</span>
+                    </div>
+                `;
+                timelineContainer.appendChild(logItem);
+            });
+        }
+
+        function addMaintenanceLogEntry() {
+            const dateVal = document.getElementById('new-log-date').value;
+            const activityVal = document.getElementById('new-log-activity').value.trim();
+
+            if (!activityVal) {
+                alert("Please enter maintenance service details before logging.");
+                return;
+            }
+
+            const rawTextarea = document.getElementById('f-history');
+            const newEntry = `${dateVal}: ${activityVal}`;
+
+            if (rawTextarea.value.trim() === "") {
+                rawTextarea.value = newEntry;
+            } else {
+                rawTextarea.value = newEntry + "\n" + rawTextarea.value;
+            }
+
+            // Instantly redraw the mechanic timeline inside the modal
+            renderHistoryTimeline(rawTextarea.value);
+            document.getElementById('new-log-activity').value = ""; // Clear activity input field
         }
 
         function closeFormModal() {
