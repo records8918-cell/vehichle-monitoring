@@ -1,28 +1,21 @@
-To make your system fully compatible with smartphones and tablets, I have
-implemented a complete mobile responsive redesign of the interface [1].
+The chaotic squeezing in your screenshot happened because of a common Flexbox
+calculation error in Tailwind. When combining flex-grow with a width constraint
+(w-full) next to a fixed-width sidebar, the browser's layout engine can
+miscalculate the workspace boundaries and squeeze the main panel down to almost
+zero width, making everything stack vertically.
 
-📱 Responsive Upgrades:
+I have corrected this by applying standard layout architecture:
 
-1.  Slide-Out Mobile Drawer (Hamburger Menu): On desktop, the sidebar navigation
-    remains statically pinned to the left. On mobile devices, it automatically
-    collapses and can be opened/closed via a hamburger menu button [1]. It
-    smoothly slides out over a darkened backdrop [1].
-2.  Compact Metric Cards Grid: Swapped the metric cards on mobile to display as
-    an elegant 2-column grid instead of stacking vertically [1]. This lets you
-    view all statistics without scrolling down [1].
-3.  Mobile-First Registry Cards: Responsive tables are notoriously hard to read
-    on touch screens. I created a dynamic mobile card view that replaces the
-    dashboard table on small screens:
-      - Each vehicle/equipment has its own self-contained card showing
-        Plate/Control No, Category, Operational Status, Driver, Model details,
-        and Age [1].
-      - It features clear, easily clickable touch action buttons for Edit,
-        Profile, and Delete.
-4.  Fluid Forms & Modals: Enhanced the input modals to automatically adapt to
-    single-column inputs on phone screens, keeping inputs wide and easy to type
-    into [1].
+1.  Pristine Desktop Bounds: Replaced the workspace flex boundaries with flex-1
+    min-w-0. This forces the main dashboard to dynamically expand to occupy 100%
+    of the remaining horizontal screen space next to the sidebar.
+2.  Fixed the False "9999 Days Overdue" Alert: Prevented empty schedules from
+    triggering active warnings. Now, if a chainsaw or concrete cutter has no
+    scheduled maintenance date, the alert panel will not display a false overdue
+    notice.
 
-Complete, Responsive HTML Code:
+Here is your complete, fully corrected, and completely functional master HTML
+code:
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
@@ -85,7 +78,7 @@ Complete, Responsive HTML Code:
         }
     </style>
 </head>
-<body class="h-full text-slate-100 flex overflow-hidden font-sans">
+<body class="h-screen w-screen text-slate-100 flex bg-brand-dark overflow-hidden font-sans">
 
     <!-- Global File Input for Repository Uploads -->
     <input type="file" id="global-hidden-uploader" class="hidden" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
@@ -125,7 +118,7 @@ Complete, Responsive HTML Code:
     <div id="sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
     <!-- Sidebar Navigation (Drawer Collapsible on Mobile) -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static">
         <div>
             <div class="p-6 border-b border-brand-border flex items-center justify-between">
                 <div>
@@ -162,8 +155,8 @@ Complete, Responsive HTML Code:
         </div>
     </div>
 
-    <!-- Workspace Area -->
-    <div class="flex-grow flex flex-col overflow-hidden bg-brand-dark w-full">
+    <!-- Workspace Area (Fixed widths dynamically adjusted to prevent shrinking) -->
+    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full">
         <!-- Top Bar Header -->
         <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
             <div class="flex items-center gap-3">
@@ -480,7 +473,7 @@ Complete, Responsive HTML Code:
         </div>
     </div>
 
-    <!-- Single Vehicle Profile Print Sheet -->
+    <!-- Single Vehicle Profile Print Sheet (Only visible during print with 'printing-single-profile' active on <body>) -->
     <div id="print-only-profile" class="hidden print-only p-12 bg-white text-slate-900 border border-slate-200 rounded-xl max-w-4xl mx-auto font-sans">
         <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
             <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
@@ -611,9 +604,9 @@ Complete, Responsive HTML Code:
             document.querySelectorAll('#filter-category-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-category-group button').forEach(b => {
-                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap";
                     });
-                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap";
                     categoryFilter = btn.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -769,8 +762,8 @@ Complete, Responsive HTML Code:
                 const gsisStat = evaluateDateStatus(v.gsis);
                 const pmsStat = evaluatePmsStatus(v.next_pms);
 
-                let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || pmsStat.statusClass === 'expired';
-                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || pmsStat.statusClass === 'expiring') && !isExpired;
+                let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || (v.next_pms && pmsStat.statusClass === 'expired');
+                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || (v.next_pms && pmsStat.statusClass === 'expiring')) && !isExpired;
 
                 if (isExpired) expiredCount++;
                 else if (isWarning) warningCount++;
@@ -778,10 +771,10 @@ Complete, Responsive HTML Code:
 
                 if (v.lto && ltoStat.statusClass === 'expired') ltoExpired++;
                 if (v.gsis && gsisStat.statusClass === 'expired') gsisExpired++;
-                if (pmsStat.statusClass === 'expired') pmsOverdue++;
+                if (v.next_pms && pmsStat.statusClass === 'expired') pmsOverdue++;
                 if (v.lto && ltoStat.statusClass === 'expiring') ltoWarning++;
                 if (v.gsis && gsisStat.statusClass === 'expiring') gsisWarning++;
-                if (pmsStat.statusClass === 'expiring') pmsWarning++;
+                if (v.next_pms && pmsStat.statusClass === 'expiring') pmsWarning++;
 
                 if (v.lto && ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
@@ -813,7 +806,7 @@ Complete, Responsive HTML Code:
                     alertsHook.appendChild(item);
                 }
 
-                if (pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                if (v.next_pms && pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-emerald-500 text-sm text-slate-300";
@@ -971,8 +964,8 @@ Complete, Responsive HTML Code:
                         <div>
                             <div class="font-mono font-bold text-white tracking-wide text-lg">${v.plate}</div>
                             <div class="flex gap-1.5 mt-1.5">
-                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${statusConfig.colors}">${statusConfig.label}</span>
-                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center ${statusConfig.colors}">${statusConfig.label}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
                             </div>
                         </div>
                         <div class="text-right">
