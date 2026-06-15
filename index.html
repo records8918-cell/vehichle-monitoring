@@ -1,3 +1,29 @@
+To make your system fully compatible with smartphones and tablets, I have
+implemented a complete mobile responsive redesign of the interface [1].
+
+📱 Responsive Upgrades:
+
+1.  Slide-Out Mobile Drawer (Hamburger Menu): On desktop, the sidebar navigation
+    remains statically pinned to the left. On mobile devices, it automatically
+    collapses and can be opened/closed via a hamburger menu button [1]. It
+    smoothly slides out over a darkened backdrop [1].
+2.  Compact Metric Cards Grid: Swapped the metric cards on mobile to display as
+    an elegant 2-column grid instead of stacking vertically [1]. This lets you
+    view all statistics without scrolling down [1].
+3.  Mobile-First Registry Cards: Responsive tables are notoriously hard to read
+    on touch screens. I created a dynamic mobile card view that replaces the
+    dashboard table on small screens:
+      - Each vehicle/equipment has its own self-contained card showing
+        Plate/Control No, Category, Operational Status, Driver, Model details,
+        and Age [1].
+      - It features clear, easily clickable touch action buttons for Edit,
+        Profile, and Delete.
+4.  Fluid Forms & Modals: Enhanced the input modals to automatically adapt to
+    single-column inputs on phone screens, keeping inputs wide and easy to type
+    into [1].
+
+Complete, Responsive HTML Code:
+
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
@@ -95,12 +121,20 @@
         </div>
     </div>
 
-    <!-- Sidebar Navigation -->
-    <div class="w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0">
+    <!-- Mobile Navigation Backdrop Drawer Overlay -->
+    <div id="sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+    <!-- Sidebar Navigation (Drawer Collapsible on Mobile) -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0">
         <div>
-            <div class="p-6 border-b border-brand-border">
-                <h2 class="text-lg font-bold tracking-tight text-white">FLEET MONITOR PH</h2>
-                <span class="text-xs font-semibold text-emerald-500 uppercase tracking-wider block mt-1">City Engineering Office</span>
+            <div class="p-6 border-b border-brand-border flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold tracking-tight text-white">FLEET MONITOR PH</h2>
+                    <span class="text-xs font-semibold text-emerald-500 uppercase tracking-wider block mt-1">City Engineering Office</span>
+                </div>
+                <button onclick="toggleMobileSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
             <div class="py-6 px-3 space-y-1">
                 <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Operations</span>
@@ -129,44 +163,51 @@
     </div>
 
     <!-- Workspace Area -->
-    <div class="flex-grow flex flex-col overflow-hidden bg-brand-dark">
+    <div class="flex-grow flex flex-col overflow-hidden bg-brand-dark w-full">
         <!-- Top Bar Header -->
-        <div class="h-16 border-b border-brand-border px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
-            <h1 id="workspace-view-header-title" class="text-xl font-bold text-white tracking-wide">Active Fleet Registry</h1>
-            <button class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 px-4 rounded-lg shadow-lg shadow-emerald-900/10 flex items-center gap-2 transition-all" id="menu-add-vehicle">
+        <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Trigger Button -->
+                <button onclick="toggleMobileSidebar(true)" class="md:hidden text-slate-300 hover:text-white p-2 -ml-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h1 id="workspace-view-header-title" class="text-base sm:text-xl font-bold text-white tracking-wide truncate">Active Fleet Registry</h1>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold py-2 px-3 sm:py-2 sm:px-4 rounded-lg shadow-lg shadow-emerald-900/10 flex items-center gap-1 sm:gap-2 transition-all" id="menu-add-vehicle">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Add Vehicle / Equipment
+                <span class="hidden sm:inline">Add Vehicle / Equipment</span>
+                <span class="sm:hidden">Add New</span>
             </button>
         </div>
 
         <!-- Dashboard View Container -->
-        <div class="flex-grow p-8 overflow-y-auto no-print space-y-8" id="view-dashboard">
-            <!-- Metrics Segment -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="bg-brand-card border-t-4 border-t-blue-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registry</span>
-                    <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-total">0</span>
-                    <span class="text-xs text-slate-400 mt-1 block">Active Units Logged</span>
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto no-print space-y-6 sm:space-y-8" id="view-dashboard">
+            <!-- Metrics Segment (2 Columns on Mobile, 4 Columns on Desktop) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div class="bg-brand-card border-t-4 border-t-blue-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registry</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-total">0</span>
+                    <span class="text-[10px] text-slate-400 mt-1 block">Active Units Logged</span>
                 </div>
-                <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
-                    <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-expired">0</span>
-                    <span class="text-xs text-rose-300 mt-1 block font-medium" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
+                <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-expired">0</span>
+                    <span class="text-[9px] sm:text-xs text-rose-300 mt-1 block font-medium truncate" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
-                <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block font-medium">Expiring & Due</span>
-                    <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-warning">0</span>
-                    <span class="text-xs text-amber-300 mt-1 block" id="stat-warning-sub">0 LTO • 0 GSIS • 0 PMS</span>
+                <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-widest block font-medium">Expiring & Due</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-warning">0</span>
+                    <span class="text-[9px] sm:text-xs text-amber-300 mt-1 block truncate" id="stat-warning-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
-                <div class="bg-brand-card border-t-4 border-t-emerald-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block">Fully Compliant</span>
-                    <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-valid">0</span>
-                    <span class="text-xs text-emerald-400 mt-1 block">PMS & Docs Up-to-Date</span>
+                <div class="bg-brand-card border-t-4 border-t-emerald-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest block">Fully Compliant</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-valid">0</span>
+                    <span class="text-[10px] text-emerald-400 mt-1 block">PMS & Docs Up-to-Date</span>
                 </div>
             </div>
 
             <!-- Active Expiring Alerts Block (Now Scrollable & Collapsible) -->
-            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6 hidden space-y-4" id="alerts-container-box">
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 sm:p-6 hidden space-y-4" id="alerts-container-box">
                 <div class="flex items-center justify-between gap-2 text-amber-500 font-bold text-xs uppercase tracking-widest">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -180,44 +221,44 @@
             </div>
 
             <!-- Filter & Search Toolbar (Restored Segments & Category Support) -->
-            <div class="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
+            <div class="bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
                 <div class="w-full xl:max-w-xs relative">
                     <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search plate, model, driver...">
                     <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <div class="flex flex-wrap gap-6">
-                    <div>
+                <div class="flex flex-wrap gap-6 w-full xl:w-auto">
+                    <div class="w-full sm:w-auto">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type</span>
-                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-category-group">
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All Types</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Service Vehicle">Vehicles</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Heavy Equipment">Heavy</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Light Equipment">Light / Tools</button>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-category-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
                         </div>
                     </div>
-                    <div>
+                    <div class="w-full sm:w-auto">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
-                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-lto-group">
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-lto-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
-                    <div>
+                    <div class="w-full sm:w-auto">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
-                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-gsis-group">
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-gsis-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Database Data Table Wrapper -->
-            <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
+            <!-- Database Data Table Wrapper (Hidden on Mobile) -->
+            <div class="hidden md:block bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
@@ -236,54 +277,59 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Mobile Card List Container (Only visible on small devices) -->
+            <div id="registry-mobile-list" class="block md:hidden space-y-4"></div>
         </div>
 
         <!-- Executive Compliance Report View Container -->
-        <div class="flex-grow p-8 overflow-y-auto hidden" id="view-reports">
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden" id="view-reports">
             <div class="mb-6 no-print">
                 <button class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm shadow-md transition-all" onclick="triggerExecutiveReportPrint()">
                     🖨️ Print Official Report
                 </button>
             </div>
-            <div class="print-exec-layout print-card bg-white text-slate-900 p-12 rounded-xl shadow-xl max-w-5xl mx-auto border border-slate-200">
+            <div class="print-exec-layout print-card bg-white text-slate-900 p-6 sm:p-12 rounded-xl shadow-xl max-w-5xl mx-auto border border-slate-200">
                 <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
-                    <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
-                    <p class="text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
-                    <p class="text-lg font-extrabold text-emerald-800 tracking-wide mt-6 uppercase">Executive Fleet Compliance & Maintenance Report</p>
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
+                    <p class="text-sm sm:text-lg font-extrabold text-emerald-800 tracking-wide mt-4 sm:mt-6 uppercase">Executive Fleet Compliance & Maintenance Report</p>
                 </div>
                 <div class="text-right text-xs font-semibold text-slate-500 mb-6 italic" id="print-timestamp">Generated on: --</div>
-                <div class="grid grid-cols-3 gap-6 mb-8 no-print">
-                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Active Units</span>
-                        <span class="text-2xl font-extrabold text-slate-800 mt-1 block" id="rep-total">0</span>
+                <div class="grid grid-cols-3 gap-4 sm:gap-6 mb-8 no-print">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Active Units</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-slate-800 mt-1 block" id="rep-total">0</span>
                     </div>
-                    <div class="bg-rose-50 border border-rose-100 rounded-lg p-4 text-center">
-                        <span class="text-[10px] font-bold text-rose-500 uppercase tracking-wider block">Expired / Overdue Units</span>
-                        <span class="text-2xl font-extrabold text-rose-700 mt-1 block" id="rep-expired">0</span>
+                    <div class="bg-rose-50 border border-rose-100 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-rose-500 uppercase tracking-wider block">Expired / Overdue</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-rose-700 mt-1 block" id="rep-expired">0</span>
                     </div>
-                    <div class="bg-amber-50 border border-amber-100 rounded-lg p-4 text-center">
-                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Pending Warnings / Due PMS</span>
-                        <span class="text-2xl font-extrabold text-amber-700 mt-1 block" id="rep-warning">0</span>
+                    <div class="bg-amber-50 border border-amber-100 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Pending / Due PMS</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-amber-700 mt-1 block" id="rep-warning">0</span>
                     </div>
                 </div>
-                <table class="w-full text-left text-xs text-slate-800 print-table border border-slate-200 rounded-lg overflow-hidden">
-                    <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
-                        <tr>
-                            <th class="py-3 px-4">Plate No. & Status</th>
-                            <th class="py-3 px-4">Identification Details (Chassis/Engine/Age)</th>
-                            <th class="py-3 px-4">Driver</th>
-                            <th class="py-3 px-4">LTO Status</th>
-                            <th class="py-3 px-4">GSIS Status</th>
-                            <th class="py-3 px-4">Next PMS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-table-body" class="divide-y divide-slate-200"></tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-800 print-table border border-slate-200 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">Plate No. & Status</th>
+                                <th class="py-3 px-4">Identification Details</th>
+                                <th class="py-3 px-4">Driver</th>
+                                <th class="py-3 px-4">LTO Status</th>
+                                <th class="py-3 px-4">GSIS Status</th>
+                                <th class="py-3 px-4">Next PMS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-table-body" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- Cloud Documentation Vault View Container -->
-        <div class="flex-grow p-8 overflow-y-auto hidden space-y-6" id="view-repository">
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden space-y-6" id="view-repository">
             <p class="text-sm text-slate-400 leading-relaxed max-w-3xl">
                 Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.), LTO Certificates of Registration (C.R.), and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
             </p>
@@ -293,23 +339,25 @@
                 </div>
             </div>
             <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
-                        <tr>
-                            <th class="py-4 px-6">Plate No.</th>
-                            <th class="py-4 px-6">Assigned Officer</th>
-                            <th class="py-4 px-6">LTO Official Receipt (O.R.)</th>
-                            <th class="py-4 px-6">LTO Certificate of Registration (C.R.)</th>
-                            <th class="py-4 px-6">GSIS Insurance (C.O.C.)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="repo-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
+                            <tr>
+                                <th class="py-4 px-6">Plate No.</th>
+                                <th class="py-4 px-6">Assigned Officer</th>
+                                <th class="py-4 px-6">LTO Official Receipt (O.R.)</th>
+                                <th class="py-4 px-6">LTO Certificate of Registration (C.R.)</th>
+                                <th class="py-4 px-6">GSIS Insurance (C.O.C.)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repo-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- System Utilities View Container -->
-        <div class="flex-grow p-8 overflow-y-auto hidden" id="view-utilities">
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden" id="view-utilities">
             <div class="bg-brand-card border border-brand-border p-6 rounded-xl max-w-2xl shadow-lg space-y-4">
                 <h3 class="text-lg font-bold text-white">Local JSON Registry Backup Utility</h3>
                 <p class="text-sm text-slate-400 leading-relaxed">
@@ -334,7 +382,7 @@
                 <!-- Hidden legacy history output synced behind scenes -->
                 <textarea id="f-history" class="hidden"></textarea>
 
-                <div class="p-6 space-y-4 overflow-y-auto flex-grow max-h-[70vh]">
+                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Control / Serial No.</label>
@@ -349,7 +397,7 @@
                             <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux / Stihl MS 250 Chainsaw" required>
                         </div>
                         <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Vehicle Status</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Status</label>
                             <select id="f-status" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                                 <option value="Operational">🟢 Operational</option>
                                 <option value="Under Repair">🔴 Under Repair</option>
@@ -386,23 +434,23 @@
                             <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                         </div>
                         <div class="col-span-2 flex flex-col gap-1.5 border-t border-brand-border pt-4">
-                            <div class="flex items-center justify-between">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
                                 <!-- Quick Presets -->
-                                <div class="flex gap-1" id="pms-quick-presets">
+                                <div class="flex flex-wrap gap-1" id="pms-quick-presets">
                                     <button type="button" onclick="setQuickPmsPreset(6)" class="bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Standard (6 mos)</button>
-                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy Use (3 mos)</button>
-                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Light Tool (12 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy (3 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Tool (12 mos)</button>
                                 </div>
                             </div>
-                            <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                            <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all mt-1">
                             <span class="text-[10px] text-slate-400 mt-1 italic leading-relaxed">
                                 ℹ️ <strong>Baguio Motorpool Guideline:</strong> Change Oil, Oil Filter, and Fuel Filter are typically serviced every <strong>6 months</strong> (or every <strong>5,000 km</strong> for standard oil / <strong>10,000 km</strong> for synthetic oil).
                             </span>
                         </div>
 
                         <!-- Mechanic Structured Logger -->
-                        <div class="col-span-2 bg-brand-dark/40 border border-brand-border rounded-xl p-4 space-y-4">
+                        <div class="col-span-2 bg-brand-dark/40 border border-brand-border rounded-xl p-3 sm:p-4 space-y-4">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">➕ Mechanic Maintenance History Logger</span>
                             <div class="grid grid-cols-3 gap-3">
                                 <div class="col-span-3 sm:col-span-1">
@@ -432,7 +480,7 @@
         </div>
     </div>
 
-    <!-- Single Vehicle Profile Print Sheet (Only visible during print with 'printing-single-profile' active on <body>) -->
+    <!-- Single Vehicle Profile Print Sheet -->
     <div id="print-only-profile" class="hidden print-only p-12 bg-white text-slate-900 border border-slate-200 rounded-xl max-w-4xl mx-auto font-sans">
         <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
             <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
@@ -594,7 +642,22 @@
             });
         }
 
+        function toggleMobileSidebar(isOpen) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (isOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
         function switchActiveView(viewId) {
+            toggleMobileSidebar(false); // Close mobile menu drawer automatically on navigation click
+            
             const views = ['dashboard', 'reports', 'repository', 'utilities'];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
@@ -630,7 +693,7 @@
         }
 
         function evaluateDateStatus(targetDateStr, warningWindow = WARNING_WINDOW_DAYS) {
-            // Safe fallback: non-road assets do not require registration and output "N/A" rather than trigger alerts
+            // Safe fallback: non-road assets do not require LTO registration and output "N/A"
             if (!targetDateStr) return { label: "N/A", statusClass: "valid", colorClass: "text-slate-500 bg-slate-800/20 border border-slate-700/20", daysRemaining: 9999 };
             const targetDate = new Date(targetDateStr);
             const today = new Date();
@@ -777,20 +840,6 @@
             document.getElementById('alerts-container-box').classList.toggle('hidden', alertItemsCount === 0);
         }
 
-        function toggleAlertsPanel() {
-            const listHook = document.getElementById('alerts-list-hook');
-            const btnText = document.getElementById('alerts-toggle-btn-text');
-            alertsPanelCollapsed = !alertsPanelCollapsed;
-
-            if (alertsPanelCollapsed) {
-                listHook.classList.add('hidden');
-                btnText.innerText = "Expand";
-            } else {
-                listHook.classList.remove('hidden');
-                btnText.innerText = "Collapse";
-            }
-        }
-
         function getStatusBadgeConfig(status) {
             const cleanStatus = status ? status.trim() : "Operational";
             switch(cleanStatus) {
@@ -818,6 +867,9 @@
             const query = document.getElementById('table-search').value.toLowerCase();
             const tbody = document.getElementById('registry-table-body');
             tbody.innerHTML = "";
+
+            const mobileContainer = document.getElementById('registry-mobile-list');
+            mobileContainer.innerHTML = "";
 
             fleet.forEach((v, index) => {
                 const ltoStat = evaluateDateStatus(v.lto);
@@ -864,6 +916,7 @@
                     }
                 }
 
+                // 1. Build Desktop Row
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-800/20 transition-all";
                 row.innerHTML = `
@@ -909,6 +962,63 @@
                     </td>
                 `;
                 tbody.appendChild(row);
+
+                // 2. Build Mobile Touch Card
+                const card = document.createElement('div');
+                card.className = "bg-brand-card border border-brand-border rounded-xl p-4 space-y-4 shadow-md";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="font-mono font-bold text-white tracking-wide text-lg">${v.plate}</div>
+                            <div class="flex gap-1.5 mt-1.5">
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${statusConfig.colors}">${statusConfig.label}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] text-slate-400 block">Custodian/Driver</span>
+                            <strong class="text-xs text-slate-200 block truncate max-w-[120px]">${v.driver || 'Unassigned'}</strong>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs bg-slate-900/40 p-3 rounded-lg border border-brand-border/40">
+                        <div class="col-span-2">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Model Description</span>
+                            <span class="text-white font-medium block">${v.model}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Acquisition Age</span>
+                            <span class="text-white font-mono block">${ageDisplay}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Next Maintenance</span>
+                            <span class="font-bold block text-[11px] ${pmsStat.colorClass.split(' ')[0]}">${pmsStat.label}</span>
+                        </div>
+                        ${v.chassis_no ? `
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Chassis Number</span>
+                            <span class="text-slate-300 font-mono text-[10px] break-all block">${v.chassis_no}</span>
+                        </div>` : ''}
+                        ${v.engine_no ? `
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Engine / Serial</span>
+                            <span class="text-slate-300 font-mono text-[10px] break-all block">${v.engine_no}</span>
+                        </div>` : ''}
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 border-t border-brand-border/40 pt-3">
+                        <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-2 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5" onclick="openFormModal(${index})">
+                            📝 Edit
+                        </button>
+                        <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
+                            🖨️ Profile
+                        </button>
+                        <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
             });
         }
 
@@ -1145,7 +1255,6 @@
             const wrapperEngine = document.getElementById('wrapper-engine');
             const wrapperLto = document.getElementById('wrapper-lto');
             const wrapperGsis = document.getElementById('wrapper-gsis');
-            const pmsPresets = document.getElementById('pms-quick-presets');
 
             if (category === "Light Equipment") {
                 // Hides LTO, GSIS, Chassis, and Engine No.
@@ -1185,7 +1294,7 @@
             const form = document.getElementById('vehicle-form');
             form.reset();
 
-            // Set default logger date to today (June 15, 2026)
+            // Set default logger date to today
             document.getElementById('new-log-date').value = "2026-06-15";
             document.getElementById('new-log-activity').value = '';
 
