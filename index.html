@@ -101,7 +101,7 @@
                     Docs Repository
                 </button>
                 <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     System Utilities
                 </button>
             </div>
@@ -119,7 +119,7 @@
             <h1 id="workspace-view-header-title" class="text-xl font-bold text-white tracking-wide">Active Fleet Registry</h1>
             <button class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 px-4 rounded-lg shadow-lg shadow-emerald-900/10 flex items-center gap-2 transition-all" id="menu-add-vehicle">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Add Vehicle
+                Add Vehicle / Equipment
             </button>
         </div>
 
@@ -128,7 +128,7 @@
             <!-- Metrics Segment -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="bg-brand-card border-t-4 border-t-blue-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Fleet</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registry</span>
                     <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-total">0</span>
                     <span class="text-xs text-slate-400 mt-1 block">Active Units Logged</span>
                 </div>
@@ -163,13 +163,22 @@
                 <div id="alerts-list-hook" class="space-y-3 max-h-56 overflow-y-auto pr-2 scrollbar-thin"></div>
             </div>
 
-            <!-- Filter & Search Toolbar (Restored Segments) -->
-            <div class="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col lg:flex-row gap-6 justify-between lg:items-center">
-                <div class="w-full lg:max-w-md relative">
-                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search by plate, model, driver, chassis, engine...">
+            <!-- Filter & Search Toolbar (Restored Segments & Category Support) -->
+            <div class="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
+                <div class="w-full xl:max-w-xs relative">
+                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search plate, model, driver...">
                     <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
                 <div class="flex flex-wrap gap-6">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type</span>
+                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-category-group">
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All Types</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Service Vehicle">Vehicles</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Heavy Equipment">Heavy</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="Light Equipment">Light / Tools</button>
+                        </div>
+                    </div>
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
                         <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-lto-group">
@@ -197,9 +206,9 @@
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
                             <tr>
-                                <th class="py-4 px-6">Plate No. & Status</th>
-                                <th class="py-4 px-6">Model Description / Identification</th>
-                                <th class="py-4 px-6">Assigned Driver</th>
+                                <th class="py-4 px-6">Plate / Control / Serial No.</th>
+                                <th class="py-4 px-6">Description & Age</th>
+                                <th class="py-4 px-6">Assigned Driver / Custodian</th>
                                 <th class="py-4 px-6">LTO Status</th>
                                 <th class="py-4 px-6">GSIS Status</th>
                                 <th class="py-4 px-6">Next PMS</th>
@@ -301,7 +310,7 @@
     <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4" id="form-modal">
         <div class="bg-brand-card border border-brand-border w-full max-w-xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
             <div class="p-6 border-b border-brand-border flex items-center justify-between bg-slate-900/40">
-                <h3 id="modal-title" class="text-lg font-bold text-white">Log New Fleet Vehicle</h3>
+                <h3 id="modal-title" class="text-lg font-bold text-white">Log New Fleet Vehicle / Equipment</h3>
                 <button class="text-slate-400 hover:text-white text-xl font-bold p-1 leading-none transition-all" id="btn-close-modal">&times;</button>
             </div>
             <form id="vehicle-form" class="flex-grow flex flex-col overflow-hidden">
@@ -312,16 +321,16 @@
                 <div class="p-6 space-y-4 overflow-y-auto flex-grow max-h-[70vh]">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Converted Number</label>
-                            <input type="text" id="f-plate" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all" placeholder="e.g. SAB-2391" required>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Control / Serial No.</label>
+                            <input type="text" id="f-plate" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all" placeholder="e.g. SAB-2391 or PROP-CS-01" required>
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acquisition Year</label>
                             <input type="number" id="f-year" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2019" min="1990" max="2030">
                         </div>
                         <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vehicle Make / Model Description</label>
-                            <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux D-4D CrewCab" required>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Equipment Make / Model Description</label>
+                            <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux / Stihl MS 250 Chainsaw" required>
                         </div>
                         <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Vehicle Status</label>
@@ -332,25 +341,33 @@
                                 <option value="Decommissioned">⚫ Decommissioned</option>
                             </select>
                         </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Equipment Classification Category</label>
+                            <select id="f-category" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <option value="Service Vehicle">🚗 Service Vehicle</option>
+                                <option value="Heavy Equipment">🚜 Heavy Equipment</option>
+                                <option value="Light Equipment">⚙️ Light Equipment / Power Tool</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Driver / Custodian Employee</label>
+                            <input type="text" id="f-driver" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="Full name of driver or officer">
+                        </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chassis Number</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chassis Number (Optional)</label>
                             <input type="text" id="f-chassis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. MROFX12G00...">
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Engine Number</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Engine Number / Motor Serial (Optional)</label>
                             <input type="text" id="f-engine" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2KD-123456">
                         </div>
-                        <div class="col-span-2 flex flex-col gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Accountable Employee (Driver)</label>
-                            <input type="text" id="f-driver" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="Full name of engineer or officer">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LTO Registration Deadline (Optional)</label>
+                            <input type="date" id="f-lto" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LTO Registration Deadline</label>
-                            <input type="date" id="f-lto" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
-                        </div>
-                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Insurance Renewal</label>
-                            <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Insurance Renewal (Optional)</label>
+                            <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                         </div>
                         <div class="col-span-2 flex flex-col gap-1.5 border-t border-brand-border pt-4">
                             <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
@@ -388,22 +405,22 @@
         </div>
     </div>
 
-    <!-- Single Vehicle Profile Print Sheet (Only visible during print with 'printing-single-profile' active on <body>) -->
+    <!-- Single Vehicle Profile Print Sheet -->
     <div id="print-only-profile" class="hidden print-only p-12 bg-white text-slate-900 border border-slate-200 rounded-xl max-w-4xl mx-auto font-sans">
         <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
             <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
             <p class="text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
-            <p class="text-lg font-extrabold text-slate-800 tracking-wide mt-4 uppercase">Vehicle Profile & Service Log Sheet</p>
+            <p class="text-lg font-extrabold text-slate-800 tracking-wide mt-4 uppercase">Equipment Profile & Service Log Sheet</p>
         </div>
         
         <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm mb-8">
-            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Plate / Registry No:</span> <strong class="text-base font-mono text-slate-900" id="print-prof-plate">SAB-2391</strong></div>
-            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Acquisition Year:</span> <strong class="text-base text-slate-900" id="print-prof-year">2019</strong></div>
-            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Vehicle Make & Model:</span> <strong class="text-base text-slate-900" id="print-prof-model">Toyota Hilux D-4D</strong></div>
-            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Chassis Number:</span> <strong class="text-slate-900 font-mono" id="print-prof-chassis">MROFX12G00</strong></div>
-            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Engine Number:</span> <strong class="text-slate-900 font-mono" id="print-prof-engine">2KD-123456</strong></div>
-            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Assigned Driver / Responsible Employee:</span> <strong class="text-base text-slate-900" id="print-prof-driver">Engr. J. Ramos</strong></div>
-            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Vehicle Operational Status:</span> <strong class="text-base text-slate-900" id="print-prof-status">Operational</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Plate / Control / Serial No:</span> <strong class="text-base font-mono text-slate-900" id="print-prof-plate">SAB-2391</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Classification & Age:</span> <strong class="text-base text-slate-900" id="print-prof-year">2019</strong></div>
+            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Equipment Make & Model:</span> <strong class="text-base text-slate-900" id="print-prof-model">Toyota Hilux D-4D</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Chassis Number / Part No:</span> <strong class="text-slate-900 font-mono" id="print-prof-chassis">MROFX12G00</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Engine Number / Serial:</span> <strong class="text-slate-900 font-mono" id="print-prof-engine">2KD-123456</strong></div>
+            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Assigned Custodian Employee / Driver:</span> <strong class="text-base text-slate-900" id="print-prof-driver">Engr. J. Ramos</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Operational Vehicle Status:</span> <strong class="text-base text-slate-900" id="print-prof-status">Operational</strong></div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 bg-slate-50 border border-slate-200 rounded-lg p-4 mb-8 text-xs">
@@ -436,6 +453,7 @@
         let fleet = [];
         let ltoFilter = 'all';
         let gsisFilter = 'all';
+        let categoryFilter = 'all';
         let alertsPanelCollapsed = false;
 
         let currentUploadPlate = "";
@@ -494,8 +512,8 @@
                 console.error("Database connection error:", err);
                 alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", vehicle_status: "Operational", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", chassis_no: "MREZZ49X01", engine_no: "4D56-789012", next_pms: "2026-05-01", vehicle_status: "Under Repair", repair_history: "2026-05-01: Change oil and filter swap", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", vehicle_status: "Operational", equipment_category: "Service Vehicle", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "PROP-CS-02", model: "Stihl MS-250 Wood Chainsaw", year: "2024", driver: "A. Baguio", lto: null, gsis: null, chassis_no: "N/A", engine_no: "8821919", next_pms: "2026-07-15", vehicle_status: "Operational", equipment_category: "Light Equipment", repair_history: "2026-04-12: Lubricated dual chain rails", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -514,6 +532,17 @@
             document.getElementById('vehicle-form').addEventListener('submit', handleFormSubmission);
             document.getElementById('table-search').addEventListener('input', buildRegistryTableRows);
             
+            document.querySelectorAll('#filter-category-group button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#filter-category-group button').forEach(b => {
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                    });
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
+                    categoryFilter = btn.getAttribute('data-filter');
+                    buildRegistryTableRows();
+                });
+            });
+
             document.querySelectorAll('#filter-lto-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-lto-group button').forEach(b => {
@@ -573,7 +602,8 @@
         }
 
         function evaluateDateStatus(targetDateStr, warningWindow = WARNING_WINDOW_DAYS) {
-            if (!targetDateStr) return { label: "EXPIRED", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border-rose-500/30", daysRemaining: -9999 };
+            // Safe fallback: non-road assets do not require registration and output "N/A" rather than trigger alerts
+            if (!targetDateStr) return { label: "N/A", statusClass: "valid", colorClass: "text-slate-400 bg-slate-800/20 border border-slate-700/20", daysRemaining: 9999 };
             const targetDate = new Date(targetDateStr);
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -643,7 +673,7 @@
                 if (gsisStat.statusClass === 'expiring') gsisWarning++;
                 if (pmsStat.statusClass === 'expiring') pmsWarning++;
 
-                if (ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                if (v.lto && ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-amber-500 text-sm text-slate-300";
@@ -658,7 +688,7 @@
                     alertsHook.appendChild(item);
                 }
 
-                if (gsisStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                if (v.gsis && gsisStat.daysRemaining <= WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-blue-500 text-sm text-slate-300";
@@ -728,6 +758,15 @@
             }
         }
 
+        function getCategoryEmoticon(category) {
+            const c = category ? category.trim() : 'Service Vehicle';
+            switch(c) {
+                case "Heavy Equipment": return '🚜 HEAVY';
+                case "Light Equipment": return '⚙️ LIGHT';
+                default: return '🚗 VEHICLE';
+            }
+        }
+
         function buildRegistryTableRows() {
             const query = document.getElementById('table-search').value.toLowerCase();
             const tbody = document.getElementById('registry-table-body');
@@ -738,6 +777,7 @@
                 const gsisStat = evaluateDateStatus(v.gsis);
                 const pmsStat = evaluatePmsStatus(v.next_pms);
 
+                if (categoryFilter !== 'all' && (v.equipment_category || 'Service Vehicle') !== categoryFilter) return;
                 if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
                 if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
 
@@ -748,7 +788,7 @@
                 const matchEngine = v.engine_no && v.engine_no.toLowerCase().includes(query);
                 if (!matchPlate && !matchModel && !matchDriver && !matchChassis && !matchEngine) return;
 
-                // Calculate vehicle age dynamically (Current year is 2026)
+                // Calculate age dynamically
                 const currentYear = 2026;
                 let ageDisplay = "—";
                 if (v.year) {
@@ -759,8 +799,8 @@
                     }
                 }
 
-                // Get operational status configuration
                 const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+                const categoryIcon = getCategoryEmoticon(v.equipment_category);
 
                 // Grab short Repair snippet
                 let lastRepairSnippet = "—";
@@ -776,7 +816,10 @@
                 row.innerHTML = `
                     <td class="py-4 px-6">
                         <div class="font-mono font-bold text-white tracking-wide text-base">${v.plate}</div>
-                        <span class="inline-block mt-1.5 px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${statusConfig.colors}">${statusConfig.label}</span>
+                        <div class="flex flex-col gap-1 mt-1.5 max-w-[100px]">
+                            <span class="inline-block px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center ${statusConfig.colors}">${statusConfig.label}</span>
+                            <span class="inline-block px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                        </div>
                     </td>
                     <td class="py-4 px-6">
                         <div class="font-semibold text-slate-100">${v.model}</div>
@@ -787,11 +830,11 @@
                     <td class="py-4 px-6 text-slate-300">${v.driver ? v.driver : '<span class="italic text-slate-500">Unassigned</span>'}</td>
                     <td class="py-4 px-6">
                         <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${ltoStat.colorClass}">${ltoStat.label}</span>
-                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.lto}</div>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.lto || 'N/A'}</div>
                     </td>
                     <td class="py-4 px-6">
                         <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${gsisStat.colorClass}">${gsisStat.label}</span>
-                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.gsis}</div>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.gsis || 'N/A'}</div>
                     </td>
                     <td class="py-4 px-6">
                         <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${pmsStat.colorClass}">${pmsStat.label}</span>
@@ -826,7 +869,7 @@
             const v = fleet[index];
             if (!v) return;
 
-            // Populate metadata template fields
+            // Populate metadata
             document.getElementById('print-prof-plate').innerText = v.plate;
             
             const currentYear = 2026;
@@ -839,14 +882,14 @@
                 }
             }
 
-            document.getElementById('print-prof-year').innerText = ageDisplay;
+            document.getElementById('print-prof-year').innerText = `[${v.equipment_category || 'Service Vehicle'}] — ${ageDisplay}`;
             document.getElementById('print-prof-model').innerText = v.model;
             document.getElementById('print-prof-chassis').innerText = v.chassis_no || '—';
             document.getElementById('print-prof-engine').innerText = v.engine_no || '—';
             document.getElementById('print-prof-driver').innerText = v.driver || 'Unassigned';
             document.getElementById('print-prof-status').innerText = v.vehicle_status || 'Operational';
-            document.getElementById('print-prof-lto').innerText = v.lto;
-            document.getElementById('print-prof-gsis').innerText = v.gsis;
+            document.getElementById('print-prof-lto').innerText = v.lto || 'Not Applicable (N/A)';
+            document.getElementById('print-prof-gsis').innerText = v.gsis || 'Not Applicable (N/A)';
             document.getElementById('print-prof-pms').innerText = v.next_pms || 'No Sched';
 
             // Populate print timeline
@@ -921,7 +964,7 @@
                 row.innerHTML = `
                     <td class="py-3 px-4 border-b border-slate-200">
                         <div class="font-mono font-bold text-slate-900">${v.plate}</div>
-                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label}</span>
+                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label} • ${v.equipment_category || 'Vehicle'}</span>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
                         <div><strong>${v.model}</strong></div>
@@ -930,11 +973,11 @@
                     <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
                     <td class="py-3 px-4 border-b border-slate-200">
                         <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${ltoStat.colorClass}">${ltoStat.label}</span>
-                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.lto}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.lto || 'N/A'}</span>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200">
                         <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${gsisStat.colorClass}">${gsisStat.label}</span>
-                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis || 'N/A'}</span>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200">
                         <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${pmsStat.colorClass}">${pmsStat.label}</span>
@@ -1120,7 +1163,7 @@
             const form = document.getElementById('vehicle-form');
             form.reset();
 
-            // Set default logger date to today (June 15, 2026)
+            // Set default logger date to today
             document.getElementById('new-log-date').value = "2026-06-15";
             document.getElementById('new-log-activity').value = '';
 
@@ -1135,18 +1178,20 @@
                 document.getElementById('f-chassis').value = v.chassis_no || '';
                 document.getElementById('f-engine').value = v.engine_no || '';
                 document.getElementById('f-driver').value = v.driver || '';
-                document.getElementById('f-lto').value = v.lto;
-                document.getElementById('f-gsis').value = v.gsis;
+                document.getElementById('f-lto').value = v.lto || '';
+                document.getElementById('f-gsis').value = v.gsis || '';
                 document.getElementById('f-pms').value = v.next_pms || '';
                 document.getElementById('f-history').value = v.repair_history || '';
                 document.getElementById('f-status').value = v.vehicle_status || 'Operational';
+                document.getElementById('f-category').value = v.equipment_category || 'Service Vehicle';
                 
                 renderHistoryTimeline(v.repair_history || '');
             } else {
-                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
+                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle / Equipment";
                 document.getElementById('edit-idx').value = -1;
                 document.getElementById('f-plate').disabled = false;
                 document.getElementById('f-status').value = 'Operational';
+                document.getElementById('f-category').value = 'Service Vehicle';
                 renderHistoryTimeline('');
             }
             modal.classList.remove('hidden');
@@ -1234,11 +1279,12 @@
                 chassis_no: document.getElementById('f-chassis').value.trim().toUpperCase() || null,
                 engine_no: document.getElementById('f-engine').value.trim().toUpperCase() || null,
                 driver: document.getElementById('f-driver').value.trim() || null,
-                lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value,
+                lto: document.getElementById('f-lto').value || null,
+                gsis: document.getElementById('f-gsis').value || null,
                 next_pms: document.getElementById('f-pms').value || null,
                 repair_history: document.getElementById('f-history').value.trim() || null,
-                vehicle_status: document.getElementById('f-status').value
+                vehicle_status: document.getElementById('f-status').value,
+                equipment_category: document.getElementById('f-category').value
             };
 
             toggleLoading(true);
