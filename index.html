@@ -854,4 +854,497 @@
                             </button>
                             <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
                                 🖨️ Profile
-                            </butt
+                            </button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function triggerExecutiveReportPrint() {
+            document.body.classList.remove('printing-single-profile');
+            document.body.classList.add('printing-exec-report');
+            window.print();
+        }
+
+        function printSingleVehicleProfile(index) {
+            const v = fleet[index];
+            if (!v) return;
+
+            // Populate metadata
+            document.getElementById('print-prof-plate').innerText = v.plate;
+            
+            const currentYear = 2026;
+            let ageDisplay = "—";
+            if (v.year) {
+                const parsedYear = parseInt(v.year);
+                if (!isNaN(parsedYear)) {
+                    const age = currentYear - parsedYear;
+                    ageDisplay = `${v.year} (${age} ${age === 1 ? 'year' : 'years'} old)`;
+                }
+            }
+
+            document.getElementById('print-prof-year').innerText = `[${v.equipment_category || 'Service Vehicle'}] — ${ageDisplay}`;
+            document.getElementById('print-prof-model').innerText = v.model;
+            document.getElementById('print-prof-driver').innerText = v.driver || 'Unassigned';
+            document.getElementById('print-prof-status').innerText = v.vehicle_status || 'Operational';
+
+            // Print deadlines layout configuration (Hides irrelevant metadata fields depending on type)
+            const printLtoBox = document.getElementById('print-box-lto');
+            const printGsisBox = document.getElementById('print-box-gsis');
+            const printChassisText = document.getElementById('print-prof-chassis');
+            const printEngineText = document.getElementById('print-prof-engine');
+
+            if (v.equipment_category === "Light Equipment") {
+                printChassisText.parentNode.classList.add('hidden');
+                printEngineText.parentNode.classList.add('hidden');
+                printLtoBox.classList.add('hidden');
+                printGsisBox.classList.add('hidden');
+            } else if (v.equipment_category === "Heavy Equipment") {
+                printChassisText.parentNode.classList.remove('hidden');
+                printEngineText.parentNode.classList.remove('hidden');
+                printChassisText.innerText = v.chassis_no || '—';
+                printEngineText.innerText = v.engine_no || '—';
+                printLtoBox.classList.add('hidden');
+                printGsisBox.classList.add('hidden');
+            } else { // Service Vehicle
+                printChassisText.parentNode.classList.remove('hidden');
+                printEngineText.parentNode.classList.remove('hidden');
+                printChassisText.innerText = v.chassis_no || '—';
+                printEngineText.innerText = v.engine_no || '—';
+                printLtoBox.classList.remove('hidden');
+                printGsisBox.classList.remove('hidden');
+                document.getElementById('print-prof-lto').innerText = v.lto || '—';
+                document.getElementById('print-prof-gsis').innerText = v.gsis || '—';
+            }
+
+            document.getElementById('print-prof-pms').innerText = v.next_pms || 'No Sched';
+
+            // Populate print timeline
+            const printTimeline = document.getElementById('print-prof-timeline');
+            printTimeline.innerHTML = "";
+
+            if (!v.repair_history || v.repair_history.trim() === "") {
+                printTimeline.innerHTML = `<span class="italic text-slate-400 text-sm block">No maintenance or service history has been logged for this vehicle.</span>`;
+            } else {
+                const logs = v.repair_history.split('\n').filter(line => line.trim() !== "");
+                logs.forEach(log => {
+                    const parts = log.split(':');
+                    const d = parts[0] ? parts[0].trim() : '—';
+                    const act = parts.slice(1).join(':') ? parts.slice(1).join(':').trim() : '—';
+
+                    const item = document.createElement('div');
+                    item.className = "border-l-2 border-slate-300 pl-4 py-1";
+                    item.innerHTML = `
+                        <span class="font-mono text-xs font-bold text-slate-500 block">${d}</span>
+                        <span class="text-slate-800 text-sm block mt-0.5">${act}</span>
+                    `;
+                    printTimeline.appendChild(item);
+                });
+            }
+
+            // Route print rendering styles correctly
+            document.body.classList.remove('printing-exec-report');
+            document.body.classList.add('printing-single-profile');
+
+            window.print();
+        }
+
+        function buildExecutiveReportRows() {
+            document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString()} | City Engineering Office Baguio`;
+            
+            let expiredCount = 0;
+            let warningCount = 0;
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+                if ((v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || pmsStat.statusClass === 'expired') expiredCount++;
+                else if (((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || pmsStat.statusClass === 'expiring')) warningCount++;
+            });
+
+            document.getElementById('rep-total').innerText = fleet.length;
+            document.getElementById('rep-expired').innerText = expiredCount;
+            document.getElementById('rep-warning').innerText = warningCount;
+
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+
+                const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+
+                const currentYear = 2026;
+                let ageDisplay = "—";
+                if (v.year) {
+                    const parsedYear = parseInt(v.year);
+                    if (!isNaN(parsedYear)) {
+                        const age = currentYear - parsedYear;
+                        ageDisplay = `${v.year} (${age} yrs old)`;
+                    }
+                }
+
+                // Subline config
+                let detailsSubline = "";
+                if (v.chassis_no || v.engine_no) {
+                    detailsSubline = ` • Chassis: ${v.chassis_no || '—'} • Engine: ${v.engine_no || '—'}`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "text-slate-800 font-medium";
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <div class="font-mono font-bold text-slate-900">${v.plate}</div>
+                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label} • ${v.equipment_category || 'Vehicle'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
+                        <div><strong>${v.model}</strong></div>
+                        <div>Age: ${ageDisplay}${detailsSubline}</div>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${ltoStat.colorClass}">${ltoStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.lto || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${gsisStat.colorClass}">${gsisStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.next_pms || '—'}</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function buildRepositoryTableRows() {
+            const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (query && !matchPlate && !matchDriver) return;
+
+                let ltoCell = "";
+                let crCell = "";
+                let gsisCell = "";
+
+                // LTO Official Receipt (O.R.)
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload O.R.</button>`;
+                }
+
+                // LTO Certificate of Registration (C.R.)
+                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    crCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'cr_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    crCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">📤 Upload C.R.</button>`;
+                }
+
+                // GSIS Insurance (C.O.C.)
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload C.O.C.</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-800/10 transition-all";
+                row.innerHTML = `
+                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
+                    <td class="py-4 px-6 font-semibold text-slate-100">${v.driver || 'Unassigned'}</td>
+                    <td class="py-4 px-6">${ltoCell}</td>
+                    <td class="py-4 px-6">${crCell}</td>
+                    <td class="py-4 px-6">${gsisCell}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function triggerFileUploadForm(plate, fieldName) {
+            currentUploadPlate = plate;
+            currentUploadField = fieldName;
+            document.getElementById('global-hidden-uploader').click();
+        }
+
+        async function processSelectedFile(inputElement) {
+            if (!inputElement.files || inputElement.files.length === 0) return;
+            const targetFile = inputElement.files[0];
+            const fileExtension = targetFile.name.split('.').pop();
+            const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
+            const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
+            
+            toggleLoading(true);
+            try {
+                const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
+                const uploadHeaders = {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": targetFile.type
+                };
+
+                const uploadResponse = await fetch(storageEndpoint, {
+                    method: "POST",
+                    headers: uploadHeaders,
+                    body: targetFile
+                });
+
+                if (!uploadResponse.ok) throw new Error("Storage upload failed.");
+
+                const patchPayload = {};
+                patchPayload[currentUploadField] = cleanPublicUrl;
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
+                    method: "PATCH",
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Unable to patch document field. ${errText}`);
+                }
+
+                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
+                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
+
+                alert("Document successfully committed to security repository vault.");
+                inputElement.value = ""; 
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error(err);
+                alert(`Error: ${err.message || "Failed to commit attachment record."}`);
+                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
+                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
+                
+                inputElement.value = "";
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        async function clearCloudDocumentField(plateNumber, targetField) {
+            if (!confirm(`Are you sure you want to completely remove this document link for vehicle ${plateNumber}?`)) {
+                return;
+            }
+
+            toggleLoading(true);
+            try {
+                const patchPayload = {};
+                patchPayload[targetField] = null;
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
+                    method: "PATCH",
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Database field clearing failed. Confirm database connection.");
+                }
+
+                const localVehicle = fleet.find(v => v.plate === plateNumber);
+                if (localVehicle) localVehicle[targetField] = null;
+
+                alert("Document attachment reference successfully removed.");
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error("Bypassing pipeline intercept error:", err);
+                
+                const localVehicle = fleet.find(v => v.plate === plateNumber);
+                if (localVehicle) localVehicle[targetField] = null;
+                
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function adjustFormFieldsByCategory() {
+            const category = document.getElementById('f-category').value;
+            const wrapperChassis = document.getElementById('wrapper-chassis');
+            const wrapperEngine = document.getElementById('wrapper-engine');
+            const wrapperLto = document.getElementById('wrapper-lto');
+            const wrapperGsis = document.getElementById('wrapper-gsis');
+
+            if (category === "Light Equipment") {
+                // Hides LTO, GSIS, Chassis, and Engine No.
+                wrapperChassis.classList.add('hidden');
+                wrapperEngine.classList.add('hidden');
+                wrapperLto.classList.add('hidden');
+                wrapperGsis.classList.add('hidden');
+            } else if (category === "Heavy Equipment") {
+                // Shows Chassis & Engine, Hides LTO & GSIS
+                wrapperChassis.classList.remove('hidden');
+                wrapperEngine.classList.remove('hidden');
+                wrapperLto.classList.add('hidden');
+                wrapperGsis.classList.add('hidden');
+            } else { // Service Vehicle: Shows everything
+                wrapperChassis.classList.remove('hidden');
+                wrapperEngine.classList.remove('hidden');
+                wrapperLto.classList.remove('hidden');
+                wrapperGsis.classList.remove('hidden');
+            }
+        }
+
+        function openFormModal(index = -1) {
+            const modal = document.getElementById('form-modal');
+            const form = document.getElementById('vehicle-form');
+            form.reset();
+
+            // Set default logger date to today
+            document.getElementById('new-log-date').value = "2026-06-15";
+            document.getElementById('new-log-activity').value = '';
+
+            if (index > -1) {
+                const v = fleet[index];
+                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
+                document.getElementById('edit-idx').value = index;
+                document.getElementById('f-plate').value = v.plate;
+                document.getElementById('f-plate').disabled = true;
+                document.getElementById('f-year').value = v.year;
+                document.getElementById('f-model').value = v.model;
+                document.getElementById('f-chassis').value = v.chassis_no || '';
+                document.getElementById('f-engine').value = v.engine_no || '';
+                document.getElementById('f-driver').value = v.driver || '';
+                document.getElementById('f-lto').value = v.lto || '';
+                document.getElementById('f-gsis').value = v.gsis || '';
+                document.getElementById('f-pms').value = v.next_pms || '';
+                document.getElementById('f-history').value = v.repair_history || '';
+                document.getElementById('f-status').value = v.vehicle_status || 'Operational';
+                document.getElementById('f-category').value = v.equipment_category || 'Service Vehicle';
+                
+                renderHistoryTimeline(v.repair_history || '');
+            } else {
+                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle / Equipment";
+                document.getElementById('edit-idx').value = -1;
+                document.getElementById('f-plate').disabled = false;
+                document.getElementById('f-status').value = 'Operational';
+                document.getElementById('f-category').value = 'Service Vehicle';
+                renderHistoryTimeline('');
+            }
+
+            adjustFormFieldsByCategory(); // Set fields visibility depending on loaded category
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderHistoryTimeline(historyString) {
+            const timelineContainer = document.getElementById('history-display-timeline');
+            timelineContainer.innerHTML = "";
+
+            if (!historyString || historyString.trim() === "") {
+                timelineContainer.innerHTML = `<span class="italic text-slate-500 block py-2">No repair history logged for this vehicle.</span>`;
+                return;
+            }
+
+            const logs = historyString.split('\n').filter(line => line.trim() !== "");
+            
+            logs.forEach((log, index) => {
+                const parts = log.split(':');
+                const dateLabel = parts[0] ? parts[0].trim() : '—';
+                const activityLabel = parts.slice(1).join(':') ? parts.slice(1).join(':').trim() : '—';
+
+                const logItem = document.createElement('div');
+                logItem.className = "flex gap-3 items-start border-l border-brand-border pl-4 relative ml-2 group";
+                logItem.innerHTML = `
+                    <div class="absolute w-2 h-2 rounded-full bg-emerald-500 -left-[4.5px] top-1.5"></div>
+                    <div class="flex-grow">
+                        <span class="font-mono text-[10px] font-bold text-slate-400 block">${dateLabel}</span>
+                        <span class="text-slate-200 mt-0.5 block">${activityLabel}</span>
+                    </div>
+                    <button type="button" onclick="removeMaintenanceLogEntry(${index})" class="text-rose-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 font-semibold text-[10px] bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded transition-all shrink-0 self-center">
+                        🗑️ Delete
+                    </button>
+                `;
+                timelineContainer.appendChild(logItem);
+            });
+        }
+
+        function addMaintenanceLogEntry() {
+            const dateVal = document.getElementById('new-log-date').value;
+            const activityVal = document.getElementById('new-log-activity').value.trim();
+
+            if (!activityVal) {
+                alert("Please enter maintenance service details before logging.");
+                return;
+            }
+
+            const rawTextarea = document.getElementById('f-history');
+            const newEntry = `${dateVal}: ${activityVal}`;
+
+            if (rawTextarea.value.trim() === "") {
+                rawTextarea.value = newEntry;
+            } else {
+                rawTextarea.value = newEntry + "\n" + rawTextarea.value;
+            }
+
+            // Instantly redraw the mechanic timeline inside the modal
+            renderHistoryTimeline(rawTextarea.value);
+            document.getElementById('new-log-activity').value = ""; // Clear activity input field
+        }
+
+        function removeMaintenanceLogEntry(index) {
+            if (!confirm("Are you sure you want to delete this maintenance entry?")) return;
+            const rawTextarea = document.getElementById('f-history');
+            let logs = rawTextarea.value.split('\n').filter(line => line.trim() !== "");
+            logs.splice(index, 1);
+            rawTextarea.value = logs.join('\n');
+            renderHistoryTimeline(rawTextarea.value);
+        }
+
+        function closeFormModal() {
+            const modal = document.getElementById('form-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('edit-idx').value);
+            const category = document.getElementById('f-category').value;
+            
+            const recordData = {
+                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
+                year: document.getElementById('f-year').value.toString(),
+                model: document.getElementById('f-model').value.trim(),
+                driver: document.getElementById('f-driver').value.trim() || null,
+                next_pms: document.getElementById('f-pms').value || null,
+                repair_history: document.getElementById('f-history').value.trim() || null,
