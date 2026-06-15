@@ -80,20 +80,20 @@
             </div>
             <div class="py-6 px-3 space-y-1">
                 <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Operations</span>
-                <button id="side-nav-dashboard" onclick="switchActiveView('dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold active">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <button id="side-nav-dashboard" onclick="switchActiveView('dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 group">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Main Dashboard
                 </button>
-                <button id="side-nav-reports" onclick="switchActiveView('reports')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <button id="side-nav-reports" onclick="switchActiveView('reports')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Executive Reports
                 </button>
-                <button id="side-nav-repository" onclick="switchActiveView('repository')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 00-2 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
+                <button id="side-nav-repository" onclick="switchActiveView('repository')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
                     Docs Repository
                 </button>
-                <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     System Utilities
                 </button>
             </div>
@@ -160,19 +160,19 @@
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
                         <div class="inline-flex rounded-lg bg-brand-dark p-1 border border-brand-border" id="filter-lto-group">
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white active" data-filter="all">All</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="valid">Valid</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="expiring">Warning</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="expired">Expired</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all" data-filter="all">All</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
                         <div class="inline-flex rounded-lg bg-brand-dark p-1 border border-brand-border" id="filter-gsis-group">
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white active" data-filter="all">All</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="valid">Valid</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="expiring">Warning</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all [&.active]:bg-slate-700/60 [&.active]:text-white" data-filter="expired">Expired</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all" data-filter="all">All</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                 </div>
@@ -430,8 +430,10 @@
             
             document.querySelectorAll('#filter-lto-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('#filter-lto-group button').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
+                    document.querySelectorAll('#filter-lto-group button').forEach(b => {
+                        b.className = "px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                    });
+                    e.target.className = "px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all";
                     ltoFilter = e.target.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -439,8 +441,10 @@
 
             document.querySelectorAll('#filter-gsis-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('#filter-gsis-group button').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
+                    document.querySelectorAll('#filter-gsis-group button').forEach(b => {
+                        b.className = "px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                    });
+                    e.target.className = "px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all";
                     gsisFilter = e.target.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -448,14 +452,24 @@
         }
 
         function switchActiveView(viewId) {
-            document.querySelectorAll('#view-dashboard, #view-reports, #view-repository, #view-utilities').forEach(view => view.classList.add('hidden'));
-            document.querySelectorAll('[id^="side-nav-"]').forEach(item => item.classList.remove('active'));
+            const views = ['dashboard', 'reports', 'repository', 'utilities'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+                
+                const nav = document.getElementById(`side-nav-${v}`);
+                if (nav) {
+                    nav.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group";
+                }
+            });
             
             const currentView = document.getElementById(`view-${viewId}`);
-            const currentNavItem = document.getElementById(`side-nav-${viewId}`);
+            if (currentView) currentView.classList.remove('hidden');
             
-            if(currentView) currentView.classList.remove('hidden');
-            if(currentNavItem) currentNavItem.classList.add('active');
+            const currentNavItem = document.getElementById(`side-nav-${viewId}`);
+            if (currentNavItem) {
+                currentNavItem.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 group";
+            }
 
             const headerTitle = document.getElementById('workspace-view-header-title');
             if (viewId === 'dashboard') {
@@ -631,4 +645,121 @@
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-800/20 transition-all";
                 row.innerHTML = `
-                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${
+                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-100">${v.model} (${v.year || '—'})</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                            C: ${v.chassis_no || '—'} • E: ${v.engine_no || '—'}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-slate-300">${v.driver ? v.driver : '<span class="italic text-slate-500">Unassigned</span>'}</td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${ltoStat.colorClass}">${ltoStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.lto}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${gsisStat.colorClass}">${gsisStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.gsis}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.next_pms || '—'}</div>
+                    </td>
+                    <td class="py-4 px-6 text-xs text-slate-400 font-sans italic max-w-[200px] truncate" title="${v.repair_history || ''}">${lastRepairSnippet}</td>
+                    <td class="py-4 px-6 text-center">
+                        <div class="inline-flex gap-2">
+                            <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-1.5 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center gap-1.5" onclick="openFormModal(${index})">
+                                📝 Edit
+                            </button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function buildExecutiveReportRows() {
+            document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString()} | City Engineering Office Baguio`;
+            
+            let expiredCount = 0;
+            let warningCount = 0;
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+                if (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired' || pmsStat.statusClass === 'expired') expiredCount++;
+                else if (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring' || pmsStat.statusClass === 'expiring') warningCount++;
+            });
+
+            document.getElementById('rep-total').innerText = fleet.length;
+            document.getElementById('rep-expired').innerText = expiredCount;
+            document.getElementById('rep-warning').innerText = warningCount;
+
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+
+                const row = document.createElement('tr');
+                row.className = "text-slate-800 font-medium";
+                row.innerHTML = `
+                    <td class="py-3 px-4 font-mono font-bold border-b border-slate-200 text-slate-900">${v.plate}</td>
+                    <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
+                        <div><strong>${v.model} (${v.year || '—'})</strong></div>
+                        <div>Chassis: ${v.chassis_no || '—'}</div>
+                        <div>Engine: ${v.engine_no || '—'}</div>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${ltoStat.colorClass}">${ltoStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.lto}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${gsisStat.colorClass}">${gsisStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.next_pms || '—'}</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function buildRepositoryTableRows() {
+            const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (query && !matchPlate && !matchDriver) return;
+
+                let ltoCell = "";
+                let crCell = "";
+                let gsisCell = "";
+
+                // LTO Official Receipt (O.R.)
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload O.R.</button>`;
+                }
+
+                // LTO Certificate of Registration (C.R.)
+                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    crCell = `
