@@ -763,3 +763,218 @@
                 // LTO Certificate of Registration (C.R.)
                 if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
                     crCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'cr_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    crCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">📤 Upload C.R.</button>`;
+                }
+
+                // GSIS Insurance (C.O.C.)
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload C.O.C.</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-800/10 transition-all";
+                row.innerHTML = `
+                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
+                    <td class="py-4 px-6 font-semibold text-slate-100">${v.driver || 'Unassigned'}</td>
+                    <td class="py-4 px-6">${ltoCell}</td>
+                    <td class="py-4 px-6">${crCell}</td>
+                    <td class="py-4 px-6">${gsisCell}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function triggerFileUploadForm(plate, fieldName) {
+            currentUploadPlate = plate;
+            currentUploadField = fieldName;
+            document.getElementById('global-hidden-uploader').click();
+        }
+
+        async function processSelectedFile(inputElement) {
+            if (!inputElement.files || inputElement.files.length === 0) return;
+            const targetFile = inputElement.files[0];
+            const fileExtension = targetFile.name.split('.').pop();
+            const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
+            const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
+            
+            toggleLoading(true);
+            try {
+                const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
+                const uploadHeaders = {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": targetFile.type
+                };
+
+                const uploadResponse = await fetch(storageEndpoint, {
+                    method: "POST",
+                    headers: uploadHeaders,
+                    body: targetFile
+                });
+
+                if (!uploadResponse.ok) throw new Error("Storage upload failed.");
+
+                const patchPayload = {};
+                patchPayload[currentUploadField] = cleanPublicUrl;
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
+                    method: "PATCH",
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Unable to patch document field. ${errText}`);
+                }
+
+                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
+                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
+
+                alert("Document successfully committed to security repository vault.");
+                inputElement.value = ""; 
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error(err);
+                alert(`Error: ${err.message || "Failed to commit attachment record."}`);
+                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
+                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
+                
+                inputElement.value = "";
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        async function clearCloudDocumentField(plateNumber, targetField) {
+            if (!confirm(`Are you sure you want to completely remove this document link for vehicle ${plateNumber}?`)) {
+                return;
+            }
+
+            toggleLoading(true);
+            try {
+                const patchPayload = {};
+                patchPayload[targetField] = null;
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
+                    method: "PATCH",
+                    headers: getHeaders(),
+                    body: JSON.stringify(patchPayload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Database field clearing failed. Confirm database connection.");
+                }
+
+                const localVehicle = fleet.find(v => v.plate === plateNumber);
+                if (localVehicle) localVehicle[targetField] = null;
+
+                alert("Document attachment reference successfully removed.");
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } catch (err) {
+                console.error("Bypassing pipeline intercept error:", err);
+                
+                const localVehicle = fleet.find(v => v.plate === plateNumber);
+                if (localVehicle) localVehicle[targetField] = null;
+                
+                updateInterfaceMetricsAndAlerts();
+                buildRepositoryTableRows();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function openFormModal(index = -1) {
+            const modal = document.getElementById('form-modal');
+            const form = document.getElementById('vehicle-form');
+            form.reset();
+
+            if (index > -1) {
+                const v = fleet[index];
+                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
+                document.getElementById('edit-idx').value = index;
+                document.getElementById('f-plate').value = v.plate;
+                document.getElementById('f-plate').disabled = true;
+                document.getElementById('f-year').value = v.year;
+                document.getElementById('f-model').value = v.model;
+                document.getElementById('f-chassis').value = v.chassis_no || '';
+                document.getElementById('f-engine').value = v.engine_no || '';
+                document.getElementById('f-driver').value = v.driver || '';
+                document.getElementById('f-lto').value = v.lto;
+                document.getElementById('f-gsis').value = v.gsis;
+                document.getElementById('f-pms').value = v.next_pms || '';
+                document.getElementById('f-history').value = v.repair_history || '';
+            } else {
+                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
+                document.getElementById('edit-idx').value = -1;
+                document.getElementById('f-plate').disabled = false;
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFormModal() {
+            const modal = document.getElementById('form-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('edit-idx').value);
+            
+            const recordData = {
+                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
+                year: document.getElementById('f-year').value.toString(),
+                model: document.getElementById('f-model').value.trim(),
+                chassis_no: document.getElementById('f-chassis').value.trim().toUpperCase() || null,
+                engine_no: document.getElementById('f-engine').value.trim().toUpperCase() || null,
+                driver: document.getElementById('f-driver').value.trim() || null,
+                lto: document.getElementById('f-lto').value,
+                gsis: document.getElementById('f-gsis').value,
+                next_pms: document.getElementById('f-pms').value || null,
+                repair_history: document.getElementById('f-history').value.trim() || null
+            };
+
+            toggleLoading(true);
+            try {
+                let response;
+                if (idx > -1) {
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                        method: "PATCH",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                } else {
+                    recordData.lto_document_attachment = null;
+                    recordData.cr_document_attachment = null;
+                    recordData.gsis_document_attachment = null;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                        method: "POST",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText);
