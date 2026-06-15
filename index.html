@@ -163,7 +163,7 @@
                 <div id="alerts-list-hook" class="space-y-3 max-h-56 overflow-y-auto pr-2 scrollbar-thin"></div>
             </div>
 
-            <!-- Filter & Search Toolbar -->
+            <!-- Filter & Search Toolbar (Restored Segments) -->
             <div class="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col lg:flex-row gap-6 justify-between lg:items-center">
                 <div class="w-full lg:max-w-md relative">
                     <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search by plate, model, driver, chassis, engine...">
@@ -172,20 +172,20 @@
                 <div class="flex flex-wrap gap-6">
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
-                        <div class="inline-flex rounded-lg bg-brand-dark p-1 border border-brand-border" id="filter-lto-group">
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all" data-filter="all">All</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-lto-group">
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
-                        <div class="inline-flex rounded-lg bg-brand-dark p-1 border border-brand-border" id="filter-gsis-group">
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all" data-filter="all">All</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border" id="filter-gsis-group">
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
                             <tr>
-                                <th class="py-4 px-6">Plate No.</th>
+                                <th class="py-4 px-6">Plate No. & Status</th>
                                 <th class="py-4 px-6">Model Description / Identification</th>
                                 <th class="py-4 px-6">Assigned Driver</th>
                                 <th class="py-4 px-6">LTO Status</th>
@@ -244,8 +244,8 @@
                 <table class="w-full text-left text-xs text-slate-800 print-table border border-slate-200 rounded-lg overflow-hidden">
                     <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
                         <tr>
-                            <th class="py-3 px-4">Plate No.</th>
-                            <th class="py-3 px-4">Identification Details (Chassis/Engine)</th>
+                            <th class="py-3 px-4">Plate No. & Status</th>
+                            <th class="py-3 px-4">Identification Details (Chassis/Engine/Age)</th>
                             <th class="py-3 px-4">Driver</th>
                             <th class="py-3 px-4">LTO Status</th>
                             <th class="py-3 px-4">GSIS Status</th>
@@ -309,7 +309,7 @@
                 <!-- Hidden legacy history output synced behind scenes -->
                 <textarea id="f-history" class="hidden"></textarea>
 
-                <div class="p-6 space-y-4 overflow-y-auto flex-grow">
+                <div class="p-6 space-y-4 overflow-y-auto flex-grow max-h-[70vh]">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Converted Number</label>
@@ -319,9 +319,18 @@
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acquisition Year</label>
                             <input type="number" id="f-year" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2019" min="1990" max="2030">
                         </div>
-                        <div class="col-span-2 flex flex-col gap-1.5">
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vehicle Make / Model Description</label>
                             <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux D-4D CrewCab" required>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Vehicle Status</label>
+                            <select id="f-status" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <option value="Operational">🟢 Operational</option>
+                                <option value="Under Repair">🔴 Under Repair</option>
+                                <option value="Standby">🔵 Standby</option>
+                                <option value="Decommissioned">⚫ Decommissioned</option>
+                            </select>
                         </div>
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chassis Number</label>
@@ -394,6 +403,7 @@
             <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Chassis Number:</span> <strong class="text-slate-900 font-mono" id="print-prof-chassis">MROFX12G00</strong></div>
             <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Engine Number:</span> <strong class="text-slate-900 font-mono" id="print-prof-engine">2KD-123456</strong></div>
             <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Assigned Driver / Responsible Employee:</span> <strong class="text-base text-slate-900" id="print-prof-driver">Engr. J. Ramos</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Vehicle Operational Status:</span> <strong class="text-base text-slate-900" id="print-prof-status">Operational</strong></div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 bg-slate-50 border border-slate-200 rounded-lg p-4 mb-8 text-xs">
@@ -484,8 +494,8 @@
                 console.error("Database connection error:", err);
                 alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", chassis_no: "MREZZ49X01", engine_no: "4D56-789012", next_pms: "2026-05-01", repair_history: "2026-05-01: Change oil and filter swap", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", vehicle_status: "Operational", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", chassis_no: "MREZZ49X01", engine_no: "4D56-789012", next_pms: "2026-05-01", vehicle_status: "Under Repair", repair_history: "2026-05-01: Change oil and filter swap", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -507,9 +517,9 @@
             document.querySelectorAll('#filter-lto-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-lto-group button').forEach(b => {
-                        b.className = "px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
                     });
-                    btn.className = "px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all";
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
                     ltoFilter = btn.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -518,9 +528,9 @@
             document.querySelectorAll('#filter-gsis-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-gsis-group button').forEach(b => {
-                        b.className = "px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
                     });
-                    btn.className = "px-3 py-1 text-xs font-semibold rounded-md bg-slate-700/60 text-white transition-all";
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
                     gsisFilter = btn.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -704,6 +714,20 @@
             }
         }
 
+        function getStatusBadgeConfig(status) {
+            const cleanStatus = status ? status.trim() : "Operational";
+            switch(cleanStatus) {
+                case "Under Repair":
+                    return { label: "🔧 Repair", colors: "bg-rose-500/10 text-rose-400 border border-rose-500/25" };
+                case "Standby":
+                    return { label: "💤 Standby", colors: "bg-blue-500/10 text-blue-400 border border-blue-500/25" };
+                case "Decommissioned":
+                    return { label: "⚠️ Retired", colors: "bg-slate-500/10 text-slate-400 border border-slate-500/25" };
+                default:
+                    return { label: "🟢 Active", colors: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" };
+            }
+        }
+
         function buildRegistryTableRows() {
             const query = document.getElementById('table-search').value.toLowerCase();
             const tbody = document.getElementById('registry-table-body');
@@ -724,6 +748,20 @@
                 const matchEngine = v.engine_no && v.engine_no.toLowerCase().includes(query);
                 if (!matchPlate && !matchModel && !matchDriver && !matchChassis && !matchEngine) return;
 
+                // Calculate vehicle age dynamically (Current year is 2026)
+                const currentYear = 2026;
+                let ageDisplay = "—";
+                if (v.year) {
+                    const parsedYear = parseInt(v.year);
+                    if (!isNaN(parsedYear)) {
+                        const age = currentYear - parsedYear;
+                        ageDisplay = `${v.year} (${age} ${age === 1 ? 'yr' : 'yrs'} old)`;
+                    }
+                }
+
+                // Get operational status configuration
+                const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+
                 // Grab short Repair snippet
                 let lastRepairSnippet = "—";
                 if (v.repair_history) {
@@ -736,11 +774,14 @@
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-800/20 transition-all";
                 row.innerHTML = `
-                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
                     <td class="py-4 px-6">
-                        <div class="font-semibold text-slate-100">${v.model} (${v.year || '—'})</div>
+                        <div class="font-mono font-bold text-white tracking-wide text-base">${v.plate}</div>
+                        <span class="inline-block mt-1.5 px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${statusConfig.colors}">${statusConfig.label}</span>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-100">${v.model}</div>
                         <div class="text-[10px] text-slate-400 mt-0.5 font-mono">
-                            C: ${v.chassis_no || '—'} • E: ${v.engine_no || '—'}
+                            Age: ${ageDisplay} • C: ${v.chassis_no || '—'} • E: ${v.engine_no || '—'}
                         </div>
                     </td>
                     <td class="py-4 px-6 text-slate-300">${v.driver ? v.driver : '<span class="italic text-slate-500">Unassigned</span>'}</td>
@@ -787,11 +828,23 @@
 
             // Populate metadata template fields
             document.getElementById('print-prof-plate').innerText = v.plate;
-            document.getElementById('print-prof-year').innerText = v.year || '—';
+            
+            const currentYear = 2026;
+            let ageDisplay = "—";
+            if (v.year) {
+                const parsedYear = parseInt(v.year);
+                if (!isNaN(parsedYear)) {
+                    const age = currentYear - parsedYear;
+                    ageDisplay = `${v.year} (${age} ${age === 1 ? 'year' : 'years'} old)`;
+                }
+            }
+
+            document.getElementById('print-prof-year').innerText = ageDisplay;
             document.getElementById('print-prof-model').innerText = v.model;
             document.getElementById('print-prof-chassis').innerText = v.chassis_no || '—';
             document.getElementById('print-prof-engine').innerText = v.engine_no || '—';
             document.getElementById('print-prof-driver').innerText = v.driver || 'Unassigned';
+            document.getElementById('print-prof-status').innerText = v.vehicle_status || 'Operational';
             document.getElementById('print-prof-lto').innerText = v.lto;
             document.getElementById('print-prof-gsis').innerText = v.gsis;
             document.getElementById('print-prof-pms').innerText = v.next_pms || 'No Sched';
@@ -851,14 +904,28 @@
                 const gsisStat = evaluateDateStatus(v.gsis);
                 const pmsStat = evaluatePmsStatus(v.next_pms);
 
+                const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+
+                const currentYear = 2026;
+                let ageDisplay = "—";
+                if (v.year) {
+                    const parsedYear = parseInt(v.year);
+                    if (!isNaN(parsedYear)) {
+                        const age = currentYear - parsedYear;
+                        ageDisplay = `${v.year} (${age} yrs old)`;
+                    }
+                }
+
                 const row = document.createElement('tr');
                 row.className = "text-slate-800 font-medium";
                 row.innerHTML = `
-                    <td class="py-3 px-4 font-mono font-bold border-b border-slate-200 text-slate-900">${v.plate}</td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <div class="font-mono font-bold text-slate-900">${v.plate}</div>
+                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label}</span>
+                    </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
-                        <div><strong>${v.model} (${v.year || '—'})</strong></div>
-                        <div>Chassis: ${v.chassis_no || '—'}</div>
-                        <div>Engine: ${v.engine_no || '—'}</div>
+                        <div><strong>${v.model}</strong></div>
+                        <div>Age: ${ageDisplay} • Chassis: ${v.chassis_no || '—'} • Engine: ${v.engine_no || '—'}</div>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
                     <td class="py-3 px-4 border-b border-slate-200">
@@ -1053,8 +1120,8 @@
             const form = document.getElementById('vehicle-form');
             form.reset();
 
-            // Set dynamic logger default date to today
-            document.getElementById('new-log-date').value = new Date().toISOString().split('T')[0];
+            // Set default logger date to today (June 15, 2026)
+            document.getElementById('new-log-date').value = "2026-06-15";
             document.getElementById('new-log-activity').value = '';
 
             if (index > -1) {
@@ -1072,12 +1139,14 @@
                 document.getElementById('f-gsis').value = v.gsis;
                 document.getElementById('f-pms').value = v.next_pms || '';
                 document.getElementById('f-history').value = v.repair_history || '';
+                document.getElementById('f-status').value = v.vehicle_status || 'Operational';
                 
                 renderHistoryTimeline(v.repair_history || '');
             } else {
                 document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
                 document.getElementById('edit-idx').value = -1;
                 document.getElementById('f-plate').disabled = false;
+                document.getElementById('f-status').value = 'Operational';
                 renderHistoryTimeline('');
             }
             modal.classList.remove('hidden');
@@ -1168,7 +1237,8 @@
                 lto: document.getElementById('f-lto').value,
                 gsis: document.getElementById('f-gsis').value,
                 next_pms: document.getElementById('f-pms').value || null,
-                repair_history: document.getElementById('f-history').value.trim() || null
+                repair_history: document.getElementById('f-history').value.trim() || null,
+                vehicle_status: document.getElementById('f-status').value
             };
 
             toggleLoading(true);
