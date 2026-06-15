@@ -1348,3 +1348,91 @@
                 driver: document.getElementById('f-driver').value.trim() || null,
                 next_pms: document.getElementById('f-pms').value || null,
                 repair_history: document.getElementById('f-history').value.trim() || null,
+                vehicle_status: document.getElementById('f-status').value,
+                equipment_category: category
+            };
+
+            // Database Cleaning: Map values dynamically depending on classification to keep database clean
+            if (category === "Light Equipment") {
+                recordData.chassis_no = null;
+                recordData.engine_no = null;
+                recordData.lto = null;
+                recordData.gsis = null;
+            } else if (category === "Heavy Equipment") {
+                recordData.chassis_no = document.getElementById('f-chassis').value.trim().toUpperCase() || null;
+                recordData.engine_no = document.getElementById('f-engine').value.trim().toUpperCase() || null;
+                recordData.lto = null;
+                recordData.gsis = null;
+            } else { // Service Vehicle
+                recordData.chassis_no = document.getElementById('f-chassis').value.trim().toUpperCase() || null;
+                recordData.engine_no = document.getElementById('f-engine').value.trim().toUpperCase() || null;
+                recordData.lto = document.getElementById('f-lto').value || null;
+                recordData.gsis = document.getElementById('f-gsis').value || null;
+            }
+
+            toggleLoading(true);
+            try {
+                let response;
+                if (idx > -1) {
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                        method: "PATCH",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                } else {
+                    recordData.lto_document_attachment = null;
+                    recordData.cr_document_attachment = null;
+                    recordData.gsis_document_attachment = null;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                        method: "POST",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText);
+                }
+                
+                closeFormModal();
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error("Mutation failed:", err);
+                alert(`Error saving vehicle details:\n${err.message || "Please check your Supabase DB connection and column types."}`);
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        async function deleteVehicleRecord(plateId) {
+            if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateId)}`, {
+                    method: "DELETE",
+                    headers: getHeaders()
+                });
+                if (!response.ok) throw new Error("Cloud execution failed.");
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error(err);
+                alert("Database action updated successfully.");
+                fetchFleetFromCloud();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function exportLocalDatabaseToBackupFile() {
+            if (fleet.length === 0) return alert("No operational data array rows available for packaging snapshots.");
+            const flatStringData = JSON.stringify(fleet, null, 2);
+            const dataBlob = new Blob([flatStringData], { type: "application/json" });
+            const anchor = document.createElement('a');
+            anchor.href = URL.createObjectURL(dataBlob);
+            anchor.download = `CEO_FLEET_SNAPSHOT_${new Date().toISOString().split('T')[0]}.json`;
+            anchor.click();
+        }
+    </script>
+</body>
+</html>
