@@ -23,6 +23,22 @@
         }
     </script>
     <style>
+        /* Clean custom scrollbar for overflow scroll elements */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #243249;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
         /* Custom print overrides */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
@@ -101,7 +117,7 @@
                     Docs Repository
                 </button>
                 <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     System Utilities
                 </button>
             </div>
@@ -370,8 +386,19 @@
                             <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                         </div>
                         <div class="col-span-2 flex flex-col gap-1.5 border-t border-brand-border pt-4">
-                            <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
+                            <div class="flex items-center justify-between">
+                                <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
+                                <!-- Quick Presets -->
+                                <div class="flex gap-1" id="pms-quick-presets">
+                                    <button type="button" onclick="setQuickPmsPreset(6)" class="bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Standard (6 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy Use (3 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Light Tool (12 mos)</button>
+                                </div>
+                            </div>
                             <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                            <span class="text-[10px] text-slate-400 mt-1 italic leading-relaxed">
+                                ℹ️ <strong>Baguio Motorpool Guideline:</strong> Change Oil, Oil Filter, and Fuel Filter are typically serviced every <strong>6 months</strong> (or every <strong>5,000 km</strong> for standard oil / <strong>10,000 km</strong> for synthetic oil).
+                            </span>
                         </div>
 
                         <!-- Mechanic Structured Logger -->
@@ -603,7 +630,8 @@
         }
 
         function evaluateDateStatus(targetDateStr, warningWindow = WARNING_WINDOW_DAYS) {
-            if (!targetDateStr) return { label: "N/A", statusClass: "valid", colorClass: "text-slate-500 bg-slate-800/10 border border-slate-700/10", daysRemaining: 9999 };
+            // Safe fallback: non-road assets do not require registration and output "N/A" rather than trigger alerts
+            if (!targetDateStr) return { label: "N/A", statusClass: "valid", colorClass: "text-slate-500 bg-slate-800/20 border border-slate-700/20", daysRemaining: 9999 };
             const targetDate = new Date(targetDateStr);
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -622,7 +650,7 @@
         }
 
         function evaluatePmsStatus(targetDateStr) {
-            if (!targetDateStr) return { label: "NO PMS SCHED", statusClass: "expired", colorClass: "text-slate-400 bg-slate-800/40 border border-slate-700/30", daysRemaining: -9999 };
+            if (!targetDateStr) return { label: "NO PMS SCHED", statusClass: "expired", colorClass: "text-slate-400 bg-slate-800/40 border border-slate-700/30", daysRemaining: -9999, detailText: "No target set" };
             const targetDate = new Date(targetDateStr);
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -632,11 +660,30 @@
             const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
 
             if (daysRemaining < 0) {
-                return { label: "OVERDUE", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", daysRemaining };
+                const absDays = Math.abs(daysRemaining);
+                return { 
+                    label: `OVERDUE (${absDays}d)`, 
+                    statusClass: "expired", 
+                    colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", 
+                    daysRemaining,
+                    detailText: `${absDays} days overdue`
+                };
             } else if (daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
-                return { label: `DUE (${daysRemaining}d)`, statusClass: "expiring", colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", daysRemaining };
+                return { 
+                    label: `DUE (${daysRemaining}d)`, 
+                    statusClass: "expiring", 
+                    colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", 
+                    daysRemaining,
+                    detailText: `Due in ${daysRemaining} days`
+                };
             } else {
-                return { label: "PMS OK", statusClass: "valid", colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", daysRemaining };
+                return { 
+                    label: `PMS OK (${daysRemaining}d)`, 
+                    statusClass: "valid", 
+                    colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", 
+                    daysRemaining,
+                    detailText: `${daysRemaining} days left`
+                };
             }
         }
 
@@ -1092,116 +1139,13 @@
             });
         }
 
-        async function triggerFileUploadForm(plate, fieldName) {
-            currentUploadPlate = plate;
-            currentUploadField = fieldName;
-            document.getElementById('global-hidden-uploader').click();
-        }
-
-        async function processSelectedFile(inputElement) {
-            if (!inputElement.files || inputElement.files.length === 0) return;
-            const targetFile = inputElement.files[0];
-            const fileExtension = targetFile.name.split('.').pop();
-            const storagePath = `${currentUploadPlate}_${currentUploadField}_${Date.now()}.${fileExtension}`;
-            const cleanPublicUrl = `${SUPABASE_URL}/storage/v1/object/public/records/${storagePath}`;
-            
-            toggleLoading(true);
-            try {
-                const storageEndpoint = `${SUPABASE_URL}/storage/v1/object/records/${storagePath}`;
-                const uploadHeaders = {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": `Bearer ${SUPABASE_KEY}`,
-                    "Content-Type": targetFile.type
-                };
-
-                const uploadResponse = await fetch(storageEndpoint, {
-                    method: "POST",
-                    headers: uploadHeaders,
-                    body: targetFile
-                });
-
-                if (!uploadResponse.ok) throw new Error("Storage upload failed.");
-
-                const patchPayload = {};
-                patchPayload[currentUploadField] = cleanPublicUrl;
-
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
-                    method: "PATCH",
-                    headers: getHeaders(),
-                    body: JSON.stringify(patchPayload)
-                });
-
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`Unable to patch document field. ${errText}`);
-                }
-
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
-
-                alert("Document successfully committed to security repository vault.");
-                inputElement.value = ""; 
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } catch (err) {
-                console.error(err);
-                alert(`Error: ${err.message || "Failed to commit attachment record."}`);
-                const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
-                if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
-                
-                inputElement.value = "";
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } finally {
-                toggleLoading(false);
-            }
-        }
-
-        async function clearCloudDocumentField(plateNumber, targetField) {
-            if (!confirm(`Are you sure you want to completely remove this document link for vehicle ${plateNumber}?`)) {
-                return;
-            }
-
-            toggleLoading(true);
-            try {
-                const patchPayload = {};
-                patchPayload[targetField] = null;
-
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
-                    method: "PATCH",
-                    headers: getHeaders(),
-                    body: JSON.stringify(patchPayload)
-                });
-
-                if (!response.ok) {
-                    throw new Error("Database field clearing failed. Confirm database connection.");
-                }
-
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
-
-                alert("Document attachment reference successfully removed.");
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } catch (err) {
-                console.error("Bypassing pipeline intercept error:", err);
-                
-                const localVehicle = fleet.find(v => v.plate === plateNumber);
-                if (localVehicle) localVehicle[targetField] = null;
-                
-                updateInterfaceMetricsAndAlerts();
-                buildRepositoryTableRows();
-            } finally {
-                toggleLoading(false);
-            }
-        }
-
         function adjustFormFieldsByCategory() {
             const category = document.getElementById('f-category').value;
             const wrapperChassis = document.getElementById('wrapper-chassis');
             const wrapperEngine = document.getElementById('wrapper-engine');
             const wrapperLto = document.getElementById('wrapper-lto');
             const wrapperGsis = document.getElementById('wrapper-gsis');
+            const pmsPresets = document.getElementById('pms-quick-presets');
 
             if (category === "Light Equipment") {
                 // Hides LTO, GSIS, Chassis, and Engine No.
@@ -1223,12 +1167,25 @@
             }
         }
 
+        function setQuickPmsPreset(months) {
+            const today = new Date();
+            // Add months cleanly
+            today.setMonth(today.getMonth() + months);
+            
+            // Format YYYY-MM-DD
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            
+            document.getElementById('f-pms').value = `${yyyy}-${mm}-${dd}`;
+        }
+
         function openFormModal(index = -1) {
             const modal = document.getElementById('form-modal');
             const form = document.getElementById('vehicle-form');
             form.reset();
 
-            // Set default logger date to today
+            // Set default logger date to today (June 15, 2026)
             document.getElementById('new-log-date').value = "2026-06-15";
             document.getElementById('new-log-activity').value = '';
 
