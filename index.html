@@ -127,17 +127,17 @@
                 <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-6 rounded-xl shadow-lg">
                     <span class="text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
                     <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-expired">0</span>
-                    <span class="text-xs text-rose-300 mt-1 block font-medium" id="stat-expired-sub">0 LTO • 0 GSIS</span>
+                    <span class="text-xs text-rose-300 mt-1 block font-medium" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-6 rounded-xl shadow-lg">
-                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block font-medium">Expiring Soon</span>
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block font-medium">Expiring & Due</span>
                     <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-warning">0</span>
-                    <span class="text-xs text-amber-300 mt-1 block" id="stat-warning-sub">0 LTO • 0 GSIS</span>
+                    <span class="text-xs text-amber-300 mt-1 block" id="stat-warning-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-emerald-500 border border-brand-border p-6 rounded-xl shadow-lg">
                     <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block">Fully Compliant</span>
                     <span class="text-3xl font-extrabold text-white mt-2 block" id="stat-valid">0</span>
-                    <span class="text-xs text-emerald-400 mt-1 block">Up to Date</span>
+                    <span class="text-xs text-emerald-400 mt-1 block">PMS & Docs Up-to-Date</span>
                 </div>
             </div>
 
@@ -145,7 +145,7 @@
             <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6 hidden space-y-4" id="alerts-container-box">
                 <div class="flex items-center gap-2 text-amber-500 font-bold text-xs uppercase tracking-widest">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Expiration Attention Required (60-Day Window)
+                    Expiration & Maintenance Attention Required
                 </div>
                 <div id="alerts-list-hook" class="space-y-3"></div>
             </div>
@@ -153,7 +153,7 @@
             <!-- Filter & Search Toolbar -->
             <div class="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col lg:flex-row gap-6 justify-between lg:items-center">
                 <div class="w-full lg:max-w-md relative">
-                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search by plate number, model, or driver...">
+                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search by plate, model, driver, chassis, engine...">
                     <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
                 <div class="flex flex-wrap gap-6">
@@ -185,11 +185,12 @@
                         <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
                             <tr>
                                 <th class="py-4 px-6">Plate No.</th>
-                                <th class="py-4 px-6">Model Description</th>
-                                <th class="py-4 px-6">Year</th>
+                                <th class="py-4 px-6">Model Description / Identification</th>
                                 <th class="py-4 px-6">Assigned Driver</th>
-                                <th class="py-4 px-6">LTO Registration</th>
-                                <th class="py-4 px-6">GSIS Insurance</th>
+                                <th class="py-4 px-6">LTO Status</th>
+                                <th class="py-4 px-6">GSIS Status</th>
+                                <th class="py-4 px-6">Next PMS</th>
+                                <th class="py-4 px-6">Last Repair History Snippet</th>
                                 <th class="py-4 px-6 text-center">Actions</th>
                             </tr>
                         </thead>
@@ -210,7 +211,7 @@
                 <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
                     <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
                     <p class="text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
-                    <p class="text-lg font-extrabold text-emerald-800 tracking-wide mt-6 uppercase">Executive Fleet Compliance Audit Report</p>
+                    <p class="text-lg font-extrabold text-emerald-800 tracking-wide mt-6 uppercase">Executive Fleet Compliance & Maintenance Report</p>
                 </div>
                 <div class="text-right text-xs font-semibold text-slate-500 mb-6 italic" id="print-timestamp">Generated on: --</div>
                 <div class="grid grid-cols-3 gap-6 mb-8 no-print">
@@ -219,11 +220,11 @@
                         <span class="text-2xl font-extrabold text-slate-800 mt-1 block" id="rep-total">0</span>
                     </div>
                     <div class="bg-rose-50 border border-rose-100 rounded-lg p-4 text-center">
-                        <span class="text-[10px] font-bold text-rose-500 uppercase tracking-wider block">Critical Expired Units</span>
+                        <span class="text-[10px] font-bold text-rose-500 uppercase tracking-wider block">Expired / Overdue Units</span>
                         <span class="text-2xl font-extrabold text-rose-700 mt-1 block" id="rep-expired">0</span>
                     </div>
                     <div class="bg-amber-50 border border-amber-100 rounded-lg p-4 text-center">
-                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Pending Warnings</span>
+                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Pending Warnings / Due PMS</span>
                         <span class="text-2xl font-extrabold text-amber-700 mt-1 block" id="rep-warning">0</span>
                     </div>
                 </div>
@@ -231,10 +232,11 @@
                     <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
                         <tr>
                             <th class="py-3 px-4">Plate No.</th>
-                            <th class="py-3 px-4">Model Description</th>
-                            <th class="py-3 px-4">Assigned Personnel</th>
+                            <th class="py-3 px-4">Identification Details (Chassis/Engine)</th>
+                            <th class="py-3 px-4">Driver</th>
                             <th class="py-3 px-4">LTO Status</th>
-                            <th class="py-3 px-4">GSIS Insurance Status</th>
+                            <th class="py-3 px-4">GSIS Status</th>
+                            <th class="py-3 px-4">Next PMS</th>
                         </tr>
                     </thead>
                     <tbody id="report-table-body" class="divide-y divide-slate-200"></tbody>
@@ -284,20 +286,20 @@
 
     <!-- Edit/Add Vehicle Form Modal Overlay -->
     <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4" id="form-modal">
-        <div class="bg-brand-card border border-brand-border w-full max-w-xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="bg-brand-card border border-brand-border w-full max-w-xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
             <div class="p-6 border-b border-brand-border flex items-center justify-between bg-slate-900/40">
                 <h3 id="modal-title" class="text-lg font-bold text-white">Log New Fleet Vehicle</h3>
                 <button class="text-slate-400 hover:text-white text-xl font-bold p-1 leading-none transition-all" id="btn-close-modal">&times;</button>
             </div>
             <form id="vehicle-form" class="flex-grow flex flex-col overflow-hidden">
                 <input type="hidden" id="edit-idx" value="-1">
-                <div class="p-6 space-y-6 overflow-y-auto flex-grow">
+                <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Converted Number</label>
                             <input type="text" id="f-plate" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all" placeholder="e.g. SAB-2391" required>
                         </div>
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acquisition Year</label>
                             <input type="number" id="f-year" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2019" min="1990" max="2030">
                         </div>
@@ -305,17 +307,33 @@
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vehicle Make / Model Description</label>
                             <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux D-4D CrewCab" required>
                         </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chassis Number</label>
+                            <input type="text" id="f-chassis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. MROFX12G00..." required>
+                        </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Engine Number</label>
+                            <input type="text" id="f-engine" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2KD-123456" required>
+                        </div>
                         <div class="col-span-2 flex flex-col gap-1.5">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Accountable Employee</label>
                             <input type="text" id="f-driver" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="Full name of engineer or officer">
                         </div>
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LTO Registration Deadline</label>
                             <input type="date" id="f-lto" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
                         </div>
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Comprehensive Policy</label>
                             <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" required>
+                        </div>
+                        <div class="col-span-2 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Next Preventive Maintenance Schedule (PMS)</label>
+                            <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                        <div class="col-span-2 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Repair Logs & Maintenance History Log</label>
+                            <textarea id="f-history" rows="4" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all resize-none" placeholder="Format: YYYY-MM-DD: Repair completed - Notes (One record per line)"></textarea>
                         </div>
                     </div>
                 </div>
@@ -332,6 +350,7 @@
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
 
         const WARNING_WINDOW_DAYS = 60;
+        const PMS_WARNING_WINDOW_DAYS = 30;
         let fleet = [];
         let ltoFilter = 'all';
         let gsisFilter = 'all';
@@ -346,7 +365,6 @@
             "Prefer": "return=representation"
         });
 
-        // Interface helper functions
         const toggleLoading = (show) => {
             document.getElementById('loading-spinner').classList.toggle('hidden', !show);
         };
@@ -393,8 +411,8 @@
                 console.error("Database connection error:", err);
                 alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", chassis_no: "MREZZ49X01", engine_no: "4D56-789012", next_pms: "2026-05-01", repair_history: "2026-05-01: Change oil and filter swap", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -454,7 +472,7 @@
             }
         }
 
-        function evaluateDateStatus(targetDateStr) {
+        function evaluateDateStatus(targetDateStr, warningWindow = WARNING_WINDOW_DAYS) {
             if (!targetDateStr) return { label: "EXPIRED", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border-rose-500/30", daysRemaining: -9999 };
             const targetDate = new Date(targetDateStr);
             const today = new Date();
@@ -466,10 +484,29 @@
 
             if (daysRemaining < 0) {
                 return { label: "EXPIRED", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", daysRemaining };
-            } else if (daysRemaining <= WARNING_WINDOW_DAYS) {
+            } else if (daysRemaining <= warningWindow) {
                 return { label: `WARN (${daysRemaining}d)`, statusClass: "expiring", colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", daysRemaining };
             } else {
                 return { label: "VALID", statusClass: "valid", colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", daysRemaining };
+            }
+        }
+
+        function evaluatePmsStatus(targetDateStr) {
+            if (!targetDateStr) return { label: "NO PMS SCHED", statusClass: "expired", colorClass: "text-slate-400 bg-slate-800/40 border border-slate-700/30", daysRemaining: -9999 };
+            const targetDate = new Date(targetDateStr);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
+
+            const differenceInTime = targetDate.getTime() - today.getTime();
+            const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+            if (daysRemaining < 0) {
+                return { label: "OVERDUE", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", daysRemaining };
+            } else if (daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                return { label: `DUE (${daysRemaining}d)`, statusClass: "expiring", colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", daysRemaining };
+            } else {
+                return { label: "PMS OK", statusClass: "valid", colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", daysRemaining };
             }
         }
 
@@ -479,8 +516,8 @@
             let warningCount = 0;
             let validCount = 0;
 
-            let ltoExpired = 0, gsisExpired = 0;
-            let ltoWarning = 0, gsisWarning = 0;
+            let ltoExpired = 0, gsisExpired = 0, pmsOverdue = 0;
+            let ltoWarning = 0, gsisWarning = 0, pmsWarning = 0;
 
             const MathAbs = Math.abs;
             const alertsHook = document.getElementById('alerts-list-hook');
@@ -490,9 +527,10 @@
             fleet.forEach(v => {
                 const ltoStat = evaluateDateStatus(v.lto);
                 const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
 
-                let isExpired = (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired');
-                let isWarning = (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') && !isExpired;
+                let isExpired = (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired' || pmsStat.statusClass === 'expired');
+                let isWarning = (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring' || pmsStat.statusClass === 'expiring') && !isExpired;
 
                 if (isExpired) expiredCount++;
                 else if (isWarning) warningCount++;
@@ -500,8 +538,10 @@
 
                 if (ltoStat.statusClass === 'expired') ltoExpired++;
                 if (gsisStat.statusClass === 'expired') gsisExpired++;
+                if (pmsStat.statusClass === 'expired') pmsOverdue++;
                 if (ltoStat.statusClass === 'expiring') ltoWarning++;
                 if (gsisStat.statusClass === 'expiring') gsisWarning++;
+                if (pmsStat.statusClass === 'expiring') pmsWarning++;
 
                 if (ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
@@ -532,13 +572,28 @@
                     `;
                     alertsHook.appendChild(item);
                 }
+
+                if (pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-emerald-500 text-sm text-slate-300";
+                    const dayLabel = pmsStat.daysRemaining < 0 ? `PMS OVERDUE (${MathAbs(pmsStat.daysRemaining)} days ago)` : `PMS SCHEDULED (${pmsStat.daysRemaining} days remaining)`;
+                    item.innerHTML = `
+                        <div>
+                            <strong class="text-white">${v.plate}</strong> — ${v.model} requires Preventive Maintenance.
+                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-emerald-500/15 text-emerald-400 rounded">PMS DUE</span>
+                        </div>
+                        <div class="font-semibold text-rose-400 text-xs tracking-wider uppercase">${dayLabel}</div>
+                    `;
+                    alertsHook.appendChild(item);
+                }
             });
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-expired').innerText = expiredCount;
-            document.getElementById('stat-expired-sub').innerText = `${ltoExpired} LTO • ${gsisExpired} GSIS`;
+            document.getElementById('stat-expired-sub').innerText = `${ltoExpired} LTO • ${gsisExpired} GSIS • ${pmsOverdue} PMS`;
             document.getElementById('stat-warning').innerText = warningCount;
-            document.getElementById('stat-warning-sub').innerText = `${ltoWarning} LTO • ${gsisWarning} GSIS`;
+            document.getElementById('stat-warning-sub').innerText = `${ltoWarning} LTO • ${gsisWarning} GSIS • ${pmsWarning} PMS`;
             document.getElementById('stat-valid').innerText = validCount;
 
             document.getElementById('alerts-container-box').classList.toggle('hidden', alertItemsCount === 0);
@@ -552,6 +607,7 @@
             fleet.forEach((v, index) => {
                 const ltoStat = evaluateDateStatus(v.lto);
                 const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
 
                 if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
                 if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
@@ -559,14 +615,29 @@
                 const matchPlate = v.plate.toLowerCase().includes(query);
                 const matchModel = v.model.toLowerCase().includes(query);
                 const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
-                if (!matchPlate && !matchModel && !matchDriver) return;
+                const matchChassis = v.chassis_no && v.chassis_no.toLowerCase().includes(query);
+                const matchEngine = v.engine_no && v.engine_no.toLowerCase().includes(query);
+                if (!matchPlate && !matchModel && !matchDriver && !matchChassis && !matchEngine) return;
+
+                // Grab short Repair snippet
+                let lastRepairSnippet = "—";
+                if (v.repair_history) {
+                    const lines = v.repair_history.split('\n').filter(l => l.trim() !== "");
+                    if (lines.length > 0) {
+                        lastRepairSnippet = lines[0].substring(0, 32) + (lines[0].length > 32 ? "..." : "");
+                    }
+                }
 
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-800/20 transition-all";
                 row.innerHTML = `
                     <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
-                    <td class="py-4 px-6 font-semibold text-slate-100">${v.model}</td>
-                    <td class="py-4 px-6">${v.year || '—'}</td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-100">${v.model} (${v.year || '—'})</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                            C: ${v.chassis_no || '—'} • E: ${v.engine_no || '—'}
+                        </div>
+                    </td>
                     <td class="py-4 px-6 text-slate-300">${v.driver ? v.driver : '<span class="italic text-slate-500">Unassigned</span>'}</td>
                     <td class="py-4 px-6">
                         <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${ltoStat.colorClass}">${ltoStat.label}</span>
@@ -576,6 +647,11 @@
                         <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${gsisStat.colorClass}">${gsisStat.label}</span>
                         <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.gsis}</div>
                     </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.next_pms || '—'}</div>
+                    </td>
+                    <td class="py-4 px-6 text-xs text-slate-400 font-sans italic max-w-[200px] truncate" title="${v.repair_history || ''}">${lastRepairSnippet}</td>
                     <td class="py-4 px-6 text-center">
                         <div class="inline-flex gap-2">
                             <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-1.5 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center gap-1.5" onclick="openFormModal(${index})">
@@ -599,8 +675,9 @@
             fleet.forEach(v => {
                 const ltoStat = evaluateDateStatus(v.lto);
                 const gsisStat = evaluateDateStatus(v.gsis);
-                if (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired') expiredCount++;
-                else if (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring') warningCount++;
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+                if (ltoStat.statusClass === 'expired' || gsisStat.statusClass === 'expired' || pmsStat.statusClass === 'expired') expiredCount++;
+                else if (ltoStat.statusClass === 'expiring' || gsisStat.statusClass === 'expiring' || pmsStat.statusClass === 'expiring') warningCount++;
             });
 
             document.getElementById('rep-total').innerText = fleet.length;
@@ -613,12 +690,17 @@
             fleet.forEach(v => {
                 const ltoStat = evaluateDateStatus(v.lto);
                 const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
 
                 const row = document.createElement('tr');
                 row.className = "text-slate-800 font-medium";
                 row.innerHTML = `
                     <td class="py-3 px-4 font-mono font-bold border-b border-slate-200 text-slate-900">${v.plate}</td>
-                    <td class="py-3 px-4 border-b border-slate-200 text-slate-900">${v.model} (${v.year})</td>
+                    <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
+                        <div><strong>${v.model} (${v.year || '—'})</strong></div>
+                        <div>Chassis: ${v.chassis_no || '—'}</div>
+                        <div>Engine: ${v.engine_no || '—'}</div>
+                    </td>
                     <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
                     <td class="py-3 px-4 border-b border-slate-200">
                         <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${ltoStat.colorClass}">${ltoStat.label}</span>
@@ -627,6 +709,10 @@
                     <td class="py-3 px-4 border-b border-slate-200">
                         <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${gsisStat.colorClass}">${gsisStat.label}</span>
                         <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.next_pms || '—'}</span>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -751,7 +837,7 @@
                 buildRepositoryTableRows();
             } catch (err) {
                 console.error(err);
-                alert(`Error: ${err.message || "Failed to commit attachment record. Please check table structure."}`);
+                alert(`Error: ${err.message || "Failed to commit attachment record."}`);
                 const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
                 if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
                 
@@ -815,9 +901,13 @@
                 document.getElementById('f-plate').disabled = true;
                 document.getElementById('f-year').value = v.year;
                 document.getElementById('f-model').value = v.model;
+                document.getElementById('f-chassis').value = v.chassis_no || '';
+                document.getElementById('f-engine').value = v.engine_no || '';
                 document.getElementById('f-driver').value = v.driver || '';
                 document.getElementById('f-lto').value = v.lto;
                 document.getElementById('f-gsis').value = v.gsis;
+                document.getElementById('f-pms').value = v.next_pms || '';
+                document.getElementById('f-history').value = v.repair_history || '';
             } else {
                 document.getElementById('modal-title').innerText = "Log New Fleet Vehicle";
                 document.getElementById('edit-idx').value = -1;
@@ -841,9 +931,13 @@
                 plate: document.getElementById('f-plate').value.trim().toUpperCase(),
                 year: document.getElementById('f-year').value.toString(),
                 model: document.getElementById('f-model').value.trim(),
+                chassis_no: document.getElementById('f-chassis').value.trim().toUpperCase(),
+                engine_no: document.getElementById('f-engine').value.trim().toUpperCase(),
                 driver: document.getElementById('f-driver').value.trim() || null,
                 lto: document.getElementById('f-lto').value,
-                gsis: document.getElementById('f-gsis').value
+                gsis: document.getElementById('f-gsis').value,
+                next_pms: document.getElementById('f-pms').value || null,
+                repair_history: document.getElementById('f-history').value.trim() || null
             };
 
             toggleLoading(true);
