@@ -1,4 +1,5 @@
 
+```html
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
@@ -60,7 +61,7 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen text-slate-100 flex bg-brand-dark overflow-hidden font-sans">
+<body class="h-full text-slate-100 flex overflow-hidden font-sans">
 
     <!-- Global File Input for Repository Uploads -->
     <input type="file" id="global-hidden-uploader" class="hidden" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
@@ -100,7 +101,7 @@
     <div id="sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
     <!-- Sidebar Navigation (Drawer Collapsible on Mobile) -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0">
         <div>
             <div class="p-6 border-b border-brand-border flex items-center justify-between">
                 <div>
@@ -137,8 +138,8 @@
         </div>
     </div>
 
-    <!-- Workspace Area (Fixed widths dynamically adjusted to prevent shrinking) -->
-    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full">
+    <!-- Workspace Area -->
+    <div class="flex-grow flex flex-col overflow-hidden bg-brand-dark w-full">
         <!-- Top Bar Header -->
         <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
             <div class="flex items-center gap-3">
@@ -455,7 +456,7 @@
         </div>
     </div>
 
-    <!-- Single Vehicle Profile Print Sheet (Only visible during print with 'printing-single-profile' active on <body>) -->
+    <!-- Single Vehicle Profile Print Sheet -->
     <div id="print-only-profile" class="hidden print-only p-12 bg-white text-slate-900 border border-slate-200 rounded-xl max-w-4xl mx-auto font-sans">
         <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
             <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
@@ -586,9 +587,9 @@
             document.querySelectorAll('#filter-category-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-category-group button').forEach(b => {
-                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap";
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
                     });
-                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap";
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
                     categoryFilter = btn.getAttribute('data-filter');
                     buildRegistryTableRows();
                 });
@@ -744,8 +745,8 @@
                 const gsisStat = evaluateDateStatus(v.gsis);
                 const pmsStat = evaluatePmsStatus(v.next_pms);
 
-                let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || (v.next_pms && pmsStat.statusClass === 'expired');
-                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || (v.next_pms && pmsStat.statusClass === 'expiring')) && !isExpired;
+                let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || pmsStat.statusClass === 'expired';
+                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || pmsStat.statusClass === 'expiring') && !isExpired;
 
                 if (isExpired) expiredCount++;
                 else if (isWarning) warningCount++;
@@ -753,10 +754,10 @@
 
                 if (v.lto && ltoStat.statusClass === 'expired') ltoExpired++;
                 if (v.gsis && gsisStat.statusClass === 'expired') gsisExpired++;
-                if (v.next_pms && pmsStat.statusClass === 'expired') pmsOverdue++;
+                if (pmsStat.statusClass === 'expired') pmsOverdue++;
                 if (v.lto && ltoStat.statusClass === 'expiring') ltoWarning++;
                 if (v.gsis && gsisStat.statusClass === 'expiring') gsisWarning++;
-                if (v.next_pms && pmsStat.statusClass === 'expiring') pmsWarning++;
+                if (pmsStat.statusClass === 'expiring') pmsWarning++;
 
                 if (v.lto && ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
@@ -788,7 +789,7 @@
                     alertsHook.appendChild(item);
                 }
 
-                if (v.next_pms && pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                if (pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-emerald-500 text-sm text-slate-300";
@@ -946,8 +947,8 @@
                         <div>
                             <div class="font-mono font-bold text-white tracking-wide text-lg">${v.plate}</div>
                             <div class="flex gap-1.5 mt-1.5">
-                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center ${statusConfig.colors}">${statusConfig.label}</span>
-                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${statusConfig.colors}">${statusConfig.label}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
                             </div>
                         </div>
                         <div class="text-right">
@@ -1477,3 +1478,4 @@
     </script>
 </body>
 </html>
+```
