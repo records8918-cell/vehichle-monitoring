@@ -89,7 +89,7 @@
                     Executive Reports
                 </button>
                 <button id="side-nav-repository" onclick="switchActiveView('repository')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold">
-                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white group-[.active]:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 00-2 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
                     Docs Repository
                 </button>
                 <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group [&.active]:bg-emerald-500/10 [&.active]:text-emerald-400 [&.active]:font-semibold">
@@ -245,7 +245,7 @@
         <!-- Cloud Documentation Vault View Container -->
         <div class="flex-grow p-8 overflow-y-auto hidden space-y-6" id="view-repository">
             <p class="text-sm text-slate-400 leading-relaxed max-w-3xl">
-                Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.) and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
+                Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.), LTO Certificates of Registration (C.R.), and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
             </p>
             <div class="bg-brand-card border border-brand-border rounded-xl p-4">
                 <div class="relative w-full max-w-md">
@@ -258,8 +258,9 @@
                         <tr>
                             <th class="py-4 px-6">Plate No.</th>
                             <th class="py-4 px-6">Assigned Officer</th>
-                            <th class="py-4 px-6">LTO Registration Document</th>
-                            <th class="py-4 px-6">GSIS Insurance Document</th>
+                            <th class="py-4 px-6">LTO Official Receipt (O.R.)</th>
+                            <th class="py-4 px-6">LTO Certificate of Registration (C.R.)</th>
+                            <th class="py-4 px-6">GSIS Insurance (C.O.C.)</th>
                         </tr>
                     </thead>
                     <tbody id="repo-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
@@ -392,8 +393,8 @@
                 console.error("Database connection error:", err);
                 alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
-                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_document_attachment: null, gsis_document_attachment: null }
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "SFC-8821", model: "Mitsubishi L300 Exceed", year: "2020", driver: "W. Laguinday", lto: "2026-06-23", gsis: "2026-06-18", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -481,6 +482,7 @@
             let ltoExpired = 0, gsisExpired = 0;
             let ltoWarning = 0, gsisWarning = 0;
 
+            const MathAbs = Math.abs;
             const alertsHook = document.getElementById('alerts-list-hook');
             alertsHook.innerHTML = "";
             let alertItemsCount = 0;
@@ -505,7 +507,7 @@
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-amber-500 text-sm text-slate-300";
-                    const dayLabel = ltoStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(ltoStat.daysRemaining)} days ago)` : `${ltoStat.daysRemaining} days remaining`;
+                    const dayLabel = ltoStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${MathAbs(ltoStat.daysRemaining)} days ago)` : `${ltoStat.daysRemaining} days remaining`;
                     item.innerHTML = `
                         <div>
                             <strong class="text-white">${v.plate}</strong> — ${v.model} (${v.driver || 'No Assigned Driver'}) requires LTO Registration Renewal.
@@ -520,7 +522,7 @@
                     alertItemsCount++;
                     const item = document.createElement('div');
                     item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-blue-500 text-sm text-slate-300";
-                    const dayLabel = gsisStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${Math.abs(gsisStat.daysRemaining)} days ago)` : `${gsisStat.daysRemaining} days remaining`;
+                    const dayLabel = gsisStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${MathAbs(gsisStat.daysRemaining)} days ago)` : `${gsisStat.daysRemaining} days remaining`;
                     item.innerHTML = `
                         <div>
                             <strong class="text-white">${v.plate}</strong> — ${v.model} (${v.driver || 'No Assigned Driver'}) requires GSIS Insurance Coverage Renewal.
@@ -642,30 +644,46 @@
                 if (query && !matchPlate && !matchDriver) return;
 
                 let ltoCell = "";
+                let crCell = "";
                 let gsisCell = "";
 
+                // LTO Official Receipt (O.R.)
                 if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
                     ltoCell = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View Document</a>
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
                             <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
                             <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
                         </div>
                     `;
                 } else {
-                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload Scanned Copy</button>`;
+                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload O.R.</button>`;
                 }
 
+                // LTO Certificate of Registration (C.R.)
+                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    crCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'cr_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    crCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">📤 Upload C.R.</button>`;
+                }
+
+                // GSIS Insurance (C.O.C.)
                 if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
                     gsisCell = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View Document</a>
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
                             <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
                             <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
                         </div>
                     `;
                 } else {
-                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload Scanned Copy</button>`;
+                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload C.O.C.</button>`;
                 }
 
                 const row = document.createElement('tr');
@@ -674,6 +692,7 @@
                     <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
                     <td class="py-4 px-6 font-semibold text-slate-100">${v.driver || 'Unassigned'}</td>
                     <td class="py-4 px-6">${ltoCell}</td>
+                    <td class="py-4 px-6">${crCell}</td>
                     <td class="py-4 px-6">${gsisCell}</td>
                 `;
                 tbody.appendChild(row);
@@ -713,11 +732,15 @@
                 const patchPayload = {};
                 patchPayload[currentUploadField] = cleanPublicUrl;
 
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(currentUploadPlate)}`, {
                     method: "PATCH",
                     headers: getHeaders(),
                     body: JSON.stringify(patchPayload)
                 });
+
+                if (!response.ok) {
+                    throw new Error("Unable to patch document field. Check if database column exists.");
+                }
 
                 const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
                 if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
@@ -728,6 +751,7 @@
                 buildRepositoryTableRows();
             } catch (err) {
                 console.error(err);
+                alert(`Error: ${err.message || "Failed to commit attachment record. Please check table structure."}`);
                 const localVehicle = fleet.find(v => v.plate === currentUploadPlate);
                 if (localVehicle) localVehicle[currentUploadField] = cleanPublicUrl;
                 
@@ -749,11 +773,15 @@
                 const patchPayload = {};
                 patchPayload[targetField] = null;
 
-                await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateNumber)}`, {
                     method: "PATCH",
                     headers: getHeaders(),
                     body: JSON.stringify(patchPayload)
                 });
+
+                if (!response.ok) {
+                    throw new Error("Database field clearing failed. Confirm database connection.");
+                }
 
                 const localVehicle = fleet.find(v => v.plate === plateNumber);
                 if (localVehicle) localVehicle[targetField] = null;
@@ -829,6 +857,7 @@
                     });
                 } else {
                     recordData.lto_document_attachment = null;
+                    recordData.cr_document_attachment = null;
                     recordData.gsis_document_attachment = null;
                     response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
                         method: "POST",
