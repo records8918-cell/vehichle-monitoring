@@ -1,22 +1,3 @@
-When you deploy your application to hosting platforms like Vercel, the build
-systems optimize and wrap the JavaScript code in a strict, sandboxed scope [1].
-
-Because of this isolation, classic inline HTML attributes like
-onclick="triggerFileUploadForm(...)" can fail because the browser's console is
-prevented from finding the isolated functions on the global window object [1].
-This results in the buttons doing nothing when clicked.
-
-How I solved this:
-
-I have eliminated all inline string-based event handlers in both the Docs
-Repository and the Dashboard Registry (including mobile touch cards).
-
-All buttons—such as Upload, Replace, View, Remove, Edit, and Print Profile—are
-now programmatically bound to their click events using standard, modern
-addEventListener methods on the DOM nodes [1]. This ensures that they respond
-immediately when clicked under any deployment environment.
-
-Complete, Responsive HTML Code:
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
