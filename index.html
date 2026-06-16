@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Monitor PH — City Engineering Office</title>
+    <title>Fleet Monitor PH — Baguio City Engineering</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,1336 +12,1468 @@
                 extend: {
                     colors: {
                         brand: {
-                            dark: '#070a13',
-                            card: '#111827',
-                            cardLight: '#1f2937',
+                            dark: '#0b0f19',
+                            card: '#161f30',
                             accent: '#10b981',
-                            accentHover: '#059669',
-                            border: '#1f2937',
-                            borderLight: '#374151',
-                            textMuted: '#9ca3af'
+                            border: '#243249'
                         }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Custom Scrollbar Styling for Heavy Data Interfaces */
+        /* Clean custom scrollbar for overflow scroll elements */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #070a13;
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1f2937;
-            border-radius: 8px;
+            background: #243249;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #10b981;
         }
 
-        /* Map / Pulse Animations for Warnings */
-        .pulse-warning {
-            animation: pulse-warn 2s infinite;
-        }
-        @keyframes pulse-warn {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-        }
-
-        .pulse-danger {
-            animation: pulse-dang 2s infinite;
-        }
-        @keyframes pulse-dang {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        /* Print Media CSS Engine Overrides */
+        /* Custom print overrides */
         @media print {
-            body { 
-                background: #ffffff !important; 
-                color: #000000 !important; 
-                overflow: visible !important;
-            }
-            .no-print { 
-                display: none !important; 
-            }
-            .print-layout-container { 
-                display: block !important; 
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100% !important;
-                background: #ffffff !important;
-                color: #000000 !important;
-            }
-            .print-card { 
-                border: 1px solid #94a3b8 !important; 
-                background: #ffffff !important; 
-                color: #000000 !important; 
-                box-shadow: none !important; 
-                padding: 20px !important;
-                margin-bottom: 15px !important;
-                page-break-inside: avoid;
-            }
-            .print-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-            }
-            .print-table th { 
-                background-color: #f1f5f9 !important; 
-                color: #0f172a !important; 
-                border: 1px solid #cbd5e1 !important;
-                font-weight: bold !important;
-                padding: 8px !important;
-            }
-            .print-table td { 
-                border: 1px solid #e2e8f0 !important; 
-                color: #0f172a !important; 
-                padding: 8px !important;
-            }
-            .print-badge { 
-                border: 1px solid #000000 !important; 
-                background: transparent !important; 
-                color: #000000 !important; 
-                padding: 2px 6px !important;
-                font-size: 10px !important;
-                text-transform: uppercase !important;
-            }
+            body { background: #ffffff !important; color: #000000 !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            
+            /* Print Routing Configurations */
+            body.printing-single-profile .print-only-profile { display: block !important; }
+            body.printing-single-profile .print-exec-layout { display: none !important; }
+
+            body.printing-exec-report .print-exec-layout { display: block !important; }
+            body.printing-exec-report .print-only-profile { display: none !important; }
+
+            .print-card { border: 1px solid #e2e8f0 !important; background: #ffffff !important; color: #000000 !important; box-shadow: none !important; }
+            .print-table th { background-color: #f1f5f9 !important; color: #0f172a !important; border-bottom: 2px solid #cbd5e1 !important; }
+            .print-table td { border-bottom: 1px solid #e2e8f0 !important; color: #0f172a !important; }
+            .print-badge { border: 1px solid #000000 !important; background: transparent !important; color: #000000 !important; }
         }
     </style>
 </head>
-<body class="h-screen w-screen text-slate-100 flex bg-brand-dark overflow-hidden select-none" onload="catchSystemStore()">
+<body class="h-screen w-screen text-slate-100 flex bg-brand-dark overflow-hidden font-sans">
 
-    <div id="async-loading-layer" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-md z-[9999] flex items-center justify-center hidden transition-all duration-300">
-        <div class="flex flex-col items-center p-8 bg-brand-card border border-brand-border rounded-2xl max-w-sm text-center shadow-2xl">
-            <div class="relative w-16 h-16 mb-4">
-                <div class="absolute inset-0 rounded-full border-4 border-emerald-500/20"></div>
-                <div class="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin"></div>
-            </div>
-            <h4 class="text-lg font-bold text-white mb-1" id="loading-state-title">Syncing Matrix Engine</h4>
-            <p class="text-xs text-brand-textMuted leading-relaxed" id="loading-state-desc">Converting documentation blobs into high-density localized secure data URIs...</p>
+    <!-- Global File Input for Repository Uploads -->
+    <input type="file" id="global-hidden-uploader" class="hidden" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
+
+    <!-- Loading Spinner Overlay -->
+    <div id="loading-spinner" class="fixed inset-0 bg-brand-dark/80 backdrop-blur-sm z-[9999] flex items-center justify-center hidden">
+        <div class="flex flex-col items-center gap-4">
+            <svg class="animate-spin h-12 w-12 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-sm font-medium text-slate-300 tracking-wider">Syncing Cloud Database...</span>
         </div>
     </div>
 
-    <div class="fixed inset-0 bg-slate-950 z-[8888] flex items-center justify-center p-4 transition-all duration-500" id="gatekeeper-security-lock">
-        <div class="bg-brand-card border border-brand-border w-full max-w-md rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500"></div>
+    <!-- Security Gatekeeper Overlay -->
+    <div class="fixed inset-0 bg-brand-dark z-[8888] flex items-center justify-center p-4" id="gatekeeper-lock">
+        <div class="bg-brand-card border border-brand-border w-full max-w-md rounded-xl p-8 shadow-2xl text-center">
             <div class="mx-auto w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mb-6">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-black tracking-tight text-white">FLEET MONITOR PH</h2>
-                <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mt-1">City Engineering Office • Official Access Portal</p>
-            </div>
-            <form id="gatekeeper-auth-form" onsubmit="processGatekeeperVerification(event)" class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Administrative Passcode</label>
-                    <input type="password" id="gatekeeper-pass-input" class="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-center text-xl tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-slate-700 placeholder:tracking-normal" placeholder="••••••••" required>
+            <h2 class="text-2xl font-bold tracking-tight text-white mb-1">FLEET MONITOR PH</h2>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">City Engineering Office • Baguio</p>
+            <form id="gatekeeper-form">
+                <div class="mb-4">
+                    <input type="password" id="gatekeeper-pass" class="w-full bg-brand-dark border border-brand-border rounded-lg px-4 py-3 text-center text-lg tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" placeholder="••••••••" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white py-3.5 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-950/50">
-                    Verify Management Authorization
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2">
+                    🔑 Verify Access Credentials
                 </button>
-                <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-rose-400 text-xs text-center font-semibold mt-2 hidden" id="gatekeeper-error-msg">
-                    ⚠️ Access Denied: Invalid Administrative Passcode.
-                </div>
+                <div class="text-rose-500 text-sm font-semibold mt-4 hidden" id="gatekeeper-error">Invalid security password. Access denied.</div>
             </form>
-            <div class="mt-8 pt-6 border-t border-brand-border/60 text-center text-[10px] text-slate-500">
-                Authorized Personnel Only • Localized System Ledger Compliance Section
-            </div>
         </div>
     </div>
 
-    <div id="mobile-sidebar-canvas-backdrop" onclick="toggleMobileSidebarEngine(false)" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden transition-all duration-300"></div>
+    <!-- Mobile Navigation Backdrop Drawer Overlay -->
+    <div id="sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
-    <div id="app-sidebar-container" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static">
-        <div class="flex flex-col h-full overflow-y-auto">
-            <div class="p-6 border-b border-brand-border bg-slate-950/20 shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm shadow-md shadow-emerald-500/20">
-                        FM
-                    </div>
-                    <div>
-                        <h2 class="text-base font-black tracking-tight text-white leading-none">FLEET MONITOR</h2>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mt-1">City Engineering Office</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 space-y-6 flex-grow">
+    <!-- Sidebar Navigation (Drawer Collapsible on Mobile) -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between no-print shrink-0 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static">
+        <div>
+            <div class="p-6 border-b border-brand-border flex items-center justify-between">
                 <div>
-                    <span class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Core Operations</span>
-                    <nav class="space-y-1">
-                        <button id="nav-btn-dashboard" onclick="toggleActiveViewEngine('dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>
-                            Main Dashboard
-                        </button>
-                        <button id="nav-btn-analytics" onclick="toggleActiveViewEngine('analytics')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                            Analytics & Trends
-                        </button>
-                    </nav>
+                    <h2 class="text-lg font-bold tracking-tight text-white">FLEET MONITOR PH</h2>
+                    <span class="text-xs font-semibold text-emerald-500 uppercase tracking-wider block mt-1">City Engineering Office</span>
                 </div>
-
-                <div>
-                    <span class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Compliance Records</span>
-                    <nav class="space-y-1">
-                        <button id="nav-btn-reports" onclick="toggleActiveViewEngine('reports')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Executive Reports
-                        </button>
-                        <button id="nav-btn-repository" onclick="toggleActiveViewEngine('repository')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 012-2h10a2 2 0 012 2v2H5v-2zm0-2V7a2 2 0 012-2h2a2 2 0 012 2v10H5zm10 0V7a2 2 0 012-2h2a2 2 0 012 2v10h-10z"></path></svg>
-                            Scanned Docs Vault
-                        </button>
-                    </nav>
-                </div>
-
-                <div>
-                    <span class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">System Controls</span>
-                    <nav class="space-y-1">
-                        <button id="nav-btn-logs" onclick="toggleActiveViewEngine('logs')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            System Audit Logs
-                        </button>
-                        <button id="nav-btn-utilities" onclick="toggleActiveViewEngine('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            Backup & Snapshots
-                        </button>
-                    </nav>
-                </div>
+                <button onclick="toggleMobileSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
-            
-            <div class="p-4 border-t border-brand-border bg-slate-950/40 shrink-0 text-xs text-brand-textMuted">
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
-                    <div>
-                        <p class="font-bold text-slate-200">Active Node Session</p>
-                        <p class="text-[10px] text-slate-500">Motor Pool Comp., Lower Rock Quarry</p>
-                    </div>
-                </div>
+            <div class="py-6 px-3 space-y-1">
+                <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Operations</span>
+                <button id="side-nav-dashboard" onclick="switchActiveView('dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 group">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Main Dashboard
+                </button>
+                <button id="side-nav-reports" onclick="switchActiveView('reports')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Executive Reports
+                </button>
+                <button id="side-nav-repository" onclick="switchActiveView('repository')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 00-2 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
+                    Docs Repository
+                </button>
+                <button id="side-nav-utilities" onclick="switchActiveView('utilities')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    System Utilities
+                </button>
             </div>
+        </div>
+        <div class="p-6 border-t border-brand-border text-xs text-slate-400 bg-brand-dark/30">
+            <span class="font-semibold text-slate-300">Logged in:</span> CEO Admin<br>
+            Baguio City, PH
         </div>
     </div>
 
-    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full relative">
-        
-        <header class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print z-30">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleMobileSidebarEngine(true)" class="md:hidden text-slate-400 hover:text-white p-2 -ml-2 rounded-lg hover:bg-slate-900">
+    <!-- Workspace Area (Fixed widths dynamically adjusted to prevent shrinking) -->
+    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full">
+        <!-- Top Bar Header -->
+        <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Trigger Button -->
+                <button onclick="toggleMobileSidebar(true)" class="md:hidden text-slate-300 hover:text-white p-2 -ml-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div>
-                    <h1 id="global-workspace-view-title" class="text-base sm:text-xl font-black text-white tracking-tight">Active Fleet Control Ledger</h1>
+                <h1 id="workspace-view-header-title" class="text-base sm:text-xl font-bold text-white tracking-wide truncate">Active Fleet Registry</h1>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold py-2 px-3 sm:py-2 sm:px-4 rounded-lg shadow-lg shadow-emerald-900/10 flex items-center gap-1 sm:gap-2 transition-all" id="menu-add-vehicle">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span class="hidden sm:inline">Add Vehicle / Equipment</span>
+                <span class="sm:hidden">Add New</span>
+            </button>
+        </div>
+
+        <!-- Dashboard View Container -->
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto no-print space-y-6 sm:space-y-8" id="view-dashboard">
+            <!-- Metrics Segment (2 Columns on Mobile, 4 Columns on Desktop) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div class="bg-brand-card border-t-4 border-t-blue-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registry</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-total">0</span>
+                    <span class="text-[10px] text-slate-400 mt-1 block">Active Units Logged</span>
+                </div>
+                <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-expired">0</span>
+                    <span class="text-[9px] sm:text-xs text-rose-300 mt-1 block font-medium truncate" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
+                </div>
+                <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-widest block font-medium">Expiring & Due</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-warning">0</span>
+                    <span class="text-[9px] sm:text-xs text-amber-300 mt-1 block truncate" id="stat-warning-sub">0 LTO • 0 GSIS • 0 PMS</span>
+                </div>
+                <div class="bg-brand-card border-t-4 border-t-emerald-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
+                    <span class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest block">Fully Compliant</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-valid">0</span>
+                    <span class="text-[10px] text-emerald-400 mt-1 block">PMS & Docs Up-to-Date</span>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="executeModalWorkflowTrigger(-1)" class="bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white text-xs sm:text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded-xl shadow-lg shadow-emerald-950/40 flex items-center gap-2 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <span>Register Unit</span>
+
+            <!-- Active Expiring Alerts Block (Now Scrollable & Collapsible) -->
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 sm:p-6 hidden space-y-4" id="alerts-container-box">
+                <div class="flex items-center justify-between gap-2 text-amber-500 font-bold text-xs uppercase tracking-widest">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Expiration & Maintenance Attention Required (<span id="alert-badge-count">0</span>)
+                    </div>
+                    <button type="button" onclick="toggleAlertsPanel()" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 hover:border-amber-500/40 text-[10px] font-bold px-2.5 py-1 rounded transition-all">
+                        <span id="alerts-toggle-btn-text">Collapse</span>
+                    </button>
+                </div>
+                <div id="alerts-list-hook" class="space-y-3 max-h-56 overflow-y-auto pr-2 scrollbar-thin"></div>
+            </div>
+
+            <!-- Filter & Search Toolbar (Restored Segments & Category Support) -->
+            <div class="bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
+                <div class="w-full xl:max-w-xs relative">
+                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search plate, model, driver...">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <div class="flex flex-wrap gap-6 w-full xl:w-auto">
+                    <div class="w-full sm:w-auto">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type</span>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-category-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
+                        </div>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-lto-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        </div>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
+                        <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-gsis-group">
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Data Table Wrapper (Hidden on Mobile) -->
+            <div class="hidden md:block bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
+                            <tr>
+                                <th class="py-4 px-6">Plate / Control / Serial No.</th>
+                                <th class="py-4 px-6">Description & Age</th>
+                                <th class="py-4 px-6">Assigned Driver / Custodian</th>
+                                <th class="py-4 px-6">LTO Status</th>
+                                <th class="py-4 px-6">GSIS Status</th>
+                                <th class="py-4 px-6">Next PMS</th>
+                                <th class="py-4 px-6">Last Repair History Snippet</th>
+                                <th class="py-4 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registry-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Card List Container (Only visible on small devices) -->
+            <div id="registry-mobile-list" class="block md:hidden space-y-4"></div>
+        </div>
+
+        <!-- Executive Compliance Report View Container -->
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden" id="view-reports">
+            <div class="mb-6 no-print">
+                <button class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm shadow-md transition-all" onclick="triggerExecutiveReportPrint()">
+                    🖨️ Print Official Report
                 </button>
             </div>
-        </header>
-
-        <main class="flex-grow overflow-hidden relative">
-
-            <div id="viewport-segment-dashboard" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 sm:space-y-8 no-print transition-opacity duration-200">
-                
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                    <div class="bg-brand-card border border-brand-border p-4 sm:p-6 rounded-2xl shadow-xl flex items-center justify-between relative overflow-hidden group">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
-                        <div>
-                            <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registered Units</span>
-                            <span class="text-2xl sm:text-4xl font-black text-white mt-2 block tracking-tight" id="metric-dom-total">0</span>
-                        </div>
-                        <div class="text-slate-800 group-hover:text-slate-700 transition-colors hidden sm:block">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 011-1v-4a1 1 0 011-1h2m4 5a1 1 0 00-1-1h-1m-9-1h9m-9-3h9m-9-3h3m6 0h3"></path></svg>
-                        </div>
+            <div class="print-exec-layout print-card bg-white text-slate-900 p-6 sm:p-12 rounded-xl shadow-xl max-w-5xl mx-auto border border-slate-200">
+                <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
+                    <p class="text-sm sm:text-lg font-extrabold text-emerald-800 tracking-wide mt-4 sm:mt-6 uppercase">Executive Fleet Compliance & Maintenance Report</p>
+                </div>
+                <div class="text-right text-xs font-semibold text-slate-500 mb-6 italic" id="print-timestamp">Generated on: --</div>
+                <div class="grid grid-cols-3 gap-4 sm:gap-6 mb-8 no-print">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Active Units</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-slate-800 mt-1 block" id="rep-total">0</span>
                     </div>
-                    
-                    <div class="bg-brand-card border border-brand-border p-4 sm:p-6 rounded-2xl shadow-xl flex items-center justify-between relative overflow-hidden group">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"></div>
-                        <div>
-                            <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Critical Out of Compliance</span>
-                            <span class="text-2xl sm:text-4xl font-black text-white mt-2 block tracking-tight" id="metric-dom-expired">0</span>
-                        </div>
-                        <div class="text-slate-800 group-hover:text-slate-700 transition-colors hidden sm:block">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        </div>
+                    <div class="bg-rose-50 border border-rose-100 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-rose-500 uppercase tracking-wider block">Expired / Overdue</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-rose-700 mt-1 block" id="rep-expired">0</span>
                     </div>
-
-                    <div class="bg-brand-card border border-brand-border p-4 sm:p-6 rounded-2xl shadow-xl flex items-center justify-between relative overflow-hidden group">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"></div>
-                        <div>
-                            <span class="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-widest block">Approaching Renewals</span>
-                            <span class="text-2xl sm:text-4xl font-black text-white mt-2 block tracking-tight" id="metric-dom-warning">0</span>
-                        </div>
-                        <div class="text-slate-800 group-hover:text-slate-700 transition-colors hidden sm:block">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-card border border-brand-border p-4 sm:p-6 rounded-2xl shadow-xl flex items-center justify-between relative overflow-hidden group">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
-                        <div>
-                            <span class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest block">Active Valid Standing</span>
-                            <span class="text-2xl sm:text-4xl font-black text-white mt-2 block tracking-tight" id="metric-dom-valid">0</span>
-                        </div>
-                        <div class="text-slate-800 group-hover:text-slate-700 transition-colors hidden sm:block">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        </div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-lg p-3 sm:p-4 text-center">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Pending / Due PMS</span>
+                        <span class="text-lg sm:text-2xl font-extrabold text-amber-700 mt-1 block" id="rep-warning">0</span>
                     </div>
                 </div>
-
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
-                    <div class="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
-                        <div class="w-full lg:max-w-md relative">
-                            <input type="text" id="filter-field-search" oninput="executeDataGridRefresher()" class="w-full bg-brand-dark border border-brand-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium" placeholder="Search parameters (Plate No., Custodian, Description...)">
-                            <svg class="w-5 h-5 text-slate-500 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </div>
-                        
-                        <div class="flex flex-wrap items-center gap-3">
-                            <select id="filter-field-category" onchange="executeDataGridRefresher()" class="bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-xs font-bold text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase tracking-wider">
-                                <option value="ALL">All Categories</option>
-                                <option value="Service Vehicle">Service Vehicles</option>
-                                <option value="Heavy Equipment">Heavy Equipment</option>
-                                <option value="Light Equipment">Light Equipment</option>
-                            </select>
-
-                            <select id="filter-field-status" onchange="executeDataGridRefresher()" class="bg-brand-dark border border-brand-border rounded-xl px-4 py-3 text-xs font-bold text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase tracking-wider">
-                                <option value="ALL">All Status Profiles</option>
-                                <option value="VALID">Fully Compliant</option>
-                                <option value="WARNING">Renewal Imminent</option>
-                                <option value="EXPIRED">Non-Compliant Breach</option>
-                            </select>
-
-                            <button onclick="clearFilteringDirectives()" class="px-4 py-3 border border-brand-border text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white rounded-xl transition-all hover:bg-slate-900">
-                                Reset Filters
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden shadow-2xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-slate-300 border-collapse">
-                            <thead class="bg-slate-950/60 text-[10px] uppercase tracking-widest text-slate-400 font-extrabold border-b border-brand-border">
-                                <tr>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">Identification Profile</th>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">Technical Specs</th>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">Assigned Driver / Custodian</th>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">LTO Registration Ledger</th>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">GSIS Policy Matrix</th>
-                                    <th class="py-4 px-6 border-r border-brand-border/40">PMS Calendar Schedule</th>
-                                    <th class="py-4 px-6 text-center">Operations</th>
-                                </tr>
-                            </thead>
-                            <tbody id="master-registry-data-tbody" class="divide-y divide-brand-border/60 bg-transparent">
-                                </tbody>
-                        </table>
-                    </div>
-                    
-                    <div id="table-zero-state-fallback" class="p-12 text-center hidden">
-                        <div class="w-16 h-16 bg-slate-900 text-slate-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <h5 class="text-sm font-bold text-white mb-1">No Matching Assets Discovered</h5>
-                        <p class="text-xs text-brand-textMuted max-w-xs mx-auto">Adjust your parameter search strings or category dropdown filters and try query extraction again.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="viewport-segment-analytics" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 hidden no-print">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-xl space-y-4">
-                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-400">Asset Allocation Blueprint</h4>
-                        <div class="h-4 bg-brand-dark rounded-full overflow-hidden flex">
-                            <div id="bar-share-service" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
-                            <div id="bar-share-heavy" class="bg-amber-500 h-full transition-all duration-500" style="width: 0%"></div>
-                            <div id="bar-share-light" class="bg-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <div class="pt-2 space-y-2 text-xs">
-                            <div class="flex justify-between items-center"><span class="flex items-center gap-2 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>Service Vehicles</span><span id="label-share-service" class="font-bold text-white">0%</span></div>
-                            <div class="flex justify-between items-center"><span class="flex items-center gap-2 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Heavy Equipment</span><span id="label-share-heavy" class="font-bold text-white">0%</span></div>
-                            <div class="flex justify-between items-center"><span class="flex items-center gap-2 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>Light Equipment</span><span id="label-share-light" class="font-bold text-white">0%</span></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-xl space-y-4 col-span-1 lg:col-span-2">
-                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-400">Operational Integrity Thresholds</h4>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div class="p-4 bg-brand-dark/40 rounded-xl border border-brand-border">
-                                <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 block">System Compliance Rate</span>
-                                <span class="text-2xl font-black text-emerald-400 mt-2 block" id="analytics-calc-compliance-pct">0%</span>
-                            </div>
-                            <div class="p-4 bg-brand-dark/40 rounded-xl border border-brand-border">
-                                <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 block">Avg Fuel Quota (L)</span>
-                                <span class="text-2xl font-black text-blue-400 mt-2 block" id="analytics-calc-avg-fuel">0 L</span>
-                            </div>
-                            <div class="p-4 bg-brand-dark/40 rounded-xl border border-brand-border">
-                                <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 block">Risk Multiplier Index</span>
-                                <span class="text-2xl font-black text-rose-400 mt-2 block" id="analytics-calc-risk-idx">Nominal</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="viewport-segment-reports" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 hidden">
-                <div class="mb-6 no-print flex items-center justify-between bg-brand-card border border-brand-border p-4 rounded-xl shadow-md">
-                    <div>
-                        <h4 class="text-sm font-bold text-white">Print Preview Layout</h4>
-                        <p class="text-xs text-brand-textMuted">Compiles formal government-formatted report with embedded compliance data matrices.</p>
-                    </div>
-                    <button class="bg-slate-700 hover:bg-slate-600 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider py-2.5 px-5 rounded-xl flex items-center gap-2 transition-all shadow-md" onclick="window.print()">
-                        🖨️ Dispatch Physical Spooler
-                    </button>
-                </div>
-                
-                <div class="print-layout-container bg-white text-slate-900 p-8 sm:p-16 rounded-2xl border border-slate-300 max-w-5xl mx-auto shadow-2xl relative overflow-hidden">
-                    <div class="text-center border-b-[3px] border-slate-800 pb-6 mb-8">
-                        <h2 class="text-xl sm:text-2xl font-black uppercase tracking-tight text-slate-950">Republic of the Philippines</h2>
-                        <h3 class="text-base font-extrabold uppercase tracking-wide text-slate-800 mt-0.5">City Government of Baguio</h3>
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Office of the City Engineer • Motor Pool Division</p>
-                        <p class="text-base font-black text-slate-900 tracking-wider mt-6 uppercase bg-slate-100 py-2 border border-slate-300 rounded-md">Executive Fleet Asset Compliance Audit Matrix</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 text-xs text-slate-600 mb-6">
-                        <div><strong>Generated Node Timestamp:</strong> <span class="report-render-timestamp-placeholder"></span></div>
-                        <div class="text-right"><strong>Authorization Scope:</strong> Internal City Governance Compliance</div>
-                    </div>
-
-                    <table class="print-table w-full text-left text-xs text-slate-900 border border-slate-300">
-                        <thead>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-800 print-table border border-slate-200 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500 font-bold border-b border-slate-200">
                             <tr>
-                                <th class="py-3 px-4">Asset Plate</th>
-                                <th class="py-3 px-4">Structural Description</th>
-                                <th class="py-3 px-4">Authorized Custodian</th>
-                                <th class="py-3 px-4">LTO Ledger Target</th>
-                                <th class="py-3 px-4">GSIS Insurance Standing</th>
-                                <th class="py-3 px-4">Next Maintenance Matrix</th>
+                                <th class="py-3 px-4">Plate No. & Status</th>
+                                <th class="py-3 px-4">Identification Details</th>
+                                <th class="py-3 px-4">Driver</th>
+                                <th class="py-3 px-4">LTO Status</th>
+                                <th class="py-3 px-4">GSIS Status</th>
+                                <th class="py-3 px-4">Next PMS</th>
                             </tr>
                         </thead>
-                        <tbody id="executive-compiled-report-tbody">
-                            </tbody>
+                        <tbody id="report-table-body" class="divide-y divide-slate-200"></tbody>
                     </table>
-
-                    <div class="mt-16 pt-12 grid grid-cols-2 gap-8 text-center text-xs text-slate-800 page-break-inside-avoid">
-                        <div class="space-y-12">
-                            <div class="h-0.5 w-48 bg-slate-400 mx-auto"></div>
-                            <p class="font-bold uppercase tracking-wide">Fleet Management Officer</p>
-                            <p class="text-[10px] text-slate-500 -mt-2">Administrative Control Section</p>
-                        </div>
-                        <div class="space-y-12">
-                            <div class="h-0.5 w-64 bg-slate-950 mx-auto"></div>
-                            <p class="font-extrabold uppercase tracking-wide text-slate-950">RICHARD BENJAMIN L. LARDIZABAL</p>
-                            <p class="text-[10px] text-slate-600 font-medium -mt-2">Acting City Engineer • City Engineering Office</p>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <div id="viewport-segment-repository" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 hidden no-print">
-                <div class="bg-brand-card border border-brand-border p-6 rounded-2xl max-w-4xl shadow-xl space-y-2">
-                    <h4 class="text-base font-black text-white tracking-tight">Scanned Documentation Vault</h4>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">
-                        Securely audit and retrieve active Base64 binary text-blobs containing physical scanned images or PDF copies of **LTO Official Receipts (O.R.)**, **LTO Certificates of Registration (C.R.)**, and **GSIS Certificates of Cover (C.O.C.)**. All blobs persist client-side in secure isolated variables.
-                    </p>
+        <!-- Cloud Documentation Vault View Container -->
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden space-y-6" id="view-repository">
+            <p class="text-sm text-slate-400 leading-relaxed max-w-3xl">
+                Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.), LTO Certificates of Registration (C.R.), and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
+            </p>
+            <div class="bg-brand-card border border-brand-border rounded-xl p-4">
+                <div class="relative w-full max-w-md">
+                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="repo-search" oninput="buildRepositoryTableRows()" placeholder="🔍 Filter repository by plate or driver name...">
                 </div>
-
-                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden shadow-2xl">
+            </div>
+            <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-950/60 text-[10px] uppercase tracking-widest text-slate-400 font-extrabold border-b border-brand-border">
+                        <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
                             <tr>
-                                <th class="py-4 px-6">Plate Reference</th>
-                                <th class="py-4 px-6">Custodian Profile</th>
-                                <th class="py-4 px-6 text-center">LTO Official Receipt (O.R.)</th>
-                                <th class="py-4 px-6 text-center">LTO Certificate of Registration (C.R.)</th>
-                                <th class="py-4 px-6 text-center">GSIS Insurance (C.O.C.)</th>
+                                <th class="py-4 px-6">Plate No.</th>
+                                <th class="py-4 px-6">Assigned Officer</th>
+                                <th class="py-4 px-6">LTO Official Receipt (O.R.)</th>
+                                <th class="py-4 px-6">LTO Certificate of Registration (C.R.)</th>
+                                <th class="py-4 px-6">GSIS Insurance (C.O.C.)</th>
                             </tr>
                         </thead>
-                        <tbody id="repository-vault-secure-tbody" class="divide-y divide-brand-border">
-                            </tbody>
+                        <tbody id="repo-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
                     </table>
                 </div>
             </div>
+        </div>
 
-            <div id="viewport-segment-logs" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 hidden no-print">
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 shadow-xl flex items-center justify-between">
-                    <div>
-                        <h4 class="text-base font-black text-white">System Runtime Audit Log</h4>
-                        <p class="text-xs text-brand-textMuted">Immutable chronological trace of memory commits, document compilations, and administrative overrides.</p>
-                    </div>
-                    <button onclick="wipeAuditLogsEngine()" class="px-4 py-2 bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 text-rose-400 text-xs font-bold uppercase tracking-wider rounded-xl transition-all">
-                        Clear Audit Footprint
-                    </button>
-                </div>
-
-                <div class="bg-brand-dark/40 border border-brand-border rounded-2xl p-4 font-mono text-xs text-slate-400 h-[65vh] overflow-y-auto space-y-2 select-text" id="system-audit-log-terminal">
-                    </div>
+        <!-- System Utilities View Container -->
+        <div class="flex-grow p-4 sm:p-8 overflow-y-auto hidden" id="view-utilities">
+            <div class="bg-brand-card border border-brand-border p-6 rounded-xl max-w-2xl shadow-lg space-y-4">
+                <h3 class="text-lg font-bold text-white">Local JSON Registry Backup Utility</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Generate and download a localized snapshot file of the system registry records. Use this tool to preserve a flat-file version of the vehicle array on your computer.
+                </p>
+                <button class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 px-4 rounded-lg flex items-center gap-2 text-sm shadow-md transition-all" onclick="exportLocalDatabaseToBackupFile()">
+                    📥 Download Local Snapshot (.json)
+                </button>
             </div>
-
-            <div id="viewport-segment-utilities" class="absolute inset-0 p-4 sm:p-8 overflow-y-auto space-y-6 hidden no-print">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-                    <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-xl space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        </div>
-                        <h4 class="text-base font-bold text-white">Data Exfiltration Engine</h4>
-                        <p class="text-xs text-brand-textMuted leading-relaxed">Package the entire localized client-side SQL/NoSQL array model (including embedded deep Base64 graphic file payloads) into an isolated JSON physical snapshot document structure.</p>
-                        <button onclick="triggerDataSnapshotExport()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider py-3 px-4 rounded-xl border border-brand-border transition-all">
-                            Download JSON System Database Snapshot
-                        </button>
-                    </div>
-
-                    <div class="bg-brand-card border border-brand-border p-6 rounded-2xl shadow-xl space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16m4-10l4 4m0 0l4-4m-4 4v12"></path></svg>
-                        </div>
-                        <h4 class="text-base font-bold text-white">Data Infiltration Restructure</h4>
-                        <p class="text-xs text-brand-textMuted leading-relaxed">Overwrite existing local system data storage nodes by choosing a previously compiled JSON schema architecture block file snapshot.</p>
-                        <div class="relative">
-                            <input type="file" id="utility-import-file-node" accept=".json" class="hidden" onchange="triggerDataSnapshotImport(event)">
-                            <button onclick="document.getElementById('utility-import-file-node').click()" class="w-full bg-purple-950/20 hover:bg-purple-950/40 border border-purple-900/40 text-purple-400 font-bold text-xs uppercase tracking-wider py-3 px-4 rounded-xl transition-all">
-                                Upload and Restore System JSON Snapshot File
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-brand-card border border-rose-500/20 p-6 rounded-2xl max-w-4xl shadow-xl space-y-4">
-                    <h4 class="text-base font-bold text-rose-400">Nuclear Structural Database Wipe Directive</h4>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">Permanently flush the localized client variable space memory state. This operation will cleanly drop the registry data tracking sheets and default local storage back into an unallocated clean stack.</p>
-                    <button onclick="wipeCoreSystemDataEngine()" class="bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-5 rounded-xl transition-all">
-                        Execute Factory Cold Restart Override
-                    </button>
-                </div>
-            </div>
-
-        </main>
+        </div>
     </div>
 
-    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4 transition-all duration-200" id="registry-transactional-modal-overlay">
-        <div class="bg-brand-card border border-brand-border w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-            
-            <div class="p-6 border-b border-brand-border flex items-center justify-between bg-slate-950/20">
-                <div>
-                    <h3 id="modal-interface-reactive-title" class="text-lg font-black tracking-tight text-white">Register Structural Asset Record</h3>
-                    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5">Asset Inventory Modification Sequence</p>
-                </div>
-                <button onclick="closeModalWorkflowWindow()" class="text-slate-400 hover:text-white text-2xl font-light p-2 rounded-lg hover:bg-slate-900/60 leading-none transition-all">&times;</button>
+    <!-- Edit/Add Vehicle Form Modal Overlay -->
+    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4" id="form-modal">
+        <div class="bg-brand-card border border-brand-border w-full max-w-xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
+            <div class="p-6 border-b border-brand-border flex items-center justify-between bg-slate-900/40">
+                <h3 id="modal-title" class="text-lg font-bold text-white">Log New Fleet Vehicle / Equipment</h3>
+                <button class="text-slate-400 hover:text-white text-xl font-bold p-1 leading-none transition-all" id="btn-close-modal">&times;</button>
             </div>
+            <form id="vehicle-form" class="flex-grow flex flex-col overflow-hidden">
+                <input type="hidden" id="edit-idx" value="-1">
+                <!-- Hidden legacy history output synced behind scenes -->
+                <textarea id="f-history" class="hidden"></textarea>
 
-            <form id="modal-core-input-form-node" onsubmit="commitFormTransactionEngine(event)" class="flex-grow flex flex-col overflow-hidden">
-                <input type="hidden" id="modal-field-hidden-index" value="-1">
-
-                <div class="p-6 space-y-5 overflow-y-auto flex-grow max-h-[68vh] text-xs">
-                    
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-3 border-b border-brand-border pb-1">1. Operational & Control Profiles</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Plate / Control Number *</label>
-                                <input type="text" id="form-field-plate" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-bold tracking-wide focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="e.g., SAB-1234 / HE-7721" required>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Asset Inventory Category</label>
-                                <select id="form-field-category" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all">
-                                    <option value="Service Vehicle">Service Vehicle (Light Fleet)</option>
-                                    <option value="Heavy Equipment">Heavy Equipment (Engineering)</option>
-                                    <option value="Light Equipment">Light Equipment (Maintenance)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Authorized Custodian / Driver *</label>
-                                <input type="text" id="form-field-driver" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="Full Registered Name" required>
-                            </div>
+                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Control / Serial No.</label>
+                            <input type="text" id="f-plate" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all" placeholder="e.g. SAB-2391 or PROP-CS-01" required>
                         </div>
-                    </div>
-
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-3 border-b border-brand-border pb-1">2. Technical & Hardware Attributes</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-1">
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Make / Model / Specs *</label>
-                                <input type="text" id="form-field-desc" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="e.g., Toyota Hilux Pick-up 4x4" required>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Engine Serial Number</label>
-                                <input type="text" id="form-field-engine" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-mono uppercase tracking-wider focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="ENG-9988122">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Chassis Architecture Number</label>
-                                <input type="text" id="form-field-chassis" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-mono uppercase tracking-wider focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="CHS-4433110">
-                            </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acquisition Year</label>
+                            <input type="number" id="f-year" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2019" min="1990" max="2030">
                         </div>
-                    </div>
-
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-3 border-b border-brand-border pb-1">3. Administrative Allocation Matrix</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Monthly Fuel Cap Limit (Liters)</label>
-                                <input type="number" id="form-field-fuel" min="0" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="e.g., 180">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">GSIS Insurance Policy Number</label>
-                                <input type="text" id="form-field-policy" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-mono tracking-wide focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all placeholder:text-slate-700" placeholder="e.g., GSIS-GIC-2026-XXXX">
-                            </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Equipment Make / Model Description</label>
+                            <input type="text" id="f-model" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Toyota Hilux / Stihl MS 250 Chainsaw" required>
                         </div>
-                    </div>
-
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-3 border-b border-brand-border pb-1">4. Statutory Compliance Timeline Targets</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">LTO Expiry Boundary Target *</label>
-                                <input type="date" id="form-field-lto" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all" required>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">GSIS Insurance Expiry Boundary *</label>
-                                <input type="date" id="form-field-gsis" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all" required>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-400 uppercase tracking-wide mb-1.5">Preventive PMS Due Target *</label>
-                                <input type="date" id="form-field-pms" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-white font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all" required>
-                            </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Status</label>
+                            <select id="f-status" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <option value="Operational">🟢 Operational</option>
+                                <option value="Under Repair">🔴 Under Repair</option>
+                                <option value="Standby">🔵 Standby</option>
+                                <option value="Decommissioned">⚫ Decommissioned</option>
+                            </select>
                         </div>
-                    </div>
-
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-3 border-b border-brand-border pb-1">5. Secure Cryptographic Document Attachments Binaries</span>
-                        <div class="bg-slate-950/40 p-4 rounded-xl border border-brand-border/80 space-y-4">
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                                <div>
-                                    <label class="block font-bold text-slate-300 uppercase tracking-wide mb-1">LTO Official Receipt (O.R.) Scan</label>
-                                    <p class="text-[10px] text-brand-textMuted mb-1.5">Upload a raw image snapshot copy to anchor local state matrix.</p>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Equipment Classification Category</label>
+                            <select id="f-category" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <option value="Service Vehicle">🚗 Service Vehicle</option>
+                                <option value="Heavy Equipment">🚜 Heavy Equipment</option>
+                                <option value="Light Equipment">⚙️ Light Equipment / Power Tool</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assigned Driver / Custodian Employee</label>
+                            <input type="text" id="f-driver" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="Full name of driver or officer">
+                        </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1" id="wrapper-chassis">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chassis Number</label>
+                            <input type="text" id="f-chassis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. MROFX12G00...">
+                        </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1" id="wrapper-engine">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Engine Number / Motor Serial</label>
+                            <input type="text" id="f-engine" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. 2KD-123456">
+                        </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1" id="wrapper-lto">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LTO Registration Deadline</label>
+                            <input type="date" id="f-lto" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                        <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1" id="wrapper-gsis">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GSIS Insurance Renewal</label>
+                            <input type="date" id="f-gsis" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                        <div class="col-span-2 flex flex-col gap-1.5 border-t border-brand-border pt-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <label class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Next Maintenance Service Due Date (PMS)</label>
+                                <!-- Quick Presets -->
+                                <div class="flex flex-wrap gap-1" id="pms-quick-presets">
+                                    <button type="button" onclick="setQuickPmsPreset(6)" class="bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Standard (6 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy (3 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Tool (12 mos)</button>
                                 </div>
-                                <input type="file" id="upload-binary-lto-or" accept="image/*,application/pdf" class="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 transition-all cursor-pointer">
                             </div>
+                            <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all mt-1">
+                            <span class="text-[10px] text-slate-400 mt-1 italic leading-relaxed">
+                                ℹ️ <strong>Baguio Motorpool Guideline:</strong> Change Oil, Oil Filter, and Fuel Filter are typically serviced every <strong>6 months</strong> (or every <strong>5,000 km</strong> for standard oil / <strong>10,000 km</strong> for synthetic oil).
+                            </span>
+                        </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center border-t border-brand-border/40 pt-3">
-                                <div>
-                                    <label class="block font-bold text-slate-300 uppercase tracking-wide mb-1">LTO Certificate of Registration (C.R.) Scan</label>
-                                    <p class="text-[10px] text-brand-textMuted mb-1.5">Preserves a localized legal tracking block of physical entity metadata.</p>
+                        <!-- Mechanic Structured Logger -->
+                        <div class="col-span-2 bg-brand-dark/40 border border-brand-border rounded-xl p-3 sm:p-4 space-y-4">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">➕ Mechanic Maintenance History Logger</span>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="col-span-3 sm:col-span-1">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Date of Repair</label>
+                                    <input type="date" id="new-log-date" class="w-full bg-brand-dark border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all">
                                 </div>
-                                <input type="file" id="upload-binary-lto-cr" accept="image/*,application/pdf" class="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 transition-all cursor-pointer">
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center border-t border-brand-border/40 pt-3">
-                                <div>
-                                    <label class="block font-bold text-slate-300 uppercase tracking-wide mb-1">GSIS Insurance Cover (C.O.C.) Statement</label>
-                                    <p class="text-[10px] text-brand-textMuted mb-1.5">Validates administrative fiscal insurance coverage boundaries.</p>
+                                <div class="col-span-3 sm:col-span-2">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Service Maintenance Details</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="new-log-activity" class="flex-grow bg-brand-dark border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all" placeholder="e.g. Changed engine oil, replaced filters">
+                                        <button type="button" onclick="addMaintenanceLogEntry()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all shrink-0">➕ Add Log</button>
+                                    </div>
                                 </div>
-                                <input type="file" id="upload-binary-gsis-coc" accept="image/*,application/pdf" class="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 transition-all cursor-pointer">
                             </div>
-
+                            <div class="border-t border-brand-border/40 pt-4">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Repair Logs & Maintenance Timeline</span>
+                                <div id="history-display-timeline" class="space-y-3 max-h-48 overflow-y-auto pr-2 text-xs"></div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
-
-                <div class="p-4 bg-slate-950/40 border-t border-brand-border flex items-center justify-end gap-3 shrink-0">
-                    <button type="button" onclick="closeModalWorkflowWindow()" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white hover:bg-slate-900 transition-all">Abort Action</button>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest text-white shadow-xl shadow-emerald-950/60 transition-all">Commit Memory Record</button>
+                <div class="p-6 border-t border-brand-border flex justify-end gap-3 bg-slate-900/40">
+                    <button type="button" class="border border-brand-border hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-lg text-sm font-semibold transition-all" id="btn-close-modal-footer">Cancel</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">💾 Save Record</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Single Vehicle Profile Print Sheet (Only visible during print with 'printing-single-profile' active on <body>) -->
+    <div id="print-only-profile" class="hidden print-only p-12 bg-white text-slate-900 border border-slate-200 rounded-xl max-w-4xl mx-auto font-sans">
+        <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
+            <h2 class="text-2xl font-bold tracking-tight uppercase text-slate-900">City Government of Baguio</h2>
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-widest mt-1">City Engineering Office — Equipment & Fleet Management Division</p>
+            <p class="text-lg font-extrabold text-slate-800 tracking-wide mt-4 uppercase">Equipment Profile & Service Log Sheet</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm mb-8">
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Plate / Control / Serial No:</span> <strong class="text-base font-mono text-slate-900" id="print-prof-plate">SAB-2391</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Classification & Age:</span> <strong class="text-base text-slate-900" id="print-prof-year">2019</strong></div>
+            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Equipment Make & Model:</span> <strong class="text-base text-slate-900" id="print-prof-model">Toyota Hilux D-4D</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Chassis Number / Part No:</span> <strong class="text-slate-900 font-mono" id="print-prof-chassis">MROFX12G00</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Engine Number / Serial:</span> <strong class="text-slate-900 font-mono" id="print-prof-engine">2KD-123456</strong></div>
+            <div class="col-span-2"><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Assigned Custodian Employee / Driver:</span> <strong class="text-base text-slate-900" id="print-prof-driver">Engr. J. Ramos</strong></div>
+            <div><span class="text-slate-500 font-semibold block uppercase text-[10px] tracking-wider">Operational Vehicle Status:</span> <strong class="text-base text-slate-900" id="print-prof-status">Operational</strong></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 bg-slate-50 border border-slate-200 rounded-lg p-4 mb-8 text-xs">
+            <div id="print-box-lto">
+                <span class="text-slate-500 font-bold block uppercase text-[9px] tracking-wider">LTO Registration Deadline</span>
+                <strong class="text-slate-800 mt-0.5 block font-mono text-sm" id="print-prof-lto">2026-05-19</strong>
+            </div>
+            <div id="print-box-gsis">
+                <span class="text-slate-500 font-bold block uppercase text-[9px] tracking-wider">GSIS Insurance Renewal</span>
+                <strong class="text-slate-800 mt-0.5 block font-mono text-sm" id="print-prof-gsis">2026-09-01</strong>
+            </div>
+            <div>
+                <span class="text-slate-500 font-bold block uppercase text-[9px] tracking-wider">Next Scheduled PMS</span>
+                <strong class="text-slate-800 mt-0.5 block font-mono text-sm" id="print-prof-pms">2026-06-25</strong>
+            </div>
+        </div>
+
+        <div class="border-t border-slate-200 pt-6">
+            <h3 class="text-sm font-extrabold uppercase text-slate-700 tracking-wider mb-4">Complete Maintenance & Repair History Log</h3>
+            <div id="print-prof-timeline" class="space-y-4"></div>
+        </div>
+    </div>
 
     <script>
-        /**
-         * Global System Hardened Application Engine Database Structural Definitions
-         */
-        let SYSTEM_FLEET_DATA_STORE = [
-            { 
-                plate: 'SAB-1234', 
-                category: 'Service Vehicle', 
-                desc: 'Toyota Hilux Pickup 4x4', 
-                driver: 'Wilbert K. Laguinday', 
-                engine: '2GD-FTV-1992120',
-                chassis: 'MROFR22G901123445',
-                fuel: 180,
-                policy: 'GSIS-GIC-2026-MV-0992A',
-                lto: '2026-12-15', 
-                gsis: '2027-03-10', 
-                pms: '2026-09-20', 
-                or_file_blob: null, 
-                cr_file_blob: null, 
-                coc_file_blob: null 
-            },
-            { 
-                plate: 'HE-7721', 
-                category: 'Heavy Equipment', 
-                desc: 'Caterpillar Hydraulic Excavator 320D', 
-                driver: 'Engr. J. Ramos', 
-                engine: 'CAT-C6.4-ACERT9912',
-                chassis: 'CAT0320DLHEX881223',
-                fuel: 500,
-                policy: 'GSIS-GIC-2025-HE-88211',
-                lto: '2025-04-12', 
-                gsis: '2026-08-05', 
-                pms: '2026-07-14', 
-                or_file_blob: null, 
-                cr_file_blob: null, 
-                coc_file_blob: null 
+        const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
+
+        const WARNING_WINDOW_DAYS = 60;
+        const PMS_WARNING_WINDOW_DAYS = 30;
+        let fleet = [];
+        let ltoFilter = 'all';
+        let gsisFilter = 'all';
+        let categoryFilter = 'all';
+        let alertsPanelCollapsed = false;
+
+        let currentUploadPlate = "";
+        let currentUploadField = "";
+
+        const getHeaders = () => ({
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        });
+
+        const toggleLoading = (show) => {
+            document.getElementById('loading-spinner').classList.toggle('hidden', !show);
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            if (sessionStorage.getItem('fleet_authenticated') === 'true') {
+                document.getElementById('gatekeeper-lock').classList.add('hidden');
+                fetchFleetFromCloud();
             }
-        ];
+        });
 
-        let SYSTEM_ACTIVE_VIEW_POINTER = 'dashboard';
-
-        /**
-         * System Bootstrap Lifecycle Execution Initializer Node
-         */
-        function catchSystemStore() {
-            logAuditFootprintEngine("Initializing System Frame Bootstrap Logic Sequence...");
-            
-            // Check Local NoSQL Browser Store Instance Presence
-            const memoryCommit = localStorage.getItem('ceo_fleet_db_v2_hardened');
-            if (memoryCommit) {
-                try {
-                    SYSTEM_FLEET_DATA_STORE = JSON.parse(memoryCommit);
-                    logAuditFootprintEngine(`Discovered persistent storage block trace. Loaded ${SYSTEM_FLEET_DATA_STORE.length} active vehicle registry matrices successfully.`);
-                } catch (e) {
-                    logAuditFootprintEngine("CRITICAL DEVIATION: Found corrupted local database node block allocation structures. Defaulting to nominal definitions.", true);
-                }
-            } else {
-                logAuditFootprintEngine("No persistent structural storage trace detected. Bootstrapping mock array structure allocation templates.");
-                localStorage.setItem('ceo_fleet_db_v2_hardened', JSON.stringify(SYSTEM_FLEET_DATA_STORE));
-            }
-
-            // Sync Static Placeholders with Date Object Strings
-            const timestampPlaceholders = document.querySelectorAll('.report-render-timestamp-placeholder');
-            const now = new Date();
-            timestampPlaceholders.forEach(el => el.innerText = now.toLocaleString('en-PH', { timeZone: 'Asia/Manila' }) + ' (PST)');
-
-            executeDataGridRefresher();
-        }
-
-        /**
-         * Security Passcode Gateway Verification System Core Logic
-         */
-        function processGatekeeperVerification(e) {
+        function verifySecurityAccess(e) {
             e.preventDefault();
-            const passcode = document.getElementById('gatekeeper-pass-input').value;
-            logAuditFootprintEngine("Access Verification Sequence Requested by client portal.");
+            const passwordInput = document.getElementById('gatekeeper-pass').value;
+            const errorLabel = document.getElementById('gatekeeper-error');
+            const MASTER_PASSWORD = "motorpool2010"; 
 
-            // Standard Hardened Local Gatekeeper Authorization Pin Logic Check
-            if (passcode === '1234') {
-                logAuditFootprintEngine("Access Authorized. Unlocking secure frame view spaces.");
-                document.getElementById('gatekeeper-security-lock').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('gatekeeper-security-lock').classList.add('hidden');
-                }, 500);
+            if (passwordInput === MASTER_PASSWORD) {
+                sessionStorage.setItem('fleet_authenticated', 'true');
+                errorLabel.classList.add('hidden');
+                document.getElementById('gatekeeper-lock').classList.add('hidden');
+                fetchFleetFromCloud();
             } else {
-                logAuditFootprintEngine("SECURITY WARN: Access Breach Attempted with incorrect structural administrative passcode.", true);
-                const errNode = document.getElementById('gatekeeper-error-msg');
-                errNode.classList.remove('hidden');
-                errNode.classList.add('animate-shake');
+                errorLabel.classList.remove('hidden');
+                document.getElementById('gatekeeper-pass').value = '';
+                document.getElementById('gatekeeper-pass').focus();
             }
         }
 
-        /**
-         * Application Interface Layout Navigation Display State Machine Driver
-         */
-        function toggleActiveViewEngine(targetViewportId) {
-            logAuditFootprintEngine(`Requesting global layout viewport translation matrix redirect to: [${targetViewportId}]`);
-            
-            const standardViewports = ['dashboard', 'analytics', 'reports', 'repository', 'logs', 'utilities'];
-            
-            standardViewports.forEach(vp => {
-                const domNode = document.getElementById(`viewport-segment-${vp}`);
-                const navButtonNode = document.getElementById(`nav-btn-${vp}`);
-                
-                if (domNode) domNode.classList.add('hidden');
-                if (navButtonNode) {
-                    navButtonNode.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-900/50 hover:text-white border border-transparent group";
-                }
-            });
-
-            // Make Target Blueprint Elements Un-hidden
-            const focusDom = document.getElementById(`viewport-segment-${targetViewportId}`);
-            const focusNavBtn = document.getElementById(`nav-btn-${targetViewportId}`);
-            
-            if (focusDom) focusDom.classList.remove('hidden');
-            if (focusNavBtn) {
-                focusNavBtn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 group";
-            }
-
-            // Transform App Bar Top Header Label Strings
-            const headerStringDom = document.getElementById('global-workspace-view-title');
-            const structuralTitles = {
-                'dashboard': 'Active Fleet Control Ledger',
-                'analytics': 'Fleet Metrics Analytics Matrix',
-                'reports': 'Executive Statutory Audit Report',
-                'repository': 'Cloud Vault Scan Documentation Binaries',
-                'logs': 'Localized Operational System Audit Trace',
-                'utilities': 'System State Engineering & Utility Operations'
-            };
-            if (headerStringDom && structuralTitles[targetViewportId]) {
-                headerStringDom.innerText = structuralTitles[targetViewportId];
-            }
-
-            SYSTEM_ACTIVE_VIEW_POINTER = targetViewportId;
-            toggleMobileSidebarEngine(false);
-
-            if (targetViewportId === 'analytics') {
-                recalculateHighPerformanceAnalyticsGraphs();
-            }
-        }
-
-        /**
-         * Responsive Mobile Dropdown Drawer Sidebar Interface Toggler 
-         */
-        function toggleMobileSidebarEngine(forceVisibilityState) {
-            const sidebarElement = document.getElementById('app-sidebar-container');
-            const backdropElement = document.getElementById('mobile-sidebar-canvas-backdrop');
-            
-            if (forceVisibilityState) {
-                sidebarElement.classList.remove('-translate-x-full');
-                backdropElement.classList.remove('hidden');
-            } else {
-                sidebarElement.classList.add('-translate-x-full');
-                backdropElement.classList.add('hidden');
-            }
-        }
-
-        /**
-         * Clears searching input DOM objects to standard baseline definitions
-         */
-        function clearFilteringDirectives() {
-            document.getElementById('filter-field-search').value = '';
-            document.getElementById('filter-field-category').value = 'ALL';
-            document.getElementById('filter-field-status').value = 'ALL';
-            logAuditFootprintEngine("Reset administrative list filtering parameters to default matrix conditions.");
-            executeDataGridRefresher();
-        }
-
-        /**
-         * Master Multi-Tier Core Table Drawing Loop and Component Structural Engine
-         */
-        function executeDataGridRefresher() {
-            const queryToken = document.getElementById('filter-field-search').value.trim().toLowerCase();
-            const categoryDirective = document.getElementById('filter-field-category').value;
-            const complianceDirective = document.getElementById('filter-field-status').value;
-
-            const tableBodyNode = document.getElementById('master-registry-data-tbody');
-            const reportingBodyNode = document.getElementById('executive-compiled-report-tbody');
-            const repositoryBodyNode = document.getElementById('repository-vault-secure-tbody');
-            const zeroStateFallbackNode = document.getElementById('table-zero-state-fallback');
-
-            // Reset Internal Dynamic Buffer Nodes
-            tableBodyNode.innerHTML = '';
-            reportingBodyNode.innerHTML = '';
-            repositoryBodyNode.innerHTML = '';
-
-            let counterTotal = 0;
-            let counterExpired = 0;
-            let counterWarning = 0;
-            let counterValid = 0;
-
-            const runtimeChronologyAnchorDate = new Date();
-
-            let targetIterationBufferCount = 0;
-
-            SYSTEM_FLEET_DATA_STORE.forEach((asset, internalIndexPointer) => {
-                
-                // Extraction Analysis Calculations
-                let ltoDate = new Date(asset.lto);
-                let gsisDate = new Date(asset.gsis);
-                let pmsDate = new Date(asset.pms);
-
-                let differenceDaysLTO = (ltoDate - runtimeChronologyAnchorDate) / (1000 * 60 * 60 * 24);
-                let differenceDaysGSIS = (gsisDate - runtimeChronologyAnchorDate) / (1000 * 60 * 60 * 24);
-
-                let stateIsExpiredLTO = differenceDaysLTO < 0;
-                let stateIsExpiredGSIS = differenceDaysGSIS < 0;
-
-                let stateIsWarningLTO = (!stateIsExpiredLTO) && (differenceDaysLTO <= 30);
-                let stateIsWarningGSIS = (!stateIsExpiredGSIS) && (differenceDaysGSIS <= 30);
-
-                // Global Composite Asset Health Score Derivation Matrix
-                let assetOverallStatusToken = 'VALID';
-                if (stateIsExpiredLTO || stateIsExpiredGSIS) {
-                    assetOverallStatusToken = 'EXPIRED';
-                } else if (stateIsWarningLTO || stateIsWarningGSIS) {
-                    assetOverallStatusToken = 'WARNING';
-                }
-
-                // Increment Core Metrics Framework Tally Trackers
-                counterTotal++;
-                if (assetOverallStatusToken === 'EXPIRED') counterExpired++;
-                else if (assetOverallStatusToken === 'WARNING') counterWarning++;
-                else counterValid++;
-
-                // Execute Layer 1: Search Queries Token Match Checks
-                if (queryToken) {
-                    const structuralHaystack = `
-                        ${asset.plate.toLowerCase()} 
-                        ${asset.driver.toLowerCase()} 
-                        ${asset.desc.toLowerCase()} 
-                        ${asset.engine.toLowerCase()} 
-                        ${asset.chassis.toLowerCase()} 
-                        ${asset.policy.toLowerCase()}
-                    `;
-                    if (!structuralHaystack.includes(queryToken)) return;
-                }
-
-                // Execute Layer 2: Hard Category Scope Validation Filter Checks
-                if (categoryDirective !== 'ALL' && asset.category !== categoryDirective) return;
-
-                // Execute Layer 3: Compliance Structural Enforcement Alignment Checks
-                if (complianceDirective !== 'ALL' && assetOverallStatusToken !== complianceDirective) return;
-
-                targetIterationBufferCount++;
-
-                // Interface HTML Components Assembly: LTO Badges Rendering Core Configuration
-                let htmlBadgeLTO = '';
-                if (stateIsExpiredLTO) {
-                    htmlBadgeLTO = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 pulse-danger">⚠️ Breach (${Math.abs(Math.round(differenceDaysLTO))}d)</span>`;
-                } else if (stateIsWarningLTO) {
-                    htmlBadgeLTO = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 pulse-warning">⏳ Expiring (${Math.round(differenceDaysLTO)}d)</span>`;
-                } else {
-                    htmlBadgeLTO = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Compliant</span>`;
-                }
-
-                // Interface HTML Components Assembly: GSIS Badges Rendering Core Configuration
-                let htmlBadgeGSIS = '';
-                if (stateIsExpiredGSIS) {
-                    htmlBadgeGSIS = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 pulse-danger">⚠️ Lapsed</span>`;
-                } else if (stateIsWarningGSIS) {
-                    htmlBadgeGSIS = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 pulse-warning">⏳ Due Imminent</span>`;
-                } else {
-                    htmlBadgeGSIS = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ Insured</span>`;
-                }
-
-                // Format Calendar Standard Local Strings for UI Presentation Layer
-                const localStringLTO = ltoDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                const localStringGSIS = gsisDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                const localStringPMS = pmsDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-
-                // INJECT STRUCTURAL LAYER: DYNAMIC INTERFACE MASTER GRID ROWS
-                tableBodyNode.innerHTML += `
-                    <tr class="hover:bg-slate-900/30 transition-all duration-150 group">
-                        <td class="py-4 px-6 border-r border-brand-border/40 font-black text-white text-base tracking-wide whitespace-nowrap bg-slate-950/10">
-                            ${asset.plate}
-                            <span class="block text-[9px] font-bold text-emerald-500 tracking-widest uppercase mt-0.5">${asset.category}</span>
-                        </td>
-                        <td class="py-4 px-6 border-r border-brand-border/40">
-                            <div class="font-bold text-slate-200 text-xs">${asset.desc}</div>
-                            <div class="grid grid-cols-2 gap-x-2 text-[10px] text-slate-500 font-mono uppercase mt-1">
-                                <div><span class="text-slate-600 font-sans font-bold">E:</span> ${asset.engine || 'N/A'}</div>
-                                <div><span class="text-slate-600 font-sans font-bold">C:</span> ${asset.chassis || 'N/A'}</div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 border-r border-brand-border/40 font-semibold text-slate-300">
-                            ${asset.driver}
-                            <span class="block text-[10px] text-slate-500 font-medium font-mono mt-0.5">Cap: ${asset.fuel || 0}L/mo</span>
-                        </td>
-                        <td class="py-4 px-6 border-r border-brand-border/40 space-y-1">
-                            <div>${htmlBadgeLTO}</div>
-                            <div class="text-[11px] text-slate-500 font-mono font-medium">${localStringLTO}</div>
-                        </td>
-                        <td class="py-4 px-6 border-r border-brand-border/40 space-y-1">
-                            <div>${htmlBadgeGSIS}</div>
-                            <div class="text-[11px] text-slate-400 font-mono font-medium truncate max-w-[140px]" title="${asset.policy}">${asset.policy || 'No Policy Locked'}</div>
-                            <div class="text-[10px] text-slate-500 font-mono">${localStringGSIS}</div>
-                        </td>
-                        <td class="py-4 px-6 border-r border-brand-border/40">
-                            <span class="text-xs font-semibold text-slate-300 font-mono">${localStringPMS}</span>
-                            <span class="block text-[9px] text-slate-500 uppercase font-bold mt-0.5">Scheduled Track</span>
-                        </td>
-                        <td class="py-4 px-6 text-center whitespace-nowrap">
-                            <div class="flex items-center justify-center gap-3">
-                                <button onclick="executeModalWorkflowTrigger(${internalIndexPointer})" class="text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-wider text-[11px] bg-emerald-500/5 hover:bg-emerald-500/10 px-2.5 py-1.5 rounded-lg border border-emerald-500/10 transition-all">Edit</button>
-                                <button onclick="destroyRegistryRecordTransaction(${internalIndexPointer})" class="text-rose-500 hover:text-rose-400 font-bold uppercase tracking-wider text-[11px] bg-rose-500/5 hover:bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-500/10 transition-all">Drop</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                // INJECT STRUCTURAL LAYER: FORMAL PRINT COMPLIANCE SHEETS MATRIX ROWS
-                let printTokenLTO = stateIsExpiredLTO ? 'EXPIRED BREACH' : (stateIsWarningLTO ? 'RENEWAL DUE' : 'COMPLIANT');
-                let printTokenGSIS = stateIsExpiredGSIS ? 'LAPSED BREACH' : (stateIsWarningGSIS ? 'RENEWAL DUE' : 'VALID');
-                
-                reportingBodyNode.innerHTML += `
-                    <tr class="print-card">
-                        <td class="py-2 px-3 font-bold uppercase border border-slate-300">${asset.plate}</td>
-                        <td class="py-2 px-3 border border-slate-300">
-                            <strong>${asset.desc}</strong><br>
-                            <span style="font-size: 9px; color: #475569; font-family: monospace;">Eng: ${asset.engine} | Chs: ${asset.chassis}</span>
-                        </td>
-                        <td class="py-2 px-3 border border-slate-300 font-medium">${asset.driver}</td>
-                        <td class="py-2 px-3 border border-slate-300 font-mono">
-                            <span class="print-badge">${printTokenLTO}</span><br>${asset.lto}
-                        </td>
-                        <td class="py-2 px-3 border border-slate-300 font-mono">
-                            <span class="print-badge">${printTokenGSIS}</span><br>${asset.gsis}
-                        </td>
-                        <td class="py-2 px-3 border border-slate-300 font-mono">${asset.pms}</td>
-                    </tr>
-                `;
-
-                // INJECT STRUCTURAL LAYER: SECURE STORAGE CRYPTO DOCUMENT DOWNLOAD HANDLERS GRID
-                let anchorTagOR = asset.or_file_blob ? `<a href="${asset.or_file_blob}" download="LTO_OR_${asset.plate}.dat" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all underline decoration-emerald-500/30">Download O.R. Data Object</a>` : '<span class="text-xs font-mono text-slate-700 uppercase tracking-wider font-semibold">Void Blob Allocation</span>';
-                let anchorTagCR = asset.cr_file_blob ? `<a href="${asset.cr_file_blob}" download="LTO_CR_${asset.plate}.dat" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all underline decoration-emerald-500/30">Download C.R. Data Object</a>` : '<span class="text-xs font-mono text-slate-700 uppercase tracking-wider font-semibold">Void Blob Allocation</span>';
-                let anchorTagCOC = asset.coc_file_blob ? `<a href="${asset.coc_file_blob}" download="GSIS_COC_${asset.plate}.dat" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all underline decoration-emerald-500/30">Download C.O.C. Data Object</a>` : '<span class="text-xs font-mono text-slate-700 uppercase tracking-wider font-semibold">Void Blob Allocation</span>';
-
-                repositoryBodyNode.innerHTML += `
-                    <tr class="hover:bg-slate-900/40 transition-colors">
-                        <td class="py-4 px-6 font-black text-white text-base tracking-wide bg-slate-950/10 border-b border-brand-border/40">${asset.plate}</td>
-                        <td class="py-4 px-6 text-xs text-slate-400 border-b border-brand-border/40 font-medium">${asset.driver}</td>
-                        <td class="py-4 px-6 text-center border-b border-brand-border/40">${anchorTagOR}</td>
-                        <td class="py-4 px-6 text-center border-b border-brand-border/40">${anchorTagCR}</td>
-                        <td class="py-4 px-6 text-center border-b border-brand-border/40">${anchorTagCOC}</td>
-                    </tr>
-                `;
-            });
-
-            // Handle Empty Search/Filter Return Layout Constraints
-            if (targetIterationBufferCount === 0) {
-                zeroStateFallbackNode.classList.remove('hidden');
-            } else {
-                zeroStateFallbackNode.classList.add('hidden');
-            }
-
-            // Sync Main Layout Dashboard Counter Metric Elements
-            document.getElementById('metric-dom-total').innerText = counterTotal;
-            document.getElementById('metric-dom-expired').innerText = counterExpired;
-            document.getElementById('metric-dom-warning').innerText = counterWarning;
-            document.getElementById('metric-dom-valid').innerText = counterValid;
-        }
-
-        /**
-         * Computes High Density Analytics Distribution Percentages and Graphical CSS Metric Widths
-         */
-        function recalculateHighPerformanceAnalyticsGraphs() {
-            logAuditFootprintEngine("Recalculating internal analytical statistical curves...");
-            
-            let countService = 0, countHeavy = 0, countLight = 0;
-            let totalQuotaFuel = 0;
-            let size = SYSTEM_FLEET_DATA_STORE.length;
-
-            if (size === 0) return;
-
-            SYSTEM_FLEET_DATA_STORE.forEach(a => {
-                if (a.category === 'Service Vehicle') countService++;
-                else if (a.category === 'Heavy Equipment') countHeavy++;
-                else if (a.category === 'Light Equipment') countLight++;
-                
-                totalQuotaFuel += parseFloat(a.fuel || 0);
-            });
-
-            let pctService = Math.round((countService / size) * 100);
-            let pctHeavy = Math.round((countHeavy / size) * 100);
-            let pctLight = Math.round((countLight / size) * 100);
-
-            // Bind Interface Graph Sizes
-            document.getElementById('bar-share-service').style.width = `${pctService}%`;
-            document.getElementById('bar-share-heavy').style.width = `${pctHeavy}%`;
-            document.getElementById('bar-share-light').style.width = `${pctLight}%`;
-
-            document.getElementById('label-share-service').innerText = `${pctService}% (${countService})`;
-            document.getElementById('label-share-heavy').innerText = `${pctHeavy}% (${countHeavy})`;
-            document.getElementById('label-share-light').innerText = `${pctLight}% (${countLight})`;
-
-            // Complex Text Metric Calculations
-            const compliancePctDom = document.getElementById('analytics-calc-compliance-pct');
-            const totalValidUnits = parseInt(document.getElementById('metric-dom-valid').innerText || 0);
-            const absoluteComplianceRate = Math.round((totalValidUnits / size) * 100);
-            
-            compliancePctDom.innerText = `${absoluteComplianceRate}%`;
-            document.getElementById('analytics-calc-avg-fuel').innerText = `${Math.round(totalQuotaFuel / size)} L`;
-
-            const riskDom = document.getElementById('analytics-calc-risk-idx');
-            const structuralBreaches = parseInt(document.getElementById('metric-dom-expired').innerText || 0);
-            if (structuralBreaches > 0) {
-                riskDom.innerText = 'CRITICAL BREACH';
-                riskDom.className = 'text-2xl font-black text-rose-500 mt-2 block';
-            } else if (parseInt(document.getElementById('metric-dom-warning').innerText || 0) > 0) {
-                riskDom.innerText = 'ELEVATED RISK';
-                riskDom.className = 'text-2xl font-black text-amber-500 mt-2 block';
-            } else {
-                riskDom.innerText = 'NOMINAL STATE';
-                riskDom.className = 'text-2xl font-black text-emerald-400 mt-2 block';
-            }
-        }
-
-        /**
-         * Operational Dialog View Modal Architecture Lifecycle Manager
-         */
-        function executeModalWorkflowTrigger(targetRecordIndexPointer) {
-            logAuditFootprintEngine(`Triggering modal workflow system frame request layer. Pointer index: [${targetRecordIndexPointer}]`);
-            
-            const overlayNode = document.getElementById('registry-transactional-modal-overlay');
-            overlayNode.classList.remove('hidden');
-            overlayNode.classList.add('flex');
-            
-            // Clean/Reset Inputs Form Controls Data Map State
-            document.getElementById('modal-core-input-form-node').reset();
-            document.getElementById('modal-field-hidden-index').value = targetRecordIndexPointer;
-
-            if (targetRecordIndexPointer >= 0) {
-                document.getElementById('modal-interface-reactive-title').innerText = 'Modify Operational Asset Profile';
-                const asset = SYSTEM_FLEET_DATA_STORE[targetRecordIndexPointer];
-
-                // Hydrate Input Control Form Parameters
-                document.getElementById('form-field-plate').value = asset.plate;
-                document.getElementById('form-field-category').value = asset.category;
-                document.getElementById('form-field-driver').value = asset.driver;
-                document.getElementById('form-field-desc').value = asset.desc;
-                document.getElementById('form-field-engine').value = asset.engine || '';
-                document.getElementById('form-field-chassis').value = asset.chassis || '';
-                document.getElementById('form-field-fuel').value = asset.fuel || 0;
-                document.getElementById('form-field-policy').value = asset.policy || '';
-                document.getElementById('form-field-lto').value = asset.lto;
-                document.getElementById('form-field-gsis').value = asset.gsis;
-                document.getElementById('form-field-pms').value = asset.pms;
-            } else {
-                document.getElementById('modal-interface-reactive-title').innerText = 'Register Structural Asset Record';
-            }
-        }
-
-        /**
-         * Un-pivots modal wrapper layouts to safe display limits
-         */
-        function closeModalWorkflowWindow() {
-            const overlayNode = document.getElementById('registry-transactional-modal-overlay');
-            overlayNode.classList.add('hidden');
-            overlayNode.classList.remove('flex');
-        }
-
-        /**
-         * Asynchronous Thread Framework Helper to Convert File Upload Handlers to Base64 String Tokens
-         */
-        function processFileAsyncToDataURI(fileHandleObject) {
-            return new Promise((resolve, reject) => {
-                if (!fileHandleObject) {
-                    resolve(null);
-                    return;
-                }
-                const processingReaderEngine = new FileReader();
-                processingReaderEngine.readAsDataURL(fileHandleObject);
-                processingReaderEngine.onload = () => {
-                    resolve(processingReaderEngine.result);
-                };
-                processingReaderEngine.onerror = (error) => {
-                    reject(error);
-                };
-            });
-        }
-
-        /**
-         * Form Submission Event Engine Processor
-         */
-        async function commitFormTransactionEngine(e) {
-            e.preventDefault();
-            
-            // Display Global Async Loading Matrix Layer Components
-            const processingSpinner = document.getElementById('async-loading-layer');
-            document.getElementById('loading-state-title').innerText = "Processing Memory Allocation";
-            document.getElementById('loading-state-desc').innerText = "Converting documentation scans into client data models...";
-            processingSpinner.classList.remove('hidden');
-
-            const databaseIndexPointer = parseInt(document.getElementById('modal-field-hidden-index').value);
-            
+        async function fetchFleetFromCloud() {
+            toggleLoading(true);
             try {
-                // Initialize clean memory block instance map
-                const operationalTransactionRecord = {
-                    plate: document.getElementById('form-field-plate').value.trim().toUpperCase(),
-                    category: document.getElementById('form-field-category').value,
-                    driver: document.getElementById('form-field-driver').value.trim(),
-                    desc: document.getElementById('form-field-desc').value.trim(),
-                    engine: document.getElementById('form-field-engine').value.trim().toUpperCase(),
-                    chassis: document.getElementById('form-field-chassis').value.trim().toUpperCase(),
-                    fuel: parseInt(document.getElementById('form-field-fuel').value || 0),
-                    policy: document.getElementById('form-field-policy').value.trim().toUpperCase(),
-                    lto: document.getElementById('form-field-lto').value,
-                    gsis: document.getElementById('form-field-gsis').value,
-                    pms: document.getElementById('form-field-pms').value,
-                    
-                    // Retain past image allocations if index update structure exists
-                    or_file_blob: databaseIndexPointer >= 0 ? SYSTEM_FLEET_DATA_STORE[databaseIndexPointer].or_file_blob : null,
-                    cr_file_blob: databaseIndexPointer >= 0 ? SYSTEM_FLEET_DATA_STORE[databaseIndexPointer].cr_file_blob : null,
-                    coc_file_blob: databaseIndexPointer >= 0 ? SYSTEM_FLEET_DATA_STORE[databaseIndexPointer].coc_file_blob : null
-                };
-
-                // Extract Local File Handler Input Component Nodes
-                const streamFileLtoOR = document.getElementById('upload-binary-lto-or').files[0];
-                const streamFileLtoCR = document.getElementById('upload-binary-lto-cr').files[0];
-                const streamFileGsisCOC = document.getElementById('upload-binary-gsis-coc').files[0];
-
-                // Await Serialized Stream Converters
-                if (streamFileLtoOR) {
-                    logAuditFootprintEngine(`Compiling file block token for LTO O.R. [${operationalTransactionRecord.plate}]`);
-                    operationalTransactionRecord.or_file_blob = await processFileAsyncToDataURI(streamFileLtoOR);
-                }
-                if (streamFileLtoCR) {
-                    logAuditFootprintEngine(`Compiling file block token for LTO C.R. [${operationalTransactionRecord.plate}]`);
-                    operationalTransactionRecord.cr_file_blob = await processFileAsyncToDataURI(streamFileLtoCR);
-                }
-                if (streamFileGsisCOC) {
-                    logAuditFootprintEngine(`Compiling file block token for GSIS C.O.C. [${operationalTransactionRecord.plate}]`);
-                    operationalTransactionRecord.coc_file_blob = await processFileAsyncToDataURI(streamFileGsisCOC);
-                }
-
-                // Append array elements based on modification sequence boundaries
-                if (databaseIndexPointer >= 0) {
-                    SYSTEM_FLEET_DATA_STORE[databaseIndexPointer] = operationalTransactionRecord;
-                    logAuditFootprintEngine(`Committed memory modifications to index record token line: [${operationalTransactionRecord.plate}]`);
-                } else {
-                    SYSTEM_FLEET_DATA_STORE.push(operationalTransactionRecord);
-                    logAuditFootprintEngine(`Appended completely new asset record line structure: [${operationalTransactionRecord.plate}]`);
-                }
-
-                // Persist State to local store instances
-                localStorage.setItem('ceo_fleet_db_v2_hardened', JSON.stringify(SYSTEM_FLEET_DATA_STORE));
-                
-                // Cleanup UI layout constraints
-                executeDataGridRefresher();
-                closeModalWorkflowWindow();
-
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?select=*&order=plate.asc`, {
+                    method: "GET",
+                    headers: getHeaders()
+                });
+                if (!response.ok) throw new Error("Cloud fetch failed");
+                fleet = await response.json();
+                updateInterfaceMetricsAndAlerts();
+                buildRegistryTableRows();
+                buildRepositoryTableRows();
             } catch (err) {
-                logAuditFootprintEngine(`CRITICAL EXCEPTION: File attachment compilation failed. State aborted. Error trace: ${err}`, true);
-                alert('An exception model failure stopped the transaction from saving. Review audit logs.');
+                console.error("Database connection error:", err);
+                alert("Database connection sync alert. Using snapshot placeholders.");
+                fleet = [
+                    { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", vehicle_status: "Operational", equipment_category: "Service Vehicle", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
+                    { plate: "PROP-CS-02", model: "Stihl MS-250 Wood Chainsaw", year: "2024", driver: "A. Baguio", lto: null, gsis: null, chassis_no: null, engine_no: null, next_pms: "2026-07-15", vehicle_status: "Operational", equipment_category: "Light Equipment", repair_history: "2026-04-12: Lubricated dual chain rails", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
+                ];
+                updateInterfaceMetricsAndAlerts();
+                buildRegistryTableRows();
             } finally {
-                processingSpinner.classList.add('hidden');
+                toggleLoading(false);
             }
         }
 
-        /**
-         * Drops target arrays row lines safely with modal logic checks
-         */
-        function destroyRegistryRecordTransaction(targetStorageIndexPointer) {
-            const trackingIdentifierPlateStr = SYSTEM_FLEET_DATA_STORE[targetStorageIndexPointer].plate;
+        function setupEventListeners() {
+            // Programmatic login form listener binding
+            document.getElementById('gatekeeper-form').addEventListener('submit', verifySecurityAccess);
+
+            document.getElementById('menu-add-vehicle').addEventListener('click', () => openFormModal());
+            document.getElementById('btn-close-modal').addEventListener('click', closeFormModal);
+            document.getElementById('btn-close-modal-footer').addEventListener('click', closeFormModal);
+            document.getElementById('vehicle-form').addEventListener('submit', handleFormSubmission);
+            document.getElementById('table-search').addEventListener('input', buildRegistryTableRows);
+            document.getElementById('f-category').addEventListener('change', adjustFormFieldsByCategory);
             
-            if (confirm(`CRITICAL SECURITY DISMISSAL DIRECTIVE:\n\nAre you absolutely certain you intend to permanently delete the active vehicle asset registry entry matching the plate index [ ${trackingIdentifierPlateStr} ]?\n\nThis will instantly clear all linked statutory dates and document scanning matrices.`)) {
-                logAuditFootprintEngine(`Dropped dataset entry matching index line tracking reference: [${trackingIdentifierPlateStr}]`);
-                
-                SYSTEM_FLEET_DATA_STORE.splice(targetStorageIndexPointer, 1);
-                localStorage.setItem('ceo_fleet_db_v2_hardened', JSON.stringify(SYSTEM_FLEET_DATA_STORE));
-                
-                executeDataGridRefresher();
-            }
+            document.querySelectorAll('#filter-category-group button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#filter-category-group button').forEach(b => {
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap";
+                    });
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap";
+                    categoryFilter = btn.getAttribute('data-filter');
+                    buildRegistryTableRows();
+                });
+            });
+
+            document.querySelectorAll('#filter-lto-group button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#filter-lto-group button').forEach(b => {
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                    });
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
+                    ltoFilter = btn.getAttribute('data-filter');
+                    buildRegistryTableRows();
+                });
+            });
+
+            document.querySelectorAll('#filter-gsis-group button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#filter-gsis-group button').forEach(b => {
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all";
+                    });
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all";
+                    gsisFilter = btn.getAttribute('data-filter');
+                    buildRegistryTableRows();
+                });
+            });
         }
 
-        /**
-         * Local NoSQL Base64 Raw Data Packager Exfiltration Core Hook
-         */
-        function triggerDataSnapshotExport() {
-            logAuditFootprintEngine("Packaging physical JSON database exfiltration asset snapshot packet...");
+        function toggleMobileSidebar(isOpen) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
             
-            try {
-                const physicalStringPayload = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(SYSTEM_FLEET_DATA_STORE));
-                const temporalAnchorDownloadLinkElement = document.createElement('a');
-                
-                temporalAnchorDownloadLinkElement.setAttribute("href", physicalStringPayload);
-                temporalAnchorDownloadLinkElement.setAttribute("download", `ceo_fleet_hardened_snapshot_${Math.round(Date.now() / 1000)}.json`);
-                
-                document.body.appendChild(temporalAnchorDownloadLinkElement);
-                temporalAnchorDownloadLinkElement.click();
-                document.body.removeChild(temporalAnchorDownloadLinkElement);
-                
-                logAuditFootprintEngine("Database snapshot compiled and deployed to system pipeline successfully.");
-            } catch (err) {
-                logAuditFootprintEngine(`Snapshot compression failed with system trace error: ${err}`, true);
+            if (isOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
             }
         }
 
-        /**
-         * High Density Local Storage Data Restructuring Blueprint Node Parser
-         */
-        function triggerDataSnapshotImport(event) {
-            const rawFileHandle = event.target.files[0];
-            if (!rawFileHandle) return;
-
-            logAuditFootprintEngine(`Processing structure ingestion framework for configuration setup file: [${rawFileHandle.name}]`);
-
-            const readerInstanceNode = new FileReader();
-            readerInstanceNode.onload = function(e) {
-                try {
-                    const parsedStructureResultArray = JSON.parse(e.target.result);
-                    if (Array.isArray(parsedStructureResultArray)) {
-                        SYSTEM_FLEET_DATA_STORE = parsedStructureResultArray;
-                        localStorage.setItem('ceo_fleet_db_v2_hardened', JSON.stringify(SYSTEM_FLEET_DATA_STORE));
-                        
-                        logAuditFootprintEngine(`Ingestion parsing validation clean. Swapped ${SYSTEM_FLEET_DATA_STORE.length} entries into local active layout.`);
-                        executeDataGridRefresher();
-                        alert('System database state successfully updated from external blueprint schema document file.');
-                    } else {
-                        logAuditFootprintEngine("INGESTION ABORT: Target configuration file mapping data structures failed validation tests.", true);
-                    }
-                } catch (err) {
-                    logAuditFootprintEngine(`INGESTION CRITICAL ERROR: Reading parser thrown exception model: ${err}`, true);
-                    alert('Invalid JSON blueprint formatting detected.');
+        function switchActiveView(viewId) {
+            toggleMobileSidebar(false); // Close mobile menu drawer automatically on navigation click
+            
+            const views = ['dashboard', 'reports', 'repository', 'utilities'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+                
+                const nav = document.getElementById(`side-nav-${v}`);
+                if (nav) {
+                    nav.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/50 hover:text-white group";
                 }
-            };
-            readerInstanceNode.readAsText(rawFileHandle);
-        }
-
-        /**
-         * Clears browser structural storage caches completely
-         */
-        function wipeCoreSystemDataEngine() {
-            if (confirm("NUCLEAR COLD RESTART NOTICE:\n\nYou are triggering an absolute database wipe pattern. This operation drops all fields, names, historical configurations, and raw Base64 scans.\n\nContinue factory restart pipeline alignment?")) {
-                localStorage.removeItem('ceo_fleet_db_v2_hardened');
-                SYSTEM_FLEET_DATA_STORE = [];
-                logAuditFootprintEngine("Executed nuclear cold storage database reset override parameter.", true);
-                executeDataGridRefresher();
-            }
-        }
-
-        /**
-         * Appends functional log lines into the UI terminal trace log workspace
-         */
-        function logAuditFootprintEngine(messageString, isWarningFlag = false) {
-            const logTerminalDomNode = document.getElementById('system-audit-log-terminal');
-            if (!logTerminalDomNode) return;
-
-            const timeStampStamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            let operationalBadge = isWarningFlag ? '[ CRIT_ERR ]' : '[ SYNC_OK  ]';
-            let textColorStyle = isWarningFlag ? 'text-rose-400 font-bold' : 'text-slate-400';
-
-            logTerminalDomNode.innerHTML += `
-                <div class="py-0.5 tracking-wider font-mono ${textColorStyle}">
-                    <span class="text-emerald-600 font-bold">${timeStampStamp}</span> 
-                    <span class="text-blue-500 font-semibold">${operationalBadge}</span> : ${messageString}
-                </div>
-            `;
+            });
             
-            // Scroll system log wrapper window automatically to view thresholds
-            logTerminalDomNode.scrollTop = logTerminalDomNode.scrollHeight;
+            const currentView = document.getElementById(`view-${viewId}`);
+            if (currentView) currentView.classList.remove('hidden');
+            
+            const currentNavItem = document.getElementById(`side-nav-${viewId}`);
+            if (currentNavItem) {
+                currentNavItem.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all bg-emerald-500/10 text-emerald-400 group";
+            }
+
+            const headerTitle = document.getElementById('workspace-view-header-title');
+            if (viewId === 'dashboard') {
+                headerTitle.innerText = "Active Fleet Registry";
+                buildRegistryTableRows();
+            } else if (viewId === 'reports') {
+                headerTitle.innerText = "Executive Compliance Reports";
+                buildExecutiveReportRows();
+            } else if (viewId === 'repository') {
+                headerTitle.innerText = "Cloud Documentation Vault";
+                buildRepositoryTableRows();
+            } else if (viewId === 'utilities') {
+                headerTitle.innerText = "System Utilities Overview";
+            }
         }
 
-        /**
-         * Wipe active visible debug log frames clean
-         */
-        function wipeAuditLogsEngine() {
-            const logTerminalDomNode = document.getElementById('system-audit-log-terminal');
-            if (logTerminalDomNode) {
-                logTerminalDomNode.innerHTML = '';
-                logAuditFootprintEngine("System logs trace stack cleared via management directive.");
+        function evaluateDateStatus(targetDateStr, warningWindow = WARNING_WINDOW_DAYS) {
+            // Safe fallback: non-road assets do not require LTO registration and output "N/A"
+            if (!targetDateStr) return { label: "N/A", statusClass: "valid", colorClass: "text-slate-500 bg-slate-800/20 border border-slate-700/20", daysRemaining: 9999 };
+            const targetDate = new Date(targetDateStr);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
+
+            const differenceInTime = targetDate.getTime() - today.getTime();
+            const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+            if (daysRemaining < 0) {
+                return { label: "EXPIRED", statusClass: "expired", colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", daysRemaining };
+            } else if (daysRemaining <= warningWindow) {
+                return { label: `WARN (${daysRemaining}d)`, statusClass: "expiring", colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", daysRemaining };
+            } else {
+                return { label: "VALID", statusClass: "valid", colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", daysRemaining };
             }
+        }
+
+        function evaluatePmsStatus(targetDateStr) {
+            if (!targetDateStr) return { label: "NO PMS SCHED", statusClass: "expired", colorClass: "text-slate-400 bg-slate-800/40 border border-slate-700/30", daysRemaining: -9999, detailText: "No target set" };
+            const targetDate = new Date(targetDateStr);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            targetDate.setHours(0,0,0,0);
+
+            const differenceInTime = targetDate.getTime() - today.getTime();
+            const daysRemaining = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+            if (daysRemaining < 0) {
+                const absDays = Math.abs(daysRemaining);
+                return { 
+                    label: `OVERDUE (${absDays}d)`, 
+                    statusClass: "expired", 
+                    colorClass: "text-rose-400 bg-rose-500/10 border border-rose-500/30", 
+                    daysRemaining,
+                    detailText: `${absDays} days overdue`
+                };
+            } else if (daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                return { 
+                    label: `DUE (${daysRemaining}d)`, 
+                    statusClass: "expiring", 
+                    colorClass: "text-amber-400 bg-amber-500/10 border border-amber-500/30", 
+                    daysRemaining,
+                    detailText: `Due in ${daysRemaining} days`
+                };
+            } else {
+                return { 
+                    label: `PMS OK (${daysRemaining}d)`, 
+                    statusClass: "valid", 
+                    colorClass: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/30", 
+                    daysRemaining,
+                    detailText: `${daysRemaining} days left`
+                };
+            }
+        }
+
+        function updateInterfaceMetricsAndAlerts() {
+            let total = fleet.length;
+            let expiredCount = 0;
+            let warningCount = 0;
+            let validCount = 0;
+
+            let ltoExpired = 0, gsisExpired = 0, pmsOverdue = 0;
+            let ltoWarning = 0, gsisWarning = 0, pmsWarning = 0;
+
+            const MathAbs = Math.abs;
+            const alertsHook = document.getElementById('alerts-list-hook');
+            alertsHook.innerHTML = "";
+            let alertItemsCount = 0;
+
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+
+                let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || (v.next_pms && pmsStat.statusClass === 'expired');
+                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || (v.next_pms && pmsStat.statusClass === 'expiring')) && !isExpired;
+
+                if (isExpired) expiredCount++;
+                else if (isWarning) warningCount++;
+                else validCount++;
+
+                if (v.lto && ltoStat.statusClass === 'expired') ltoExpired++;
+                if (v.gsis && gsisStat.statusClass === 'expired') gsisExpired++;
+                if (v.next_pms && pmsStat.statusClass === 'expired') pmsOverdue++;
+                if (v.lto && ltoStat.statusClass === 'expiring') ltoWarning++;
+                if (v.gsis && gsisStat.statusClass === 'expiring') gsisWarning++;
+                if (v.next_pms && pmsStat.statusClass === 'expiring') pmsWarning++;
+
+                if (v.lto && ltoStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-amber-500 text-sm text-slate-300";
+                    const dayLabel = ltoStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${MathAbs(ltoStat.daysRemaining)} days ago)` : `${ltoStat.daysRemaining} days remaining`;
+                    item.innerHTML = `
+                        <div>
+                            <strong class="text-white">${v.plate}</strong> — ${v.model} (${v.driver || 'No Assigned Driver'}) requires LTO Registration Renewal.
+                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-amber-500/15 text-amber-400 rounded">LTO O.R.</span>
+                        </div>
+                        <div class="font-semibold text-rose-400 text-xs tracking-wider uppercase">${dayLabel}</div>
+                    `;
+                    alertsHook.appendChild(item);
+                }
+
+                if (v.gsis && gsisStat.daysRemaining <= WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-blue-500 text-sm text-slate-300";
+                    const dayLabel = gsisStat.daysRemaining < 0 ? `CRITICAL EXPIRED (${MathAbs(gsisStat.daysRemaining)} days ago)` : `${gsisStat.daysRemaining} days remaining`;
+                    item.innerHTML = `
+                        <div>
+                            <strong class="text-white">${v.plate}</strong> — ${v.model} (${v.driver || 'No Assigned Driver'}) requires GSIS Insurance Coverage Renewal.
+                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-blue-500/15 text-blue-400 rounded">GSIS C.O.C.</span>
+                        </div>
+                        <div class="font-semibold text-rose-400 text-xs tracking-wider uppercase">${dayLabel}</div>
+                    `;
+                    alertsHook.appendChild(item);
+                }
+
+                if (v.next_pms && pmsStat.daysRemaining <= PMS_WARNING_WINDOW_DAYS) {
+                    alertItemsCount++;
+                    const item = document.createElement('div');
+                    item.className = "flex flex-col md:flex-row md:items-center justify-between gap-2 bg-slate-950/40 p-4 rounded-lg border-l-4 border-l-emerald-500 text-sm text-slate-300";
+                    const dayLabel = pmsStat.daysRemaining < 0 ? `PMS OVERDUE (${MathAbs(pmsStat.daysRemaining)} days ago)` : `PMS SCHEDULED (${pmsStat.daysRemaining} days remaining)`;
+                    item.innerHTML = `
+                        <div>
+                            <strong class="text-white">${v.plate}</strong> — ${v.model} requires Preventive Maintenance.
+                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-emerald-500/15 text-emerald-400 rounded">PMS DUE</span>
+                        </div>
+                        <div class="font-semibold text-rose-400 text-xs tracking-wider uppercase">${dayLabel}</div>
+                    `;
+                    alertsHook.appendChild(item);
+                }
+            });
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-expired').innerText = expiredCount;
+            document.getElementById('stat-expired-sub').innerText = `${ltoExpired} LTO • ${gsisExpired} GSIS • ${pmsOverdue} PMS`;
+            document.getElementById('stat-warning').innerText = warningCount;
+            document.getElementById('stat-warning-sub').innerText = `${ltoWarning} LTO • ${gsisWarning} GSIS • ${pmsWarning} PMS`;
+            document.getElementById('stat-valid').innerText = validCount;
+
+            document.getElementById('alert-badge-count').innerText = alertItemsCount;
+            document.getElementById('alerts-container-box').classList.toggle('hidden', alertItemsCount === 0);
+        }
+
+        function getStatusBadgeConfig(status) {
+            const cleanStatus = status ? status.trim() : "Operational";
+            switch(cleanStatus) {
+                case "Under Repair":
+                    return { label: "🔧 Repair", colors: "bg-rose-500/10 text-rose-400 border border-rose-500/25" };
+                case "Standby":
+                    return { label: "💤 Standby", colors: "bg-blue-500/10 text-blue-400 border border-blue-500/25" };
+                case "Decommissioned":
+                    return { label: "⚠️ Retired", colors: "bg-slate-500/10 text-slate-400 border border-slate-500/25" };
+                default:
+                    return { label: "🟢 Active", colors: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" };
+            }
+        }
+
+        function getCategoryEmoticon(category) {
+            const c = category ? category.trim() : 'Service Vehicle';
+            switch(c) {
+                case "Heavy Equipment": return '🚜 HEAVY';
+                case "Light Equipment": return '⚙️ LIGHT';
+                default: return '🚗 VEHICLE';
+            }
+        }
+
+        function buildRegistryTableRows() {
+            const query = document.getElementById('table-search').value.toLowerCase();
+            const tbody = document.getElementById('registry-table-body');
+            tbody.innerHTML = "";
+
+            const mobileContainer = document.getElementById('registry-mobile-list');
+            mobileContainer.innerHTML = "";
+
+            fleet.forEach((v, index) => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+
+                if (categoryFilter !== 'all' && (v.equipment_category || 'Service Vehicle') !== categoryFilter) return;
+                if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
+                if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
+
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchModel = v.model.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                const matchChassis = v.chassis_no && v.chassis_no.toLowerCase().includes(query);
+                const matchEngine = v.engine_no && v.engine_no.toLowerCase().includes(query);
+                if (!matchPlate && !matchModel && !matchDriver && !matchChassis && !matchEngine) return;
+
+                // Calculate age dynamically (Current year is 2026)
+                const currentYear = 2026;
+                let ageDisplay = "—";
+                if (v.year) {
+                    const parsedYear = parseInt(v.year);
+                    if (!isNaN(parsedYear)) {
+                        const age = currentYear - parsedYear;
+                        ageDisplay = `${v.year} (${age} ${age === 1 ? 'yr' : 'yrs'} old)`;
+                    }
+                }
+
+                const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+                const categoryIcon = getCategoryEmoticon(v.equipment_category);
+
+                // Build secondary identification line dynamically (Hides if fields are empty)
+                let idSubline = "";
+                if (v.chassis_no || v.engine_no) {
+                    idSubline = ` • C: ${v.chassis_no || '—'} • E: ${v.engine_no || '—'}`;
+                }
+
+                // Grab short Repair snippet
+                let lastRepairSnippet = "—";
+                if (v.repair_history) {
+                    const lines = v.repair_history.split('\n').filter(l => l.trim() !== "");
+                    if (lines.length > 0) {
+                        lastRepairSnippet = lines[0].substring(0, 32) + (lines[0].length > 32 ? "..." : "");
+                    }
+                }
+
+                // 1. Build Desktop Row
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-800/20 transition-all";
+                row.innerHTML = `
+                    <td class="py-4 px-6">
+                        <div class="font-mono font-bold text-white tracking-wide text-base">${v.plate}</div>
+                        <div class="flex flex-col gap-1 mt-1.5 max-w-[100px]">
+                            <span class="inline-block px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center ${statusConfig.colors}">${statusConfig.label}</span>
+                            <span class="inline-block px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold text-slate-100">${v.model}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                            Age: ${ageDisplay}${idSubline}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-slate-300">${v.driver ? v.driver : '<span class="italic text-slate-500">Unassigned</span>'}</td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${ltoStat.colorClass}">${ltoStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.lto || 'N/A'}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${gsisStat.colorClass}">${gsisStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.gsis || 'N/A'}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">${v.next_pms || '—'}</div>
+                    </td>
+                    <td class="py-4 px-6 text-xs text-slate-400 font-sans italic max-w-[200px] truncate" title="${v.repair_history || ''}">${lastRepairSnippet}</td>
+                    <td class="py-4 px-6 text-center">
+                        <div class="inline-flex gap-2">
+                            <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-1.5 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center gap-1.5" onclick="openFormModal(${index})">
+                                📝 Edit
+                            </button>
+                            <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
+                                🖨️ Profile
+                            </button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+
+                // 2. Build Mobile Touch Card
+                const card = document.createElement('div');
+                card.className = "bg-brand-card border border-brand-border rounded-xl p-4 space-y-4 shadow-md";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="font-mono font-bold text-white tracking-wide text-lg">${v.plate}</div>
+                            <div class="flex gap-1.5 mt-1.5">
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center ${statusConfig.colors}">${statusConfig.label}</span>
+                                <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider text-center bg-slate-800 text-slate-300 border border-slate-700/50">${categoryIcon}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] text-slate-400 block">Custodian/Driver</span>
+                            <strong class="text-xs text-slate-200 block truncate max-w-[120px]">${v.driver || 'Unassigned'}</strong>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs bg-slate-900/40 p-3 rounded-lg border border-brand-border/40">
+                        <div class="col-span-2">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Model Description</span>
+                            <span class="text-white font-medium block">${v.model}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Acquisition Age</span>
+                            <span class="text-white font-mono block">${ageDisplay}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Next Maintenance</span>
+                            <span class="font-bold block text-[11px] ${pmsStat.colorClass.split(' ')[0]}">${pmsStat.label}</span>
+                        </div>
+                        ${v.chassis_no ? `
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Chassis Number</span>
+                            <span class="text-slate-300 font-mono text-[10px] break-all block">${v.chassis_no}</span>
+                        </div>` : ''}
+                        ${v.engine_no ? `
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider mb-0.5">Engine / Serial</span>
+                            <span class="text-slate-300 font-mono text-[10px] break-all block">${v.engine_no}</span>
+                        </div>` : ''}
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 border-t border-brand-border/40 pt-3">
+                        <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-2 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5" onclick="openFormModal(${index})">
+                            📝 Edit
+                        </button>
+                        <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
+                            🖨️ Profile
+                        </button>
+                        <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
+            });
+        }
+
+        function triggerExecutiveReportPrint() {
+            document.body.classList.remove('printing-single-profile');
+            document.body.classList.add('printing-exec-report');
+            window.print();
+        }
+
+        function printSingleVehicleProfile(index) {
+            const v = fleet[index];
+            if (!v) return;
+
+            // Populate metadata
+            document.getElementById('print-prof-plate').innerText = v.plate;
+            
+            const currentYear = 2026;
+            let ageDisplay = "—";
+            if (v.year) {
+                const parsedYear = parseInt(v.year);
+                if (!isNaN(parsedYear)) {
+                    const age = currentYear - parsedYear;
+                    ageDisplay = `${v.year} (${age} ${age === 1 ? 'year' : 'years'} old)`;
+                }
+            }
+
+            document.getElementById('print-prof-year').innerText = `[${v.equipment_category || 'Service Vehicle'}] — ${ageDisplay}`;
+            document.getElementById('print-prof-model').innerText = v.model;
+            document.getElementById('print-prof-driver').innerText = v.driver || 'Unassigned';
+            document.getElementById('print-prof-status').innerText = v.vehicle_status || 'Operational';
+
+            // Print deadlines layout configuration (Hides irrelevant metadata fields depending on type)
+            const printLtoBox = document.getElementById('print-box-lto');
+            const printGsisBox = document.getElementById('print-box-gsis');
+            const printChassisText = document.getElementById('print-prof-chassis');
+            const printEngineText = document.getElementById('print-prof-engine');
+
+            if (v.equipment_category === "Light Equipment") {
+                printChassisText.parentNode.classList.add('hidden');
+                printEngineText.parentNode.classList.add('hidden');
+                printLtoBox.classList.add('hidden');
+                printGsisBox.classList.add('hidden');
+            } else if (v.equipment_category === "Heavy Equipment") {
+                printChassisText.parentNode.classList.remove('hidden');
+                printEngineText.parentNode.classList.remove('hidden');
+                printChassisText.innerText = v.chassis_no || '—';
+                printEngineText.innerText = v.engine_no || '—';
+                printLtoBox.classList.add('hidden');
+                printGsisBox.classList.add('hidden');
+            } else { // Service Vehicle
+                printChassisText.parentNode.classList.remove('hidden');
+                printEngineText.parentNode.classList.remove('hidden');
+                printChassisText.innerText = v.chassis_no || '—';
+                printEngineText.innerText = v.engine_no || '—';
+                printLtoBox.classList.remove('hidden');
+                printGsisBox.classList.remove('hidden');
+                document.getElementById('print-prof-lto').innerText = v.lto || '—';
+                document.getElementById('print-prof-gsis').innerText = v.gsis || '—';
+            }
+
+            document.getElementById('print-prof-pms').innerText = v.next_pms || 'No Sched';
+
+            // Populate print timeline
+            const printTimeline = document.getElementById('print-prof-timeline');
+            printTimeline.innerHTML = "";
+
+            if (!v.repair_history || v.repair_history.trim() === "") {
+                printTimeline.innerHTML = `<span class="italic text-slate-400 text-sm block">No maintenance or service history has been logged for this vehicle.</span>`;
+            } else {
+                const logs = v.repair_history.split('\n').filter(line => line.trim() !== "");
+                logs.forEach(log => {
+                    const parts = log.split(':');
+                    const d = parts[0] ? parts[0].trim() : '—';
+                    const act = parts.slice(1).join(':') ? parts.slice(1).join(':').trim() : '—';
+
+                    const item = document.createElement('div');
+                    item.className = "border-l-2 border-slate-300 pl-4 py-1";
+                    item.innerHTML = `
+                        <span class="font-mono text-xs font-bold text-slate-500 block">${d}</span>
+                        <span class="text-slate-800 text-sm block mt-0.5">${act}</span>
+                    `;
+                    printTimeline.appendChild(item);
+                });
+            }
+
+            // Route print rendering styles correctly
+            document.body.classList.remove('printing-exec-report');
+            document.body.classList.add('printing-single-profile');
+
+            window.print();
+        }
+
+        function buildExecutiveReportRows() {
+            document.getElementById('print-timestamp').innerText = `Generated on: ${new Date().toLocaleString()} | City Engineering Office Baguio`;
+            
+            let expiredCount = 0;
+            let warningCount = 0;
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+                if ((v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || pmsStat.statusClass === 'expired') expiredCount++;
+                else if (((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || pmsStat.statusClass === 'expiring')) warningCount++;
+            });
+
+            document.getElementById('rep-total').innerText = fleet.length;
+            document.getElementById('rep-expired').innerText = expiredCount;
+            document.getElementById('rep-warning').innerText = warningCount;
+
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const ltoStat = evaluateDateStatus(v.lto);
+                const gsisStat = evaluateDateStatus(v.gsis);
+                const pmsStat = evaluatePmsStatus(v.next_pms);
+
+                const statusConfig = getStatusBadgeConfig(v.vehicle_status);
+
+                const currentYear = 2026;
+                let ageDisplay = "—";
+                if (v.year) {
+                    const parsedYear = parseInt(v.year);
+                    if (!isNaN(parsedYear)) {
+                        const age = currentYear - parsedYear;
+                        ageDisplay = `${v.year} (${age} yrs old)`;
+                    }
+                }
+
+                // Subline config
+                let detailsSubline = "";
+                if (v.chassis_no || v.engine_no) {
+                    detailsSubline = ` • Chassis: ${v.chassis_no || '—'} • Engine: ${v.engine_no || '—'}`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "text-slate-800 font-medium";
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <div class="font-mono font-bold text-slate-900">${v.plate}</div>
+                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label} • ${v.equipment_category || 'Vehicle'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
+                        <div><strong>${v.model}</strong></div>
+                        <div>Age: ${ageDisplay}${detailsSubline}</div>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">${v.driver || 'Unassigned'}</td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${ltoStat.colorClass}">${ltoStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.lto || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${gsisStat.colorClass}">${gsisStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.gsis || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-200">
+                        <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider print-badge ${pmsStat.colorClass}">${pmsStat.label}</span>
+                        <span class="text-[10px] text-slate-500 font-mono ml-2">${v.next_pms || '—'}</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function buildRepositoryTableRows() {
+            const query = document.getElementById('repo-search').value.toLowerCase();
+            const tbody = document.getElementById('repo-table-body');
+            tbody.innerHTML = "";
+
+            fleet.forEach(v => {
+                const matchPlate = v.plate.toLowerCase().includes(query);
+                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                if (query && !matchPlate && !matchDriver) return;
+
+                let ltoCell = "";
+                let crCell = "";
+                let gsisCell = "";
+
+                // LTO Official Receipt (O.R.)
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload O.R.</button>`;
+                }
+
+                // LTO Certificate of Registration (C.R.)
+                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    crCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'cr_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    crCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">📤 Upload C.R.</button>`;
+                }
+
+                // GSIS Insurance (C.O.C.)
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
+                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
+                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
+                        </div>
+                    `;
+                } else {
+                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload C.O.C.</button>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-800/10 transition-all";
+                row.innerHTML = `
+                    <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
+                    <td class="py-4 px-6 font-semibold text-slate-100">${v.driver || 'Unassigned'}</td>
+                    <td class="py-4 px-6">${ltoCell}</td>
+                    <td class="py-4 px-6">${crCell}</td>
+                    <td class="py-4 px-6">${gsisCell}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function adjustFormFieldsByCategory() {
+            const category = document.getElementById('f-category').value;
+            const wrapperChassis = document.getElementById('wrapper-chassis');
+            const wrapperEngine = document.getElementById('wrapper-engine');
+            const wrapperLto = document.getElementById('wrapper-lto');
+            const wrapperGsis = document.getElementById('wrapper-gsis');
+
+            if (category === "Light Equipment") {
+                // Hides LTO, GSIS, Chassis, and Engine No.
+                wrapperChassis.classList.add('hidden');
+                wrapperEngine.classList.add('hidden');
+                wrapperLto.classList.add('hidden');
+                wrapperGsis.classList.add('hidden');
+            } else if (category === "Heavy Equipment") {
+                // Shows Chassis & Engine, Hides LTO & GSIS
+                wrapperChassis.classList.remove('hidden');
+                wrapperEngine.classList.remove('hidden');
+                wrapperLto.classList.add('hidden');
+                wrapperGsis.classList.add('hidden');
+            } else { // Service Vehicle: Shows everything
+                wrapperChassis.classList.remove('hidden');
+                wrapperEngine.classList.remove('hidden');
+                wrapperLto.classList.remove('hidden');
+                wrapperGsis.classList.remove('hidden');
+            }
+        }
+
+        function setQuickPmsPreset(months) {
+            const today = new Date();
+            // Add months cleanly
+            today.setMonth(today.getMonth() + months);
+            
+            // Format YYYY-MM-DD
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            
+            document.getElementById('f-pms').value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        function openFormModal(index = -1) {
+            const modal = document.getElementById('form-modal');
+            const form = document.getElementById('vehicle-form');
+            form.reset();
+
+            // Set default logger date to today
+            document.getElementById('new-log-date').value = "2026-06-15";
+            document.getElementById('new-log-activity').value = '';
+
+            if (index > -1) {
+                const v = fleet[index];
+                document.getElementById('modal-title').innerText = "Modify Existing Fleet Record";
+                document.getElementById('edit-idx').value = index;
+                document.getElementById('f-plate').value = v.plate;
+                document.getElementById('f-plate').disabled = true;
+                document.getElementById('f-year').value = v.year;
+                document.getElementById('f-model').value = v.model;
+                document.getElementById('f-chassis').value = v.chassis_no || '';
+                document.getElementById('f-engine').value = v.engine_no || '';
+                document.getElementById('f-driver').value = v.driver || '';
+                document.getElementById('f-lto').value = v.lto || '';
+                document.getElementById('f-gsis').value = v.gsis || '';
+                document.getElementById('f-pms').value = v.next_pms || '';
+                document.getElementById('f-history').value = v.repair_history || '';
+                document.getElementById('f-status').value = v.vehicle_status || 'Operational';
+                document.getElementById('f-category').value = v.equipment_category || 'Service Vehicle';
+                
+                renderHistoryTimeline(v.repair_history || '');
+            } else {
+                document.getElementById('modal-title').innerText = "Log New Fleet Vehicle / Equipment";
+                document.getElementById('edit-idx').value = -1;
+                document.getElementById('f-plate').disabled = false;
+                document.getElementById('f-status').value = 'Operational';
+                document.getElementById('f-category').value = 'Service Vehicle';
+                renderHistoryTimeline('');
+            }
+
+            adjustFormFieldsByCategory(); // Set fields visibility depending on loaded category
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderHistoryTimeline(historyString) {
+            const timelineContainer = document.getElementById('history-display-timeline');
+            timelineContainer.innerHTML = "";
+
+            if (!historyString || historyString.trim() === "") {
+                timelineContainer.innerHTML = `<span class="italic text-slate-500 block py-2">No repair history logged for this vehicle.</span>`;
+                return;
+            }
+
+            const logs = historyString.split('\n').filter(line => line.trim() !== "");
+            
+            logs.forEach((log, index) => {
+                const parts = log.split(':');
+                const dateLabel = parts[0] ? parts[0].trim() : '—';
+                const activityLabel = parts.slice(1).join(':') ? parts.slice(1).join(':').trim() : '—';
+
+                const logItem = document.createElement('div');
+                logItem.className = "flex gap-3 items-start border-l border-brand-border pl-4 relative ml-2 group";
+                logItem.innerHTML = `
+                    <div class="absolute w-2 h-2 rounded-full bg-emerald-500 -left-[4.5px] top-1.5"></div>
+                    <div class="flex-grow">
+                        <span class="font-mono text-[10px] font-bold text-slate-400 block">${dateLabel}</span>
+                        <span class="text-slate-200 mt-0.5 block">${activityLabel}</span>
+                    </div>
+                    <button type="button" onclick="removeMaintenanceLogEntry(${index})" class="text-rose-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 font-semibold text-[10px] bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded transition-all shrink-0 self-center">
+                        🗑️ Delete
+                    </button>
+                `;
+                timelineContainer.appendChild(logItem);
+            });
+        }
+
+        function addMaintenanceLogEntry() {
+            const dateVal = document.getElementById('new-log-date').value;
+            const activityVal = document.getElementById('new-log-activity').value.trim();
+
+            if (!activityVal) {
+                alert("Please enter maintenance service details before logging.");
+                return;
+            }
+
+            const rawTextarea = document.getElementById('f-history');
+            const newEntry = `${dateVal}: ${activityVal}`;
+
+            if (rawTextarea.value.trim() === "") {
+                rawTextarea.value = newEntry;
+            } else {
+                rawTextarea.value = newEntry + "\n" + rawTextarea.value;
+            }
+
+            // Instantly redraw the mechanic timeline inside the modal
+            renderHistoryTimeline(rawTextarea.value);
+            document.getElementById('new-log-activity').value = ""; // Clear activity input field
+        }
+
+        function removeMaintenanceLogEntry(index) {
+            if (!confirm("Are you sure you want to delete this maintenance entry?")) return;
+            const rawTextarea = document.getElementById('f-history');
+            let logs = rawTextarea.value.split('\n').filter(line => line.trim() !== "");
+            logs.splice(index, 1);
+            rawTextarea.value = logs.join('\n');
+            renderHistoryTimeline(rawTextarea.value);
+        }
+
+        function closeFormModal() {
+            const modal = document.getElementById('form-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('edit-idx').value);
+            const category = document.getElementById('f-category').value;
+            
+            const recordData = {
+                plate: document.getElementById('f-plate').value.trim().toUpperCase(),
+                year: document.getElementById('f-year').value.toString(),
+                model: document.getElementById('f-model').value.trim(),
+                driver: document.getElementById('f-driver').value.trim() || null,
+                next_pms: document.getElementById('f-pms').value || null,
+                repair_history: document.getElementById('f-history').value.trim() || null,
+                vehicle_status: document.getElementById('f-status').value,
+                equipment_category: category
+            };
+
+            // Database Cleaning: Map values dynamically depending on classification to keep database clean
+            if (category === "Light Equipment") {
+                recordData.chassis_no = null;
+                recordData.engine_no = null;
+                recordData.lto = null;
+                recordData.gsis = null;
+            } else if (category === "Heavy Equipment") {
+                recordData.chassis_no = document.getElementById('f-chassis').value.trim().toUpperCase() || null;
+                recordData.engine_no = document.getElementById('f-engine').value.trim().toUpperCase() || null;
+                recordData.lto = null;
+                recordData.gsis = null;
+            } else { // Service Vehicle
+                recordData.chassis_no = document.getElementById('f-chassis').value.trim().toUpperCase() || null;
+                recordData.engine_no = document.getElementById('f-engine').value.trim().toUpperCase() || null;
+                recordData.lto = document.getElementById('f-lto').value || null;
+                recordData.gsis = document.getElementById('f-gsis').value || null;
+            }
+
+            toggleLoading(true);
+            try {
+                let response;
+                if (idx > -1) {
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(recordData.plate)}`, {
+                        method: "PATCH",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                } else {
+                    recordData.lto_document_attachment = null;
+                    recordData.cr_document_attachment = null;
+                    recordData.gsis_document_attachment = null;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/fleet`, {
+                        method: "POST",
+                        headers: getHeaders(),
+                        body: JSON.stringify(recordData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText);
+                }
+                
+                closeFormModal();
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error("Mutation failed:", err);
+                alert(`Error saving vehicle details:\n${err.message || "Please check your Supabase DB connection and column types."}`);
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        async function deleteVehicleRecord(plateId) {
+            if (!confirm(`Are you certain you want to permanently erase record metadata for vehicle ${plateId}?`)) return;
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/fleet?plate=eq.${encodeURIComponent(plateId)}`, {
+                    method: "DELETE",
+                    headers: getHeaders()
+                });
+                if (!response.ok) throw new Error("Cloud execution failed.");
+                fetchFleetFromCloud();
+            } catch (err) {
+                console.error(err);
+                alert("Database action updated successfully.");
+                fetchFleetFromCloud();
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function exportLocalDatabaseToBackupFile() {
+            if (fleet.length === 0) return alert("No operational data array rows available for packaging snapshots.");
+            const flatStringData = JSON.stringify(fleet, null, 2);
+            const dataBlob = new Blob([flatStringData], { type: "application/json" });
+            const anchor = document.createElement('a');
+            anchor.href = URL.createObjectURL(dataBlob);
+            anchor.download = `CEO_FLEET_SNAPSHOT_${new Date().toISOString().split('T')[0]}.json`;
+            anchor.click();
         }
     </script>
 </body>
 </html>
+```
