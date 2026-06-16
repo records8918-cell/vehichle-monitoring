@@ -1,19 +1,3 @@
-From your screenshots, we can see exactly why the uploads are failing:
-
-1.  Your bucket named records is indeed public, but it has 0 active policies
-    applied to it (meaning Supabase is blocking all upload attempts).
-2.  However, your other bucket named fleet-documents is already fully configured
-    with all 4 public policies (SELECT, INSERT, UPDATE, DELETE) [1, 2].
-
-The Solution:
-
-Instead of trying to force policies onto the records bucket, I have updated the
-application's code to upload directly to your already-configured fleet-documents
-bucket.
-
-You do not need to run any more SQL queries or adjust any more settings in your
-Supabase console. Just replace your HTML file with this updated version, and
-uploads will work immediately.
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
