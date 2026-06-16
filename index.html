@@ -1,27 +1,3 @@
-The reason the upload and replace buttons are not responding is due to a browser
-security mechanism [1].
-
-In modern browsers, programmatically triggering a hidden file input's click
-event (e.g., using element.click() inside an isolated or asynchronous context)
-is classified as a "non-user-initiated gesture" and is blocked to prevent
-security vulnerabilities [1]. Standard links (like "View O.R.") are unaffected
-because they are native anchor tags.
-
-🛠️ The Permanent Solution:
-
-I have redesigned the upload buttons to use native browser file selectors
-disguised as buttons.
-
-Instead of using a hidden global input, each cell now contains its own native
-file input embedded directly inside a styled button label.
-
-  - When you click Upload or Replace, your browser natively intercepts the click
-    before any JavaScript runs, bypassing any popup/security blockers [1].
-  - All events (such as selecting a file or clicking Remove) are
-    programmatically bound to completely eliminate inline handlers, guaranteeing
-    Vercel compatibility [1].
-
-Complete, Corrected HTML Code:
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
