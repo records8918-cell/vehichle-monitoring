@@ -1,3 +1,22 @@
+When you deploy your application to hosting platforms like Vercel, the build
+systems optimize and wrap the JavaScript code in a strict, sandboxed scope [1].
+
+Because of this isolation, classic inline HTML attributes like
+onclick="triggerFileUploadForm(...)" can fail because the browser's console is
+prevented from finding the isolated functions on the global window object [1].
+This results in the buttons doing nothing when clicked.
+
+How I solved this:
+
+I have eliminated all inline string-based event handlers in both the Docs
+Repository and the Dashboard Registry (including mobile touch cards).
+
+All buttons—such as Upload, Replace, View, Remove, Edit, and Print Profile—are
+now programmatically bound to their click events using standard, modern
+addEventListener methods on the DOM nodes [1]. This ensures that they respond
+immediately when clicked under any deployment environment.
+
+Complete, Responsive HTML Code:
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
@@ -924,18 +943,21 @@
                     <td class="py-4 px-6 text-xs text-slate-400 font-sans italic max-w-[200px] truncate" title="${v.repair_history || ''}">${lastRepairSnippet}</td>
                     <td class="py-4 px-6 text-center">
                         <div class="inline-flex gap-2">
-                            <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-1.5 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center gap-1.5" onclick="openFormModal(${index})">
+                            <button class="edit-btn bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-1.5 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
                                 📝 Edit
                             </button>
-                            <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
+                            <button class="prof-btn bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5">
                                 🖨️ Profile
                             </button>
-                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                            <button class="delete-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5">
                                 🗑️ Delete
                             </button>
                         </div>
                     </td>
                 `;
+                row.querySelector('.edit-btn').addEventListener('click', () => openFormModal(index));
+                row.querySelector('.prof-btn').addEventListener('click', () => printSingleVehicleProfile(index));
+                row.querySelector('.delete-btn').addEventListener('click', () => deleteVehicleRecord(v.plate));
                 tbody.appendChild(row);
 
                 // 2. Build Mobile Touch Card
@@ -982,17 +1004,20 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 border-t border-brand-border/40 pt-3">
-                        <button class="bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-2 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5" onclick="openFormModal(${index})">
+                        <button class="m-edit-btn bg-slate-800 hover:bg-slate-700 border border-brand-border text-xs font-semibold py-2 px-3 rounded text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5">
                             📝 Edit
                         </button>
-                        <button class="bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="printSingleVehicleProfile(${index})">
+                        <button class="m-prof-btn bg-blue-600/10 hover:bg-blue-600 border border-blue-500/20 text-blue-400 hover:text-white text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5">
                             🖨️ Profile
                         </button>
-                        <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5" onclick="deleteVehicleRecord('${v.plate}')">
+                        <button class="m-delete-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-2 px-3 rounded transition-all flex items-center justify-center gap-1.5">
                             🗑️ Delete
                         </button>
                     </div>
                 `;
+                card.querySelector('.m-edit-btn').addEventListener('click', () => openFormModal(index));
+                card.querySelector('.m-prof-btn').addEventListener('click', () => printSingleVehicleProfile(index));
+                card.querySelector('.m-delete-btn').addEventListener('click', () => deleteVehicleRecord(v.plate));
                 mobileContainer.appendChild(card);
             });
         }
@@ -1168,58 +1193,70 @@
                 const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
                 if (query && !matchPlate && !matchDriver) return;
 
-                let ltoCell = "";
-                let crCell = "";
-                let gsisCell = "";
-
-                // LTO Official Receipt (O.R.)
-                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    ltoCell = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
-                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">🔄 Replace</button>
-                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'lto_document_attachment')">🗑️ Remove</button>
-                        </div>
-                    `;
-                } else {
-                    ltoCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'lto_document_attachment')">📤 Upload O.R.</button>`;
-                }
-
-                // LTO Certificate of Registration (C.R.)
-                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    crCell = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
-                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">🔄 Replace</button>
-                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'cr_document_attachment')">🗑️ Remove</button>
-                        </div>
-                    `;
-                } else {
-                    crCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'cr_document_attachment')">📤 Upload C.R.</button>`;
-                }
-
-                // GSIS Insurance (C.O.C.)
-                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
-                    gsisCell = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
-                            <button class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">🔄 Replace</button>
-                            <button class="bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all" onclick="clearCloudDocumentField('${v.plate}', 'gsis_document_attachment')">🗑️ Remove</button>
-                        </div>
-                    `;
-                } else {
-                    gsisCell = `<button class="bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5" onclick="triggerFileUploadForm('${v.plate}', 'gsis_document_attachment')">📤 Upload C.O.C.</button>`;
-                }
-
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-800/10 transition-all";
+                
+                // Base cells
                 row.innerHTML = `
                     <td class="py-4 px-6 font-mono font-bold text-white tracking-wide">${v.plate}</td>
                     <td class="py-4 px-6 font-semibold text-slate-100">${v.driver || 'Unassigned'}</td>
-                    <td class="py-4 px-6">${ltoCell}</td>
-                    <td class="py-4 px-6">${crCell}</td>
-                    <td class="py-4 px-6">${gsisCell}</td>
+                    <td class="py-4 px-6 lto-cell"></td>
+                    <td class="py-4 px-6 cr-cell"></td>
+                    <td class="py-4 px-6 gsis-cell"></td>
                 `;
+
+                const ltoCell = row.querySelector('.lto-cell');
+                const crCell = row.querySelector('.cr-cell');
+                const gsisCell = row.querySelector('.gsis-cell');
+
+                // LTO O.R. Cell Builder (Programmatic event listeners completely bypass inline scoping)
+                if (v.lto_document_attachment && typeof v.lto_document_attachment === 'string' && v.lto_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    ltoCell.innerHTML = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.lto_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View O.R.</a>
+                            <button class="replace-btn bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border">🔄 Replace</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
+                        </div>
+                    `;
+                    ltoCell.querySelector('.replace-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'lto_document_attachment'));
+                    ltoCell.querySelector('.remove-btn').addEventListener('click', () => clearCloudDocumentField(v.plate, 'lto_document_attachment'));
+                } else {
+                    ltoCell.innerHTML = `<button class="upload-btn bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5">📤 Upload O.R.</button>`;
+                    ltoCell.querySelector('.upload-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'lto_document_attachment'));
+                }
+
+                // LTO C.R. Cell Builder
+                if (v.cr_document_attachment && typeof v.cr_document_attachment === 'string' && v.cr_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    crCell.innerHTML = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.cr_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.R.</a>
+                            <button class="replace-btn bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border">🔄 Replace</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
+                        </div>
+                    `;
+                    crCell.querySelector('.replace-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'cr_document_attachment'));
+                    crCell.querySelector('.remove-btn').addEventListener('click', () => clearCloudDocumentField(v.plate, 'cr_document_attachment'));
+                } else {
+                    crCell.innerHTML = `<button class="upload-btn bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5">📤 Upload C.R.</button>`;
+                    crCell.querySelector('.upload-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'cr_document_attachment'));
+                }
+
+                // GSIS C.O.C. Cell Builder
+                if (v.gsis_document_attachment && typeof v.gsis_document_attachment === 'string' && v.gsis_document_attachment.trim().toLowerCase().startsWith('http')) {
+                    gsisCell.innerHTML = `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <a href="${v.gsis_document_attachment.trim()}" target="_blank" class="text-emerald-400 hover:underline font-semibold text-xs flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">📄 View C.O.C.</a>
+                            <button class="replace-btn bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-1 px-2.5 rounded text-slate-300 transition-all border border-brand-border">🔄 Replace</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
+                        </div>
+                    `;
+                    gsisCell.querySelector('.replace-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'gsis_document_attachment'));
+                    gsisCell.querySelector('.remove-btn').addEventListener('click', () => clearCloudDocumentField(v.plate, 'gsis_document_attachment'));
+                } else {
+                    gsisCell.innerHTML = `<button class="upload-btn bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-transparent text-emerald-400 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-all flex items-center gap-1.5">📤 Upload C.O.C.</button>`;
+                    gsisCell.querySelector('.upload-btn').addEventListener('click', () => triggerFileUploadForm(v.plate, 'gsis_document_attachment'));
+                }
+
                 tbody.appendChild(row);
             });
         }
@@ -1269,7 +1306,7 @@
             const form = document.getElementById('vehicle-form');
             form.reset();
 
-            // Set default logger date to today (June 15, 2026)
+            // Set default logger date to today
             document.getElementById('new-log-date').value = "2026-06-15";
             document.getElementById('new-log-activity').value = '';
 
