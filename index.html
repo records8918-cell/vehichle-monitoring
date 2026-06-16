@@ -62,6 +62,9 @@
 </head>
 <body class="h-screen w-screen text-slate-100 flex bg-brand-dark overflow-hidden font-sans">
 
+    <!-- Global File Input for Repository Uploads -->
+    <input type="file" id="global-hidden-uploader" class="hidden" accept="application/pdf,image/*" onchange="processSelectedFile(this)">
+
     <!-- Loading Spinner Overlay -->
     <div id="loading-spinner" class="fixed inset-0 bg-brand-dark/80 backdrop-blur-sm z-[9999] flex items-center justify-center hidden">
         <div class="flex flex-col items-center gap-4">
@@ -163,7 +166,7 @@
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
                     <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-expired">0</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-2 block" id="stat-expired">0</span>
                     <span class="text-[9px] sm:text-xs text-rose-300 mt-1 block font-medium truncate" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
@@ -354,7 +357,7 @@
                 <!-- Hidden legacy history output synced behind scenes -->
                 <textarea id="f-history" class="hidden"></textarea>
 
-                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow max-h-[70vh]">
+                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Control / Serial No.</label>
