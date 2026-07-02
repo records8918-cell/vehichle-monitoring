@@ -68,9 +68,28 @@
                 box-shadow: none !important;
             }
 
-            /* 4. Printing Single Vehicle Profile: Hide report and dashboard, show only profile card */
+            /* 4. Force report tables to scale and fit within portrait paper margins without truncation */
+            table {
+                table-layout: auto !important;
+                width: 100% !important;
+            }
+            
+            th, td {
+                font-size: 8px !important;
+                padding: 6px 4px !important;
+                word-break: break-word !important;
+                white-space: normal !important;
+            }
+
+            .font-mono {
+                white-space: nowrap !important;
+                font-size: 8px !important;
+            }
+
+            /* 5. Printing Single Vehicle Profile: Hide report and dashboard, show only profile card */
             body.printing-single-profile #print-only-profile {
                 display: block !important;
+                max-width: 100% !important;
             }
             body.printing-single-profile #view-dashboard,
             body.printing-single-profile #view-reports,
@@ -79,7 +98,7 @@
                 display: none !important;
             }
 
-            /* 5. Printing Executive Compliance Report: Hide profile card and dashboard, show only report tables */
+            /* 6. Printing Executive Compliance Report: Hide profile card and dashboard, show only report tables */
             body.printing-exec-report #view-reports {
                 display: block !important;
             }
@@ -94,6 +113,7 @@
                 color: #000000 !important;
                 padding: 0 !important;
                 border: none !important;
+                max-width: 100% !important;
             }
         }
     </style>
@@ -209,9 +229,9 @@
         </div>
 
         <!-- Dashboard View Container -->
-        <div class="flex-grow p-4 sm:p-8 overflow-y-auto no-print space-y-6 sm:space-y-8" id="view-dashboard">
+        <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden p-4 sm:p-8 space-y-6" id="view-dashboard">
             <!-- Metrics Segment (2 Columns on Mobile, 4 Columns on Desktop) -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 shrink-0">
                 <div class="bg-brand-card border-t-4 border-t-blue-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
                     <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Registry</span>
                     <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-total">0</span>
@@ -219,7 +239,7 @@
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
                     <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-2 block" id="stat-expired">0</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-expired">0</span>
                     <span class="text-[9px] sm:text-xs text-rose-300 mt-1 block font-medium truncate" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
@@ -235,7 +255,7 @@
             </div>
 
             <!-- Active Expiring Alerts Block (Now Scrollable & Collapsible) -->
-            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 sm:p-6 hidden space-y-4" id="alerts-container-box">
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 sm:p-6 hidden space-y-4 shrink-0" id="alerts-container-box">
                 <div class="flex items-center justify-between gap-2 text-amber-500 font-bold text-xs uppercase tracking-widest">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -249,7 +269,7 @@
             </div>
 
             <!-- Filter & Search Toolbar (Restored Segments & Category Support) -->
-            <div class="bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
+            <div class="bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center shrink-0">
                 <div class="w-full xl:max-w-xs relative">
                     <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="table-search" placeholder="Search plate, model, driver...">
                     <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -268,9 +288,9 @@
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
                         <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-lto-group">
                             <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                     <div>
@@ -286,28 +306,26 @@
             </div>
 
             <!-- Database Data Table Wrapper (Hidden on Mobile) -->
-            <div class="hidden md:block bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
-                            <tr>
-                                <th class="py-4 px-6">Plate / Control / Serial No.</th>
-                                <th class="py-4 px-6">Description & Age</th>
-                                <th class="py-4 px-6">Assigned Driver / Custodian</th>
-                                <th class="py-4 px-6">LTO Status</th>
-                                <th class="py-4 px-6">GSIS Status</th>
-                                <th class="py-4 px-6">Next PMS</th>
-                                <th class="py-4 px-6">Last Repair History Snippet</th>
-                                <th class="py-4 px-6 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="registry-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
-                    </table>
-                </div>
+            <div class="hidden md:block flex-1 min-h-0 overflow-auto bg-brand-card border border-brand-border rounded-xl shadow-lg">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-900/90 backdrop-blur-sm text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border sticky top-0 z-10">
+                        <tr>
+                            <th class="py-4 px-6 bg-slate-900/90">Plate / Control / Serial No.</th>
+                            <th class="py-4 px-6 bg-slate-900/90">Description & Age</th>
+                            <th class="py-4 px-6 bg-slate-900/90">Assigned Driver / Custodian</th>
+                            <th class="py-4 px-6 bg-slate-900/90">LTO Status</th>
+                            <th class="py-4 px-6 bg-slate-900/90">GSIS Status</th>
+                            <th class="py-4 px-6 bg-slate-900/90">Next PMS</th>
+                            <th class="py-4 px-6 bg-slate-900/90">Last Repair History Snippet</th>
+                            <th class="py-4 px-6 bg-slate-900/90 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registry-table-body" class="divide-y divide-brand-border bg-transparent"></tbody>
+                </table>
             </div>
 
             <!-- Mobile Card List Container (Only visible on small devices) -->
-            <div id="registry-mobile-list" class="block md:hidden space-y-4"></div>
+            <div id="registry-mobile-list" class="block md:hidden flex-1 min-h-0 overflow-auto space-y-4"></div>
         </div>
 
         <!-- Executive Compliance Report View Container -->
@@ -381,10 +399,10 @@
                 <div class="w-full sm:w-auto">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type Filter</span>
                     <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="repo-filter-category-group">
-                        <button class="flex-1 sm:sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
-                        <button class="flex-1 sm:sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
-                        <button class="flex-1 sm:sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
-                        <button class="flex-1 sm:sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
+                        <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
                     </div>
                 </div>
             </div>
@@ -566,6 +584,21 @@
         <div class="border-t border-slate-200 pt-6">
             <h3 class="text-sm font-extrabold uppercase text-slate-700 tracking-wider mb-4">Complete Maintenance & Repair History Log</h3>
             <div id="print-prof-timeline" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal Overlay (Guarantees execution in any browser sandbox) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] hidden items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border w-full max-w-sm rounded-xl p-6 shadow-2xl space-y-6">
+            <div class="flex items-center gap-3 text-rose-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <h3 class="text-lg font-bold text-white">Confirm Removal</h3>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed" id="confirm-modal-text">Are you sure you want to completely remove this document link?</p>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="confirm-modal-cancel" class="border border-brand-border hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold transition-all">Cancel</button>
+                <button type="button" id="confirm-modal-confirm" class="bg-rose-600 hover:bg-rose-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all">Yes, Remove</button>
+            </div>
         </div>
     </div>
 
@@ -1380,7 +1413,7 @@
                                 🔄 Replace
                                 <input type="file" class="upload-input hidden" accept="application/pdf,image/*">
                             </label>
-                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-2.5 rounded transition-all">🗑️ Remove</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
                         </div>
                     `;
                     gsisCell.querySelector('.upload-input').addEventListener('change', (e) => directUploadHandler(e.target, v.plate, 'gsis_document_attachment'));
