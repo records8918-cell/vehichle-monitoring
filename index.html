@@ -290,9 +290,9 @@
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
                         <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-gsis-group">
                             <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
-                            <button class="px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
+                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
                         </div>
                     </div>
                 </div>
@@ -691,6 +691,9 @@
             document.getElementById('table-search').addEventListener('input', buildRegistryTableRows);
             document.getElementById('f-category').addEventListener('change', adjustFormFieldsByCategory);
             
+            // Programmatic search binding inside Document Vault
+            document.getElementById('repo-search').addEventListener('input', buildRepositoryTableRows);
+            
             document.querySelectorAll('#filter-category-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-category-group button').forEach(b => {
@@ -998,11 +1001,17 @@
                 if (ltoFilter !== 'all' && ltoStat.statusClass !== ltoFilter) return;
                 if (gsisFilter !== 'all' && gsisStat.statusClass !== gsisFilter) return;
 
-                const matchPlate = v.plate.toLowerCase().includes(query);
-                const matchModel = v.model.toLowerCase().includes(query);
-                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
-                const matchChassis = v.chassis_no && v.chassis_no.toLowerCase().includes(query);
-                const matchEngine = v.engine_no && v.engine_no.toLowerCase().includes(query);
+                const plateStr = String(v.plate || '').toLowerCase();
+                const modelStr = String(v.model || '').toLowerCase();
+                const driverStr = String(v.driver || '').toLowerCase();
+                const chassisStr = String(v.chassis_no || '').toLowerCase();
+                const engineStr = String(v.engine_no || '').toLowerCase();
+
+                const matchPlate = plateStr.includes(query);
+                const matchModel = modelStr.includes(query);
+                const matchDriver = driverStr.includes(query);
+                const matchChassis = chassisStr.includes(query);
+                const matchEngine = engineStr.includes(query);
                 if (!matchPlate && !matchModel && !matchDriver && !matchChassis && !matchEngine) return;
 
                 // Calculate age dynamically (Current year is 2026)
@@ -1251,7 +1260,7 @@
                 const pmsStat = evaluatePmsStatus(v.next_pms);
                 
                 let isExpired = (v.lto && ltoStat.statusClass === 'expired') || (v.gsis && gsisStat.statusClass === 'expired') || (v.next_pms && pmsStat.statusClass === 'expired');
-                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || v.next_pms && pmsStat.statusClass === 'expiring') && !isExpired;
+                let isWarning = ((v.lto && ltoStat.statusClass === 'expiring') || (v.gsis && gsisStat.statusClass === 'expiring') || (v.next_pms && pmsStat.statusClass === 'expiring')) && !isExpired;
 
                 if (isExpired) expiredCount++;
                 else if (isWarning) warningCount++;
@@ -1299,11 +1308,11 @@
                 row.innerHTML = `
                     <td class="py-3 px-4 border-b border-slate-200">
                         <div class="font-mono font-bold text-slate-900">${v.plate}</div>
-                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-500">${statusConfig.label.split(' ')[1] || statusConfig.label} • ${v.equipment_category || 'Vehicle'}</span>
+                        <span class="text-[9px] font-bold block mt-1 uppercase text-slate-600">${statusConfig.label.split(' ')[1] || statusConfig.label} • ${v.equipment_category || 'Vehicle'}</span>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
                         <div><strong>${v.model}</strong></div>
-                        <div>Age: ${ageDisplay}${detailsSubline}</div>
+                        <div class="text-[10px] text-slate-500 mt-1">Age: ${ageDisplay}${detailsSubline}</div>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-700 text-xs">${v.driver || 'Unassigned'}</td>
                     <td class="py-3 px-4 border-b border-slate-200">
@@ -1331,8 +1340,11 @@
             fleet.forEach(v => {
                 if (repoCategoryFilter !== 'all' && (v.equipment_category || 'Service Vehicle') !== repoCategoryFilter) return;
                 
-                const matchPlate = v.plate.toLowerCase().includes(query);
-                const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
+                const plateStr = String(v.plate || '').toLowerCase();
+                const driverStr = String(v.driver || '').toLowerCase();
+
+                const matchPlate = plateStr.includes(query);
+                const matchDriver = driverStr.includes(query);
                 if (query && !matchPlate && !matchDriver) return;
 
                 const row = document.createElement('tr');
@@ -1408,7 +1420,7 @@
                                 🔄 Replace
                                 <input type="file" class="upload-input hidden" accept="application/pdf,image/*">
                             </label>
-                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-2.5 rounded transition-all">🗑️ Remove</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
                         </div>
                     `;
                     gsisCell.querySelector('.upload-input').addEventListener('change', (e) => directUploadHandler(e.target, v.plate, 'gsis_document_attachment'));
