@@ -1,32 +1,3 @@
-I have completely redesigned the printing layouts and corrected the headers to
-address your requirements:
-
-🛠️ Improvements made in this version:
-
-1.  Dynamic Printing Filters: Added an Equipment Type Filter directly to your
-    on-screen Executive Reports view (automatically hidden during physical
-    printing) [1]. This allows you to filter the entire compliance report by
-    Vehicles, Heavy Equipment, or Light Tools before printing.
-2.  Fixed Printing Overlaps & Visibility:
-      - Problem: The reason you were seeing the Executive Report "leaking" onto
-        the left side of your Single Profile print was that the browser was
-        trying to print both page views at the same time.
-      - Solution: I separated the on-screen rendering (which remains a beautiful
-        dark-mode interface) and print-only rendering (which are direct child
-        templates of the body). When you click print, the app now completely
-        hides the active on-screen workspace [1]. Only the chosen print sheet
-        (Single Profile OR Executive Report) is sent to the printer, resulting
-        in a perfect, clean document with zero overlaps or layout leaks [1].
-      - High Contrast Print Badges: Upgraded the report status badges to use
-        dark green (text-emerald-700), dark gold (text-amber-700), and deep red
-        (text-rose-700) color styles, guaranteeing they print sharply on any
-        standard grayscale or color printer [1].
-3.  Removed "Division" Branding: Removed the text — Equipment & Fleet Management
-    Division from all headers. It now reads cleanly as: CITY GOVERNMENT OF
-    BAGUIO • City Engineering Office.
-
-Complete, Corrected HTML Code:
-
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
