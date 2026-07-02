@@ -180,7 +180,7 @@
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-rose-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
                     <span class="text-[10px] sm:text-xs font-bold text-rose-400 uppercase tracking-widest block">Expired Records</span>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-1 sm:mt-2 block" id="stat-expired">0</span>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white mt-2 block" id="stat-expired">0</span>
                     <span class="text-[9px] sm:text-xs text-rose-300 mt-1 block font-medium truncate" id="stat-expired-sub">0 LTO • 0 GSIS • 0 PMS</span>
                 </div>
                 <div class="bg-brand-card border-t-4 border-t-amber-500 border border-brand-border p-4 sm:p-6 rounded-xl shadow-lg">
@@ -219,7 +219,7 @@
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type</span>
                         <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-category-group">
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
+                            <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
@@ -228,7 +228,7 @@
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">LTO Registration</span>
                         <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-lto-group">
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
@@ -237,7 +237,7 @@
                     <div>
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">GSIS Insurance</span>
                         <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="filter-gsis-group">
-                            <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
+                            <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all" data-filter="all">All</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="valid">Valid</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expiring">Warning</button>
                             <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all" data-filter="expired">Expired</button>
@@ -322,12 +322,23 @@
             <p class="text-sm text-slate-400 leading-relaxed max-w-3xl">
                 Securely upload or attach scanned PDF records or image snapshots of official LTO Official Receipts (O.R.), LTO Certificates of Registration (C.R.), and GSIS Certificates of Cover (C.O.C.). Files are hosted safely inside your Supabase Cloud Storage.
             </p>
-            <div class="bg-brand-card border border-brand-border rounded-xl p-4">
-                <div class="relative w-full max-w-md">
-                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="repo-search" oninput="buildRepositoryTableRows()" placeholder="🔍 Filter repository by plate or driver name...">
+            <!-- Search and Filter Toolbar specifically for Documents Repository -->
+            <div class="bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6 flex flex-col xl:flex-row gap-6 justify-between xl:items-center">
+                <div class="w-full xl:max-w-xs relative">
+                    <input type="text" class="w-full bg-brand-dark border border-brand-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" id="repo-search" placeholder="Search plate, custodian...">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <div class="w-full sm:w-auto">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Equipment Type Filter</span>
+                    <div class="flex sm:inline-flex rounded-lg bg-slate-950 p-1 border border-brand-border overflow-x-auto" id="repo-filter-category-group">
+                        <button class="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap" data-filter="all">All Types</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Service Vehicle">Vehicles</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Heavy Equipment">Heavy</button>
+                        <button class="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap" data-filter="Light Equipment">Light/Tools</button>
+                    </div>
                 </div>
             </div>
-            <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg">
+            <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden shadow-lg mt-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold border-b border-brand-border">
@@ -371,7 +382,7 @@
                 <!-- Hidden legacy history output synced behind scenes -->
                 <textarea id="f-history" class="hidden"></textarea>
 
-                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow max-h-[70vh]">
+                <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow">
                     <div class="grid grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plate / Control / Serial No.</label>
@@ -428,8 +439,8 @@
                                 <!-- Quick Presets -->
                                 <div class="flex flex-wrap gap-1" id="pms-quick-presets">
                                     <button type="button" onclick="setQuickPmsPreset(6)" class="bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Standard (6 mos)</button>
-                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy (3 mos)</button>
-                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Tool (12 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(3)" class="bg-amber-600/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Heavy (3 mos)</button>
+                                    <button type="button" onclick="setQuickPmsPreset(12)" class="bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-emerald-500/20 text-[9px] font-semibold px-2 py-0.5 rounded transition-all">📅 Tool (12 mos)</button>
                                 </div>
                             </div>
                             <input type="date" id="f-pms" class="bg-brand-dark border border-brand-border rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all mt-1">
@@ -508,6 +519,21 @@
         </div>
     </div>
 
+    <!-- Custom Confirmation Modal Overlay (Guarantees execution in any browser sandbox) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] hidden items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border w-full max-w-sm rounded-xl p-6 shadow-2xl space-y-6">
+            <div class="flex items-center gap-3 text-rose-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <h3 class="text-lg font-bold text-white">Confirm Removal</h3>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed" id="confirm-modal-text">Are you sure you want to completely remove this document link?</p>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="confirm-modal-cancel" class="border border-brand-border hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold transition-all">Cancel</button>
+                <button type="button" id="confirm-modal-confirm" class="bg-rose-600 hover:bg-rose-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all">Yes, Remove</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://mkvmqjrbskivbbaizovt.supabase.co";
         const SUPABASE_KEY = "sb_publishable_hF2Z7ZRKTiLbLoNXofQIkQ_aNaCFPQ7";
@@ -518,6 +544,7 @@
         let ltoFilter = 'all';
         let gsisFilter = 'all';
         let categoryFilter = 'all';
+        let repoCategoryFilter = 'all'; // Added dedicated repository filter state variable
         let alertsPanelCollapsed = false;
 
         let currentUploadPlate = "";
@@ -597,6 +624,9 @@
             document.getElementById('table-search').addEventListener('input', buildRegistryTableRows);
             document.getElementById('f-category').addEventListener('change', adjustFormFieldsByCategory);
             
+            // Programmatic search binding inside Document Vault
+            document.getElementById('repo-search').addEventListener('input', buildRepositoryTableRows);
+            
             document.querySelectorAll('#filter-category-group button').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('#filter-category-group button').forEach(b => {
@@ -605,6 +635,18 @@
                     btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap";
                     categoryFilter = btn.getAttribute('data-filter');
                     buildRegistryTableRows();
+                });
+            });
+
+            // Programmatically bind repository category filters
+            document.querySelectorAll('#repo-filter-category-group button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#repo-filter-category-group button').forEach(b => {
+                        b.className = "px-4 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition-all whitespace-nowrap";
+                    });
+                    btn.className = "px-4 py-1.5 text-xs font-semibold rounded-md bg-brand-border text-white transition-all whitespace-nowrap";
+                    repoCategoryFilter = btn.getAttribute('data-filter');
+                    buildRepositoryTableRows();
                 });
             });
 
@@ -1184,6 +1226,8 @@
             tbody.innerHTML = "";
 
             fleet.forEach(v => {
+                if (repoCategoryFilter !== 'all' && (v.equipment_category || 'Service Vehicle') !== repoCategoryFilter) return;
+                
                 const matchPlate = v.plate.toLowerCase().includes(query);
                 const matchDriver = v.driver && v.driver.toLowerCase().includes(query);
                 if (query && !matchPlate && !matchDriver) return;
