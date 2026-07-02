@@ -76,25 +76,41 @@
                 height: auto !important;
             }
 
-            /* 4. Force report tables to scale and fit within portrait paper margins without truncation */
-            table {
-                table-layout: auto !important;
-                width: 100% !important;
-            }
-            
-            th, td {
+            /* 4. Executive Report Table Only: Compress padding and font sizes to fit 6 columns on portrait paper */
+            .print-table th, .print-table td {
                 font-size: 8px !important;
-                padding: 6px 4px !important;
-                word-break: break-word !important;
+                padding: 5px 3px !important;
+                word-break: break-all !important;
                 white-space: normal !important;
             }
-
-            .font-mono {
-                white-space: nowrap !important;
+            .print-table .font-mono {
                 font-size: 8px !important;
+                white-space: nowrap !important;
             }
 
-            /* 5. Printing Single Vehicle Profile: Hide report and dashboard, show only profile card */
+            /* 5. Single Vehicle Profile Card Only: Maintain standard highly legible office document sizing */
+            #print-only-profile {
+                font-size: 12px !important;
+                color: #000000 !important;
+            }
+            #print-only-profile h2 {
+                font-size: 18px !important;
+            }
+            #print-only-profile h3 {
+                font-size: 13px !important;
+            }
+            #print-only-profile .font-mono {
+                font-size: 11px !important;
+                white-space: nowrap !important;
+            }
+            #print-only-profile strong {
+                font-size: 13px !important;
+            }
+            #print-only-profile span {
+                font-size: 10px !important;
+            }
+
+            /* 6. Printing Single Vehicle Profile: Hide report and dashboard, show only profile card */
             body.printing-single-profile #print-only-profile {
                 display: block !important;
                 max-width: 100% !important;
@@ -106,7 +122,7 @@
                 display: none !important;
             }
 
-            /* 6. Printing Executive Compliance Report: Hide profile card and dashboard, show only report tables */
+            /* 7. Printing Executive Compliance Report: Hide profile card and dashboard, show only report tables */
             body.printing-exec-report #view-reports {
                 display: block !important;
             }
@@ -204,7 +220,7 @@
     </div>
 
     <!-- Workspace Area (Fixed widths dynamically adjusted to prevent shrinking) -->
-    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full">
+    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full font-sans">
         <!-- Top Bar Header -->
         <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
             <div class="flex items-center gap-3">
@@ -671,7 +687,7 @@
                 alert("Database connection sync alert. Using snapshot placeholders.");
                 fleet = [
                     { plate: "SAB-2391", model: "Toyota Hilux D-4D", year: "2019", driver: "Engr. J. Ramos", lto: "2026-05-19", gsis: "2026-09-01", chassis_no: "MROFX12G00", engine_no: "2KD-123456", next_pms: "2026-06-25", vehicle_status: "Operational", equipment_category: "Service Vehicle", repair_history: "2026-05-10: Brake pads replaced\n2026-01-12: Standard engine tune up", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null },
-                    { plate: "PROP-CS-02", model: "Stihl MS-250 Wood Chainsaw", year: "2024", driver: "A. Baguio", lto: null, gsis: null, chassis_no: null, engine_no: null, next_pms: "2026-07-15", vehicle_status: "Operational", equipment_category: "Light Equipment", repair_history: "2026-04-12: Lubricated dual chain rails", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
+                    { plate: "PROP-CS-02", model: "Stihl MS-250 Wood Chainsaw", year: "2024", driver: "A. Baguio", lto: null, gsis: null, chassis_no: null, engine_no: null, next_pms: "2026-07-15", vehicle_status: "Operational", equipment_category: "Light Equipment", repair_history: "2026-04-12: Wood block lubrication", lto_document_attachment: null, cr_document_attachment: null, gsis_document_attachment: null }
                 ];
                 updateInterfaceMetricsAndAlerts();
                 buildRegistryTableRows();
@@ -912,7 +928,7 @@
                     item.innerHTML = `
                         <div>
                             <strong class="text-white">${v.plate}</strong> — ${v.model} (${v.driver || 'No Assigned Driver'}) requires LTO Registration Renewal.
-                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-amber-500/15 text-emerald-400 rounded">LTO O.R.</span>
+                            <span class="inline-block px-2 py-0.5 ml-2 text-[10px] font-bold bg-amber-500/15 text-amber-400 rounded">LTO O.R.</span>
                         </div>
                         <div class="font-semibold text-rose-400 text-xs tracking-wider uppercase">${dayLabel}</div>
                     `;
@@ -1312,7 +1328,7 @@
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-900 text-xs">
                         <div><strong>${v.model}</strong></div>
-                        <div class="text-[10px] text-slate-500 mt-1">Age: ${ageDisplay}${detailsSubline}</div>
+                        <div>Age: ${ageDisplay}${detailsSubline}</div>
                     </td>
                     <td class="py-3 px-4 border-b border-slate-200 text-slate-700 text-xs">${v.driver || 'Unassigned'}</td>
                     <td class="py-3 px-4 border-b border-slate-200">
