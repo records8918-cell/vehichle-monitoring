@@ -39,10 +39,10 @@
             background: #10b981;
         }
 
-        /* 1. Professional Standard Printer Margins (Zeroed out so our strict inner paddings can control the canvas) */
+        /* 1. Reset physical page boundaries to 0 to bypass inconsistent browser print controls */
         @page {
-            size: auto;
-            margin: 0;
+            size: portrait;
+            margin: 0 !important;
         }
 
         /* Custom print overrides (Fixed container flow to prevent blank previews) */
@@ -81,7 +81,11 @@
                 height: auto !important;
             }
 
-            /* 4. GUARANTEED PRINT MARGIN FALLBACK: Force standard 12mm top/bottom & 15mm left/right padding inside print targets */
+            /* 
+               4. GUARANTEED AUTOMATIC PRINT MARGIN ALIGNMENT: 
+               Since the @page margin is reset to 0, these paddings act as the exact, locked margins on physical paper.
+               This guarantees balanced 12mm top/bottom and 15mm left/right margins regardless of browser settings.
+            */
             #print-only-profile, .print-exec-layout .print-card {
                 padding: 12mm 15mm 12mm 15mm !important;
                 box-sizing: border-box !important;
@@ -91,6 +95,7 @@
                 max-width: 100% !important;
                 border: none !important;
                 box-shadow: none !important;
+                display: block !important;
             }
 
             /* Executive Report Table Only: Compress padding and font sizes proportionately within margins */
@@ -173,6 +178,21 @@
         </div>
     </div>
 
+    <!-- Custom Confirmation Modal Overlay (Guarantees execution in any browser sandbox) -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] hidden items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border w-full max-w-sm rounded-xl p-6 shadow-2xl space-y-6">
+            <div class="flex items-center gap-3 text-rose-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <h3 class="text-lg font-bold text-white">Confirm Removal</h3>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed" id="confirm-modal-text">Are you sure you want to completely remove this document link?</p>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="confirm-modal-cancel" class="border border-brand-border hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold transition-all">Cancel</button>
+                <button type="button" id="confirm-modal-confirm" class="bg-rose-600 hover:bg-rose-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all">Yes, Remove</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Security Gatekeeper Overlay -->
     <div class="fixed inset-0 bg-brand-dark z-[8888] flex items-center justify-center p-4" id="gatekeeper-lock">
         <div class="bg-brand-card border border-brand-border w-full max-w-md rounded-xl p-8 shadow-2xl text-center">
@@ -235,7 +255,7 @@
     </div>
 
     <!-- Workspace Area (Fixed widths dynamically adjusted to prevent shrinking) -->
-    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full font-sans">
+    <div class="flex-grow flex-1 min-w-0 flex flex-col overflow-hidden bg-brand-dark h-full">
         <!-- Top Bar Header -->
         <div class="h-16 border-b border-brand-border px-4 sm:px-8 flex items-center justify-between bg-brand-card shrink-0 no-print">
             <div class="flex items-center gap-3">
@@ -1427,7 +1447,7 @@
                                 🔄 Replace
                                 <input type="file" class="upload-input hidden" accept="application/pdf,image/*">
                             </label>
-                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-2.5 rounded transition-all">🗑️ Remove</button>
                         </div>
                     `;
                     crCell.querySelector('.upload-input').addEventListener('change', (e) => directUploadHandler(e.target, v.plate, 'cr_document_attachment'));
@@ -1451,7 +1471,7 @@
                                 🔄 Replace
                                 <input type="file" class="upload-input hidden" accept="application/pdf,image/*">
                             </label>
-                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1 px-2.5 rounded transition-all">🗑️ Remove</button>
+                            <button class="remove-btn bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 hover:border-transparent text-rose-400 text-xs font-semibold py-1.5 px-2.5 rounded transition-all">🗑️ Remove</button>
                         </div>
                     `;
                     gsisCell.querySelector('.upload-input').addEventListener('change', (e) => directUploadHandler(e.target, v.plate, 'gsis_document_attachment'));
